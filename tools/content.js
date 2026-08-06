@@ -21,6 +21,7 @@ const SECTIONS = [
   { key: 'radio', dir: 'radio', title: 'Радиопередачи', menu: true, empty: true },
   { key: 'books', dir: 'books', title: 'Книги', menu: true },
   { key: 'stati', dir: 'stati', title: 'Статьи', menu: true, empty: true },
+  { key: 'foto', dir: 'foto', title: 'Фото', menu: true, empty: true },
 
   { key: 'events', dir: 'events', title: 'Мероприятия' },
   { key: 'texts', dir: 'texts', title: 'Расшифровки' },

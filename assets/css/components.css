@@ -137,7 +137,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
 /* Фон списка виден только в зазорах — он и есть разделительная линия */
 .sitebar__list {
   display: grid;
-  grid-template-columns: repeat(7, minmax(0, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   gap: 1px;
   max-width: var(--container);
   margin: 0 auto;
@@ -913,21 +913,23 @@ html:not(.js) .video-embed::after { display: none; }
 /* Полоса-меню сужается ступенями: семь пунктов в ряд держатся только на
    широком экране, дальше — четыре, три и два столбца. Бургера нет: меню
    всегда на виду, кликабельная зона каждой ячейки остаётся крупной. */
-/* Пунктов семь — в ряд из четырёх, трёх и двух остаётся хвост. Последний
-   пункт растягивается на остаток ряда: иначе на его месте зияет пустая
-   ячейка светлее полосы. */
-@media (max-width: 1180px) {
+/* Пунктов восемь: в ряды по четыре и по два они ложатся ровно, а в ряд из
+   трёх остаётся хвост — там последний пункт растягивается на остаток ряда,
+   иначе на его месте зияет пустая ячейка светлее полосы. */
+/* Ряд из восьми держится только на полной ширине контейнера: уже — и
+   «РАДИОПЕРЕДАЧИ» одним словом перестаёт помещаться в ячейку */
+@media (max-width: 1279px) {
   .sitebar__list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
-  .sitebar__item:last-child { grid-column: span 2; }
 }
 
 @media (max-width: 860px) {
   .sitebar__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .sitebar__item:last-child { grid-column: 1 / -1; }
+  .sitebar__item:last-child { grid-column: span 2; }
 }
 
 @media (max-width: 560px) {
   .sitebar__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sitebar__item:last-child { grid-column: auto; }
   .sitebar__link { min-height: 3.5rem; }
 }
 
