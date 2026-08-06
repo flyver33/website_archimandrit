@@ -12,7 +12,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { SECTIONS, EVENTS, BOOKS, VIDEO, BIO } = require('./content.js');
+const { SECTIONS, MENU, EVENTS, BOOKS, VIDEO, BIO } = require('./content.js');
 
 const ROOT = path.join(__dirname, '..');
 const UP = '../'; // все страницы лежат на один уровень ниже корня
@@ -46,18 +46,11 @@ ${sheets.map((name) => `<link rel="stylesheet" href="${UP}assets/css/${name}.css
 `;
 }
 
-/* aria-current="page" ставится только на самой странице раздела. На странице
+/* В шапке только имя и «Автобиография»: разделы живут в полосе-меню.
+   aria-current="page" ставится только на самой странице раздела. На странице
    элемента пункт меню ведёт не сюда, поэтому пометки нет. */
 function header(activeKey, isIndex) {
-  const mark = (key) => (isIndex && key === activeKey ? ' aria-current="page"' : '');
-
-  const links = SECTIONS.map((s) =>
-    `      <div class="nav__item"><a class="nav__link" href="${UP}${s.dir}/index.html"${mark(s.key)}>${s.title}</a></div>`
-  ).join('\n');
-
-  const mobile = SECTIONS.map((s) =>
-    `      <a href="${UP}${s.dir}/index.html"${mark(s.key)}>${s.title}</a>`
-  ).join('\n');
+  const bio = SECTIONS.find((s) => s.key === 'bio');
 
   return `
 <!-- ======================================================== Шапка -->
@@ -65,38 +58,34 @@ function header(activeKey, isIndex) {
   <div class="container header__inner">
 
     <a class="logo" href="${UP}index.html" aria-label="Архимандрит Мелхиседек — на главную">
-      <span class="logo__line">Архимандрит</span>
-      <span class="logo__line">Мелхиседек</span>
+      Архимандрит Мелхиседек
     </a>
 
-    <nav class="nav" aria-label="Основное меню">
-${links}
-    </nav>
-
     <div class="header__actions">
-      <button class="icon-btn burger" type="button" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu">
-        <svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
-          <path d="M0 1h22M0 7h22M0 13h22"/>
-        </svg>
-      </button>
+      <a class="btn btn--primary header__bio" href="${UP}${bio.dir}/index.html"${isIndex && activeKey === 'bio' ? ' aria-current="page"' : ''}>${bio.title}</a>
     </div>
 
   </div>
 
   <div class="header-ornament" aria-hidden="true"><span class="header-ornament__strip"></span></div>
 </header>
+` + sitebar(activeKey, isIndex);
+}
 
-<!-- ================================================ Мобильное меню -->
-<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Меню сайта" hidden>
-  <button class="icon-btn mobile-menu__close" type="button" id="menu-close" aria-label="Закрыть меню">
-    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16"/></svg>
-  </button>
-  <div class="container">
-    <nav aria-label="Разделы сайта">
-${mobile}
-    </nav>
-  </div>
-</div>
+/* Полоса-меню: на главной стоит под первым экраном, на остальных страницах —
+   сразу под шапкой. Разметка одна и та же, порядок пунктов — из MENU. */
+function sitebar(activeKey, isIndex) {
+  const items = MENU.map((s) =>
+    `    <li class="sitebar__item"><a class="sitebar__link" href="${UP}${s.dir}/index.html"${isIndex && s.key === activeKey ? ' aria-current="page"' : ''}>${s.title}</a></li>`
+  ).join('\n');
+
+  return `
+<!-- ================================================ Полоса-меню -->
+<nav class="sitebar" aria-label="Разделы сайта">
+  <ul class="sitebar__list">
+${items}
+  </ul>
+</nav>
 `;
 }
 
@@ -179,6 +168,31 @@ ${rows}
 
 </main>
 ` + footer(section.key);
+}
+
+/* --- Пустой раздел ----------------------------------------------------------
+   Пункт меню уже есть, содержимого ещё нет: страница отдаёт заголовок и одну
+   строку о том, что раздел готовится. Появятся материалы — раздел собирается
+   как остальные, флаг `empty` в content.js снимается. */
+
+function emptySectionPage({ key, title, description }) {
+  return head({
+    title: `${title} — архимандрит Мелхиседек (Артюхин)`,
+    description,
+    css: ['reading', 'section'],
+  }) + header(key, true) + `
+<main id="main">
+
+  <div class="container page-head">
+    <h1 class="page-head__title">${title}</h1>
+  </div>
+
+  <div class="container section-page">
+    <p class="section-empty">Раздел готовится.</p>
+  </div>
+
+</main>
+` + footer();
 }
 
 /* --- Раздел «Видео»: сетка записей с плеерами -------------------------------
@@ -415,8 +429,8 @@ texts.forEach((t, i) => {
 /* Видеозаписи */
 
 written.push(write('video/index.html', videoSectionPage({
-  title: 'Видео',
-  description: 'Проповеди, беседы и лекции архимандрита Мелхиседека (Артюхина) в записи.',
+  title: SECTIONS.find((s) => s.key === 'video').title,
+  description: 'Телепередачи с участием архимандрита Мелхиседека (Артюхина) в записи.',
   items: VIDEO,
 })));
 
@@ -464,6 +478,24 @@ ${BIO.paragraphs.map((p) => `    <p>${p}</p>`).join('\n')}
 
 </main>
 ` + footer('bio')));
+
+/* Разделы без содержимого */
+
+const EMPTY_DESCRIPTION = {
+  news: 'Новости архимандрита Мелхиседека (Артюхина).',
+  propovedi: 'Проповеди архимандрита Мелхиседека (Артюхина).',
+  besedy: 'Беседы и встречи архимандрита Мелхиседека (Артюхина).',
+  radio: 'Радиопередачи с участием архимандрита Мелхиседека (Артюхина).',
+  stati: 'Статьи архимандрита Мелхиседека (Артюхина).',
+};
+
+SECTIONS.filter((s) => s.empty).forEach((s) => {
+  written.push(write(`${s.dir}/index.html`, emptySectionPage({
+    key: s.key,
+    title: s.title,
+    description: EMPTY_DESCRIPTION[s.key] || s.title,
+  })));
+});
 
 console.log(`Собрано страниц: ${written.length}`);
 console.log(`  расшифровок: ${texts.length}`);
