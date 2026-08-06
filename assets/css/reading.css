@@ -1,0 +1,137 @@
+/* ==========================================================================
+   Страница элемента: шапка раздела со стрелкой назад, заголовок, лид,
+   длинное чтение. Одна раскладка на книгу, расшифровку, запись и встречу.
+   ========================================================================== */
+
+/* --- Шапка страницы ------------------------------------------------------- */
+
+.page-head {
+  position: relative;
+  z-index: 1;
+  padding-block: clamp(var(--space-xl), 4vw, var(--space-2xl)) var(--space-xl);
+}
+
+/* Заголовок раздела и элемента идёт во всю допустимую ширину: обрезать его
+   мерой ни к чему — это одна-две строки, а не абзац.
+
+   text-wrap: balance из base.css здесь снят: он выравнивает строки по длине,
+   и заголовок обрывается на середине страницы, хотя место справа есть.
+   pretty оставляет строку полной, а следит только за висячим словом. */
+.page-head__title {
+  max-width: none;
+  text-wrap: pretty;
+}
+
+.page-head__lead {
+  margin-top: var(--space-md);
+  max-width: none;
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  color: var(--ink-soft);
+  text-wrap: pretty;
+}
+
+/* Возврат в раздел — первая строка страницы элемента, вместо хлебных крошек:
+   уровень вложенности всего один, перечислять его целиком незачем */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-height: 44px;
+  margin-bottom: var(--space-sm);
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+.back-link svg {
+  flex: none;
+  color: var(--gold);
+  transition: transform var(--dur) var(--ease);
+}
+
+.back-link:hover { color: var(--accent); }
+.back-link:hover svg { transform: translateX(-4px); }
+
+/* Название элемента: во всю ширину и плотнее обычного заголовка — длинная
+   фраза в две-три строки не должна расползаться по вертикали */
+.entry-head__title {
+  max-width: none;
+  line-height: 1.02;
+}
+
+/* --- Текст ---------------------------------------------------------------- */
+
+.entry-body {
+  position: relative;
+  z-index: 1;
+  padding-bottom: var(--space-3xl);
+  /* Длинное чтение: кегль на ступень крупнее основного, интерлиньяж просторнее */
+  font-size: clamp(1.125rem, 1.06rem + .3vw, 1.25rem);
+  line-height: 1.75;
+}
+
+.entry-body p {
+  max-width: var(--measure-read);
+  /* В расшифровках попадаются длинные неразрывные куски — страховка от переполнения */
+  overflow-wrap: break-word;
+}
+
+.entry-body p + p { margin-top: 1.05em; }
+
+/* Реплики ведущего: в исходном документе они набраны жирным */
+.entry-body p.is-host {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.entry-body em { color: inherit; }
+.entry-body b { font-weight: 700; color: var(--ink); }
+
+/* Строка сведений над текстом: место, время, источник записи */
+.entry-facts {
+  margin-bottom: var(--space-xl);
+  padding-bottom: var(--space-lg);
+  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+/* Сведения — короткие строки «подпись: значение», а не абзацы: мера им не нужна */
+.entry-facts p { max-width: none; }
+.entry-facts p + p { margin-top: var(--space-xs); }
+
+/* --- Видеозапись внутри элемента ------------------------------------------ */
+
+.entry-media {
+  margin-bottom: var(--space-xl);
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--border-soft);
+  background: var(--surface-sunken);
+}
+
+.entry-media iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* --- Соседние элементы ---------------------------------------------------- */
+
+.entry-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: var(--space-md);
+  margin-top: var(--space-2xl);
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-soft);
+  font-size: var(--fs-small);
+}
+
+.entry-nav a { color: var(--gold-deep); }
+.entry-nav__next { margin-left: auto; text-align: right; }

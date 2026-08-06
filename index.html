@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Архимандрит Мелхиседек (Артюхин) — официальный сайт</title>
+<meta name="description" content="Официальный сайт архимандрита Мелхиседека (Артюхина): проповеди и беседы, книги и статьи, теле- и радиопередачи, ближайшие встречи.">
+<meta name="theme-color" content="#FFFDF8">
+
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
+<meta property="og:title" content="Архимандрит Мелхиседек (Артюхин)">
+<meta property="og:description" content="Проповеди и беседы, книги и статьи, ближайшие встречи.">
+<meta property="og:image" content="assets/img/portrait.webp">
+
+<link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+<link rel="preload" href="assets/fonts/arsenal-400-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/ptserif-400-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="assets/css/fonts.css">
+<link rel="stylesheet" href="assets/css/tokens.css">
+<link rel="stylesheet" href="assets/css/base.css">
+<link rel="stylesheet" href="assets/css/components.css">
+<script>document.documentElement.classList.add('js');</script>
+</head>
+<body>
+
+<a class="skip-link" href="#main">Перейти к содержанию</a>
+
+<!-- ======================================================== Шапка -->
+<header class="header" id="header">
+  <div class="container header__inner">
+
+    <a class="logo" href="/" aria-label="Архимандрит Мелхиседек — на главную">
+      <span class="logo__line">Архимандрит</span>
+      <span class="logo__line">Мелхиседек</span>
+    </a>
+
+    <nav class="nav" aria-label="Основное меню">
+      <div class="nav__item"><a class="nav__link" href="events/index.html">Мероприятия</a></div>
+      <div class="nav__item"><a class="nav__link" href="books/index.html">Книги</a></div>
+      <div class="nav__item"><a class="nav__link" href="texts/index.html">Расшифровки</a></div>
+      <div class="nav__item"><a class="nav__link" href="video/index.html">Видео</a></div>
+      <div class="nav__item"><a class="nav__link" href="bio/index.html">Биография</a></div>
+    </nav>
+
+    <div class="header__actions">
+      <button class="icon-btn burger" type="button" id="burger" aria-label="Открыть меню" aria-expanded="false" aria-controls="mobile-menu">
+        <svg width="22" height="14" viewBox="0 0 22 14" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+          <path d="M0 1h22M0 7h22M0 13h22"/>
+        </svg>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Лента внутри липкой шапки: прокрутка её не режет — она гаснет целиком -->
+  <div class="header-ornament" aria-hidden="true"><span class="header-ornament__strip"></span></div>
+</header>
+
+<!-- ================================================ Мобильное меню -->
+<div class="mobile-menu" id="mobile-menu" role="dialog" aria-modal="true" aria-label="Меню сайта" hidden>
+  <button class="icon-btn mobile-menu__close" type="button" id="menu-close" aria-label="Закрыть меню">
+    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16"/></svg>
+  </button>
+  <div class="container">
+    <nav aria-label="Разделы сайта">
+      <a href="events/index.html">Мероприятия</a>
+      <a href="books/index.html">Книги</a>
+      <a href="texts/index.html">Расшифровки</a>
+      <a href="video/index.html">Видео</a>
+      <a href="bio/index.html">Биография</a>
+    </nav>
+  </div>
+</div>
+
+<main id="main">
+
+  <!-- ================================================ Первый экран -->
+  <section class="hero">
+    <h1 class="visually-hidden">Архимандрит Мелхиседек (Артюхин) — официальный сайт</h1>
+
+    <div class="hero__photo">
+      <picture>
+        <source media="(max-width: 760px)" srcset="assets/img/portrait-sm.webp" type="image/webp">
+        <source srcset="assets/img/portrait.webp" type="image/webp">
+        <img src="assets/img/portrait.png" alt="Архимандрит Мелхиседек (Артюхин)" width="1473" height="1100" fetchpriority="high">
+      </picture>
+    </div>
+
+    <figure class="hero__quote">
+      <span class="hero__marks" aria-hidden="true">”</span>
+      <blockquote>Так возлюбил Бог мир, что отдал сына Своего!</blockquote>
+      <figcaption>Ин. 3, 16</figcaption>
+    </figure>
+  </section>
+
+  <!-- ================================================ Новости -->
+  <!-- Одна лента: ближайшие встречи, за ними — сообщения о новых публикациях -->
+  <section class="section" id="news">
+    <div class="container">
+      <div class="section__head">
+        <h2 class="reveal reveal--mask">Новости</h2>
+      </div>
+
+      <div class="events reveal">
+        <div class="events__feature">
+        <div class="event-detail" id="event-panel-1" role="tabpanel" aria-labelledby="event-tab-1" tabindex="0">
+          <div class="event-detail__head">
+            <p class="event-detail__when">
+              <b>9</b>
+              <span>августа<br><time datetime="2026-08-09T18:00">18:00</time></span>
+            </p>
+            <p class="event-detail__type">Беседа</p>
+          </div>
+          <figure class="event-detail__photo" aria-hidden="true">
+            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
+              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
+              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
+            </svg>
+          </figure>
+          <h3 class="event-detail__title">Как жить после развода? Ответ священника</h3>
+          <p class="event-detail__text">Что помогает настроиться на духовную жизнь, есть ли в ней правила и какие вопросы не стоит обсуждать с батюшкой.</p>
+          <p class="event-detail__place">
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
+            <span>Храм Покрова Пресвятой Богородицы в Ясеневе, приходской дом</span>
+          </p>
+        </div>
+
+        <div class="event-detail" id="event-panel-2" role="tabpanel" aria-labelledby="event-tab-2" tabindex="0" hidden>
+          <div class="event-detail__head">
+            <p class="event-detail__when">
+              <b>14</b>
+              <span>августа<br><time datetime="2026-08-14T19:00">19:00</time></span>
+            </p>
+            <p class="event-detail__type">Лекция</p>
+          </div>
+          <figure class="event-detail__photo" aria-hidden="true">
+            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
+              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
+              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
+            </svg>
+          </figure>
+          <h3 class="event-detail__title">Куда ведут «ченнелинг» и «молитвенные медитации»?</h3>
+          <p class="event-detail__text">Вера или магия, духовная жизнь или оккультизм — что доставит душе человека желанное счастье.</p>
+          <p class="event-detail__place">
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
+            <span>Просветительский центр при храме апостолов Петра и Павла</span>
+          </p>
+        </div>
+
+        <div class="event-detail" id="event-panel-3" role="tabpanel" aria-labelledby="event-tab-3" tabindex="0" hidden>
+          <div class="event-detail__head">
+            <p class="event-detail__when">
+              <b>27</b>
+              <span>августа<br><time datetime="2026-08-27T17:00">17:00</time></span>
+            </p>
+            <p class="event-detail__type">Богослужение</p>
+          </div>
+          <figure class="event-detail__photo" aria-hidden="true">
+            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
+              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
+              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
+            </svg>
+          </figure>
+          <h3 class="event-detail__title">Успение Пресвятой Богородицы. Всенощное бдение</h3>
+          <p class="event-detail__text">Праздничная служба с чтением акафиста и проповедью после литургии.</p>
+          <p class="event-detail__place">
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
+            <span>Храм Покрова Пресвятой Богородицы в Ясеневе</span>
+          </p>
+        </div>
+
+        <div class="event-detail" id="event-panel-4" role="tabpanel" aria-labelledby="event-tab-4" tabindex="0" hidden>
+          <div class="event-detail__head">
+            <p class="event-detail__when">
+              <b>3</b>
+              <span>сентября<br><time datetime="2026-09-03T18:30">18:30</time></span>
+            </p>
+            <p class="event-detail__type">Беседа</p>
+          </div>
+          <figure class="event-detail__photo" aria-hidden="true">
+            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
+              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
+              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
+            </svg>
+          </figure>
+          <h3 class="event-detail__title">Строились ли храмы в местах с «хорошей энергетикой»?</h3>
+          <p class="event-detail__text">Как на самом деле выбирали места для христианских храмов и причём здесь мистическая энергия.</p>
+          <p class="event-detail__place">
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
+            <span>Приходской дом в Ясеневе, малый зал</span>
+          </p>
+        </div>
+
+        <div class="event-detail" id="event-panel-5" role="tabpanel" aria-labelledby="event-tab-5" tabindex="0" hidden>
+          <div class="event-detail__head">
+            <p class="event-detail__when">
+              <b>11</b>
+              <span>сентября<br><time datetime="2026-09-11T19:00">19:00</time></span>
+            </p>
+            <p class="event-detail__type">Лекция</p>
+          </div>
+          <figure class="event-detail__photo" aria-hidden="true">
+            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
+              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
+              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
+            </svg>
+          </figure>
+          <h3 class="event-detail__title">Толкование Евангелия от Марка. Первая встреча цикла</h3>
+          <p class="event-detail__text">Разбор по главам: исторический контекст, святоотеческие толкования и приложение к сегодняшней жизни.</p>
+          <p class="event-detail__place">
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
+            <span>Просветительский центр при храме апостолов Петра и Павла</span>
+          </p>
+        </div>
+
+        <div class="event-detail" id="event-panel-6" role="tabpanel" aria-labelledby="event-tab-6" tabindex="0" hidden>
+          <div class="event-detail__head">
+            <p class="event-detail__when">
+              <b>21</b>
+              <span>сентября<br><time datetime="2026-09-21T09:00">9:00</time></span>
+            </p>
+            <p class="event-detail__type">Богослужение</p>
+          </div>
+          <figure class="event-detail__photo" aria-hidden="true">
+            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
+              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
+              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
+              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
+            </svg>
+          </figure>
+          <h3 class="event-detail__title">Рождество Пресвятой Богородицы. Литургия</h3>
+          <p class="event-detail__text">Праздничная литургия, по окончании — беседа с прихожанами и ответы на вопросы.</p>
+          <p class="event-detail__place">
+            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
+            <span>Храм святых апостолов Петра и Павла</span>
+          </p>
+        </div>
+        </div>
+
+        <ul class="events__list" data-stagger="60" role="tablist" aria-label="Лента новостей" aria-orientation="vertical">
+          <li role="presentation">
+            <button class="event-item" type="button" role="tab" id="event-tab-1"
+                    aria-controls="event-panel-1" aria-selected="true" tabindex="0">
+              <span class="event-item__date">9 авг · 18:00</span>
+              <span class="event-item__title">Как жить после развода? Ответ священника</span>
+              <span class="event-item__meta">Беседа</span>
+            </button>
+          </li>
+
+          <li role="presentation">
+            <button class="event-item" type="button" role="tab" id="event-tab-2"
+                    aria-controls="event-panel-2" aria-selected="false" tabindex="-1">
+              <span class="event-item__date">14 авг · 19:00</span>
+              <span class="event-item__title">Куда ведут «ченнелинг» и «молитвенные медитации»?</span>
+              <span class="event-item__meta">Лекция</span>
+            </button>
+          </li>
+
+          <li role="presentation">
+            <button class="event-item" type="button" role="tab" id="event-tab-3"
+                    aria-controls="event-panel-3" aria-selected="false" tabindex="-1">
+              <span class="event-item__date">27 авг · 17:00</span>
+              <span class="event-item__title">Успение Пресвятой Богородицы. Всенощное бдение</span>
+              <span class="event-item__meta">Богослужение</span>
+            </button>
+          </li>
+
+          <li role="presentation">
+            <button class="event-item" type="button" role="tab" id="event-tab-4"
+                    aria-controls="event-panel-4" aria-selected="false" tabindex="-1">
+              <span class="event-item__date">3 сен · 18:30</span>
+              <span class="event-item__title">Строились ли храмы в местах с «хорошей энергетикой»?</span>
+              <span class="event-item__meta">Беседа</span>
+            </button>
+          </li>
+
+          <li role="presentation">
+            <button class="event-item" type="button" role="tab" id="event-tab-5"
+                    aria-controls="event-panel-5" aria-selected="false" tabindex="-1">
+              <span class="event-item__date">11 сен · 19:00</span>
+              <span class="event-item__title">Толкование Евангелия от Марка. Первая встреча цикла</span>
+              <span class="event-item__meta">Лекция</span>
+            </button>
+          </li>
+
+          <li role="presentation">
+            <button class="event-item" type="button" role="tab" id="event-tab-6"
+                    aria-controls="event-panel-6" aria-selected="false" tabindex="-1">
+              <span class="event-item__date">21 сен · 9:00</span>
+              <span class="event-item__title">Рождество Пресвятой Богородицы. Литургия</span>
+              <span class="event-item__meta">Богослужение</span>
+            </button>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================================================ Проповеди и беседы -->
+  <section class="section" id="slovo">
+    <div class="container">
+      <div class="section__head">
+        <div>
+          <h2 class="reveal reveal--mask">Проповеди и беседы</h2>
+        </div>
+
+        <div class="carousel__nav reveal" style="--reveal-delay: 140ms">
+          <button class="icon-btn carousel__arrow" type="button" data-carousel-prev
+                  aria-label="Предыдущие записи" aria-controls="video-track" disabled>
+            <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M17 7H1M7 1L1 7l6 6"/></svg>
+          </button>
+          <button class="icon-btn carousel__arrow" type="button" data-carousel-next
+                  aria-label="Следующие записи" aria-controls="video-track">
+            <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M1 7h16M11 1l6 6-6 6"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Карусель не цикличная: от новых записей к старым, края упираются -->
+      <div class="carousel" data-carousel>
+        <ul class="carousel__track" id="video-track" tabindex="0" data-stagger="90"
+            aria-label="Видеозаписи, от новых к старым">
+
+          <li class="video-card reveal reveal--fade">
+            <button class="video-card__poster ph" type="button"
+                    data-video="6d52cc7244cd9731418a57430da31731"
+                    data-title="Беседы с батюшкой. Архимандрит Мелхиседек (Артюхин)">
+              <span class="visually-hidden">Смотреть: Беседы с батюшкой. Архимандрит Мелхиседек (Артюхин)</span>
+              <!-- Превью берётся у RuTube. Не отдалось — картинка убирает себя,
+                   и под ней остаётся орнаментальный плейсхолдер .ph -->
+              <img class="video-card__img" alt="" loading="lazy" decoding="async"
+                   src="https://rutube.ru/api/video/6d52cc7244cd9731418a57430da31731/thumbnail/?redirect=1"
+                   onerror="this.remove()">
+              <span class="video-card__play" aria-hidden="true">
+                <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor"><path d="M0 0l16 9-16 9z"/></svg>
+              </span>
+              <span class="video-card__time" aria-hidden="true">52 мин</span>
+            </button>
+            <div class="video-card__body">
+              <h3>Беседы с батюшкой. Архимандрит Мелхиседек (Артюхин)</h3>
+              <p class="video-card__meta">28 июля · Телеканал «Союз»</p>
+            </div>
+          </li>
+
+          <li class="video-card reveal reveal--fade">
+            <button class="video-card__poster ph" type="button"
+                    data-video="8d93d9598c952de58e6b80c1f93fd351"
+                    data-title="Спасение в современном мире">
+              <span class="visually-hidden">Смотреть: Спасение в современном мире</span>
+              <img class="video-card__img" alt="" loading="lazy" decoding="async"
+                   src="https://rutube.ru/api/video/8d93d9598c952de58e6b80c1f93fd351/thumbnail/?redirect=1"
+                   onerror="this.remove()">
+              <span class="video-card__play" aria-hidden="true">
+                <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor"><path d="M0 0l16 9-16 9z"/></svg>
+              </span>
+              <span class="video-card__time" aria-hidden="true">41 мин</span>
+            </button>
+            <div class="video-card__body">
+              <h3>Спасение в современном мире</h3>
+              <p class="video-card__meta">30 июня · Князь Невский Александр</p>
+            </div>
+          </li>
+
+          <li class="video-card reveal reveal--fade">
+            <button class="video-card__poster ph" type="button"
+                    data-video="e690f1d04dcfd911598a36309a8619aa"
+                    data-title="О хорошем и плохом настроении">
+              <span class="visually-hidden">Смотреть: О хорошем и плохом настроении</span>
+              <img class="video-card__img" alt="" loading="lazy" decoding="async"
+                   src="https://rutube.ru/api/video/e690f1d04dcfd911598a36309a8619aa/thumbnail/?redirect=1"
+                   onerror="this.remove()">
+              <span class="video-card__play" aria-hidden="true">
+                <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor"><path d="M0 0l16 9-16 9z"/></svg>
+              </span>
+              <span class="video-card__time" aria-hidden="true">28 мин</span>
+            </button>
+            <div class="video-card__body">
+              <h3>О хорошем и плохом настроении</h3>
+              <p class="video-card__meta">16 июня · Знаменитые биографии</p>
+            </div>
+          </li>
+
+          <li class="video-card reveal reveal--fade">
+            <button class="video-card__poster ph" type="button"
+                    data-video="f0c1cff8e486a82d4050363171eb4b4f"
+                    data-title="Толкование Евангелия от Матфея. Нагорная проповедь">
+              <span class="visually-hidden">Смотреть: Толкование Евангелия от Матфея. Нагорная проповедь</span>
+              <img class="video-card__img" alt="" loading="lazy" decoding="async"
+                   src="https://rutube.ru/api/video/f0c1cff8e486a82d4050363171eb4b4f/thumbnail/?redirect=1"
+                   onerror="this.remove()">
+              <span class="video-card__play" aria-hidden="true">
+                <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor"><path d="M0 0l16 9-16 9z"/></svg>
+              </span>
+              <span class="video-card__time" aria-hidden="true">36 мин</span>
+            </button>
+            <div class="video-card__body">
+              <h3>Толкование Евангелия от Матфея. Нагорная проповедь</h3>
+              <p class="video-card__meta">2 мая · Радио «Вера»</p>
+            </div>
+          </li>
+
+          <li class="video-card reveal reveal--fade">
+            <button class="video-card__poster ph" type="button"
+                    data-video="45b49f0830da6e0440c0bc1e4cdd6ece"
+                    data-title="Как сохранить мир в семье">
+              <span class="visually-hidden">Смотреть: Как сохранить мир в семье</span>
+              <img class="video-card__img" alt="" loading="lazy" decoding="async"
+                   src="https://rutube.ru/api/video/45b49f0830da6e0440c0bc1e4cdd6ece/thumbnail/?redirect=1"
+                   onerror="this.remove()">
+              <span class="video-card__play" aria-hidden="true">
+                <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor"><path d="M0 0l16 9-16 9z"/></svg>
+              </span>
+              <span class="video-card__time" aria-hidden="true">45 мин</span>
+            </button>
+            <div class="video-card__body">
+              <h3>Как сохранить мир в семье</h3>
+              <p class="video-card__meta">12 апреля · Телеканал «Союз»</p>
+            </div>
+          </li>
+
+        </ul>
+
+        <div class="carousel__rail" aria-hidden="true"><span class="carousel__thumb"></span></div>
+      </div>
+
+      <p class="section__more reveal"><a class="link" href="video/index.html">Все видеозаписи</a></p>
+    </div>
+  </section>
+
+  <!-- ================================================ Цитата -->
+  <figure class="pull-quote" id="media">
+    <div class="container">
+      <blockquote class="reveal reveal--mask">
+        «Один человек в луже видит грязь, а другой — отражение неба.<br>
+        Дай Бог, чтобы у нас был <b>правильный взгляд на всё</b>:<br>
+        на себя, родных, близких, обстоятельства жизни»
+      </blockquote>
+      </div>
+      <figcaption class="reveal" style="--reveal-delay: 320ms">Архимандрит Мелхиседек</figcaption>
+  </figure>
+
+</main>
+
+<!-- ================================================ Подвал -->
+<footer class="footer" id="bio">
+  <div class="container">
+    <div class="footer__inner" data-stagger="90">
+      <div class="footer__brand">
+        <h2>Архимандрит Мелхиседек (Артюхин)</h2>
+        <p class="muted" style="font-size: var(--fs-small)">
+          Пресс-секретарь Синодального отдела<br>по монастырям и монашеству
+        </p>
+        <p class="footer__contacts">
+          <a class="link" href="tel:+79999999999">+7 (999) 999-99-99</a> ·
+          <a class="link" href="mailto:pochta@mail.ru">pochta@mail.ru</a>
+        </p>
+        <p class="footer__place">Москва 2026</p>
+      </div>
+
+      <div class="footer__col">
+        <ul>
+          <li><a href="events/index.html">Мероприятия</a></li>
+          <li><a href="books/index.html">Книги</a></li>
+          <li><a href="texts/index.html">Расшифровки</a></li>
+          <li><a href="video/index.html">Видео</a></li>
+          <li><a href="bio/index.html">Биография</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</footer>
+
+<!-- ================================================ Плеер видеозаписи -->
+<div class="player" id="player" role="dialog" aria-modal="true" aria-labelledby="player-title" hidden>
+  <div class="player__inner">
+    <button class="icon-btn player__close" type="button" id="player-close" aria-label="Закрыть плеер">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M4 4l12 12M16 4L4 16"/></svg>
+    </button>
+    <div class="player__frame" id="player-frame"></div>
+    <p class="player__title" id="player-title"></p>
+  </div>
+</div>
+
+<script src="assets/js/main.js" defer></script>
+</body>
+</html>

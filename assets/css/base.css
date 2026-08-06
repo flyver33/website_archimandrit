@@ -1,0 +1,270 @@
+/* ==========================================================================
+   База: сброс, типографика, фактура, утилиты
+   ========================================================================== */
+
+*,
+*::before,
+*::after { box-sizing: border-box; }
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+  /* К якорю приходим при прокрутке, а там шапка уже уплотнена и без ленты */
+  scroll-padding-top: calc(var(--header-h-compact) + 1rem);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink-body);
+  font-family: var(--font-text);
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  font-kerning: normal;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* --- Фактура: бумажное зерно + тональные пятна --------------------------- */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: .04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  mix-blend-mode: multiply;
+}
+
+/* --- Типографика --------------------------------------------------------- */
+
+h1, h2, h3, h4 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  color: var(--brand);
+  line-height: var(--lh-tight);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 { font-size: var(--fs-h1); }
+h2 { font-size: var(--fs-h2); }
+h3 { font-size: var(--fs-h3); font-weight: 700; line-height: var(--lh-snug); }
+
+p { margin: 0; max-width: var(--measure); }
+
+a { color: var(--brand); text-decoration: none; }
+
+:where(a, button, summary, input, [tabindex]):focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 3px;
+  border-radius: 1px;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+
+ul { list-style: none; margin: 0; padding: 0; }
+
+button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+::selection { background: rgba(218, 169, 83, .3); color: var(--ink); }
+
+/* --- Раскладка ----------------------------------------------------------- */
+
+.container {
+  width: 100%;
+  max-width: calc(var(--container) + var(--gutter) * 2);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.section {
+  position: relative;
+  z-index: 1;
+  padding-block: var(--section-gap);
+}
+
+.section--tight { padding-block: calc(var(--section-gap) * .6); }
+
+.section__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-md) var(--space-xl);
+  margin-bottom: var(--space-2xl);
+}
+
+.section__head p { color: var(--ink-soft); max-width: 46ch; }
+
+@media (max-width: 760px) {
+  .section__head { margin-bottom: var(--space-xl); }
+}
+
+/* --- Мелкие элементы ------------------------------------------------------ */
+
+.lead {
+  font-size: var(--fs-lead);
+  line-height: var(--lh-lead);
+  color: var(--ink-soft);
+}
+
+.muted { color: var(--ink-soft); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: absolute;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: 999;
+  padding: var(--space-sm) var(--space-md);
+  background: var(--accent);
+  color: var(--on-accent);
+  transform: translateY(-160%);
+  transition: transform var(--dur) var(--ease);
+}
+
+.skip-link:focus-visible { transform: translateY(0); }
+
+/* --- Кнопки --------------------------------------------------------------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  min-height: 48px;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.btn svg { transition: transform var(--dur) var(--ease); flex: none; }
+.btn:hover svg { transform: translateX(4px); }
+
+.btn--primary { background: var(--accent); color: var(--on-accent); }
+.btn--primary:hover { background: var(--accent-hover); }
+
+.btn--secondary {
+  border: 1px solid var(--border);
+  color: var(--brand);
+  background: transparent;
+}
+
+.btn--secondary:hover {
+  background: var(--surface-sunken);
+  border-color: var(--gold);
+}
+
+/* Текстовая ссылка с растущим подчёркиванием */
+.link {
+  color: var(--gold-deep);
+  background-image: linear-gradient(var(--gold), var(--gold));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0 1px;
+  transition: background-size var(--dur) var(--ease);
+  padding-bottom: 2px;
+}
+
+.link:hover { background-size: 100% 1px; }
+
+/* --- Появление при прокрутке ---------------------------------------------- */
+
+/* Прячем только когда JS точно есть: без него содержимое видно сразу */
+.js .reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform var(--dur-slow) var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js .reveal.is-visible { opacity: 1; transform: none; }
+
+/* Шторка снизу вверх — для заголовков и крупных цитат */
+.js .reveal--mask {
+  opacity: 1;
+  transform: none;
+  clip-path: inset(0 0 110% 0);
+  transition: clip-path 900ms var(--ease);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+.js .reveal--mask.is-visible { clip-path: inset(-20% 0 -20% 0); }
+
+/* Мягкое проявление без сдвига — для крупных изображений */
+.js .reveal--fade {
+  transform: none;
+  transition: opacity 1000ms var(--ease);
+}
+
+/* Линия, прочерчивающаяся под заголовком секции */
+.js .reveal--rule::after {
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 800ms var(--ease) 160ms;
+}
+
+.js .reveal--rule.is-visible::after { transform: scaleX(1); }
+
+/* --- Вступление первого экрана -------------------------------------------- */
+
+.js .hero__photo {
+  opacity: 0;
+  transform: scale(1.035);
+  transition: opacity 1100ms var(--ease), transform 1400ms var(--ease);
+}
+
+.js .hero__marks,
+.js .hero__quote figcaption {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 700ms var(--ease), transform 700ms var(--ease);
+}
+
+.js .hero__quote blockquote {
+  clip-path: inset(0 0 110% 0);
+  transition: clip-path 1000ms var(--ease) 240ms;
+}
+
+.js .hero.is-ready .hero__photo { opacity: 1; transform: none; }
+.js .hero.is-ready .hero__marks { opacity: 1; transform: none; transition-delay: 180ms; }
+.js .hero.is-ready .hero__quote blockquote { clip-path: inset(-25% 0 -25% 0); }
+.js .hero.is-ready .hero__quote figcaption { opacity: 1; transform: none; transition-delay: 900ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .reveal,
+  .js .reveal--mask,
+  .js .hero__photo,
+  .js .hero__marks,
+  .js .hero__quote blockquote,
+  .js .hero__quote figcaption {
+    opacity: 1;
+    transform: none;
+    clip-path: none;
+  }
+
+  .js .reveal--rule::after { transform: none; }
+}

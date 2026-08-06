@@ -1,0 +1,132 @@
+/* ==========================================================================
+   Страница раздела: заголовок и вертикальный список элементов с пагинацией.
+   Раскладка одна на все разделы — книги, расшифровки, мероприятия, видео.
+   Описаний в списке нет: строка это дата-подпись и название, больше ничего.
+   ========================================================================== */
+
+.section-page {
+  position: relative;
+  z-index: 1;
+  padding-bottom: var(--space-3xl);
+}
+
+.entry-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border-top: 1px solid var(--border-soft);
+}
+
+/* baseline: подпись и название садятся на одну базовую линию — при разных
+   кеглях это надёжнее, чем подгонять отступ на глаз */
+.entry-row {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr) 2rem;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding: var(--space-lg) var(--space-md);
+  margin-inline: calc(var(--space-md) * -1);
+  border-bottom: 1px solid var(--border-soft);
+  transition: background var(--dur) var(--ease);
+}
+
+a.entry-row:hover { background: var(--surface-sunken); }
+
+/* Подпись и название — парные метки строки: один шрифт, один интерлиньяж */
+.entry-row__meta {
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  line-height: var(--lh-body);
+  letter-spacing: .08em;
+  color: var(--gold-deep);
+}
+
+.entry-row__title {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  color: var(--brand);
+  transition: color var(--dur) var(--ease);
+}
+
+a.entry-row:hover .entry-row__title { color: var(--accent); }
+
+.entry-row__arrow {
+  justify-self: end;
+  align-self: center;
+  color: var(--gold);
+  transition: transform var(--dur) var(--ease);
+}
+
+a.entry-row:hover .entry-row__arrow { transform: translateX(6px); }
+
+/* Элемент, у которого страницы ещё нет: место в списке занято, открыть нельзя */
+.entry-row.is-locked { cursor: default; }
+.entry-row.is-locked .entry-row__meta,
+.entry-row.is-locked .entry-row__title { color: var(--ink-soft); }
+
+/* --- Пагинация ------------------------------------------------------------
+   Строит скрипт: без него список отдаётся целиком, и это рабочая страница. */
+
+.pager {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  margin-top: var(--space-2xl);
+}
+
+.pager__btn {
+  display: inline-grid;
+  place-items: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding-inline: var(--space-sm);
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  letter-spacing: .04em;
+  color: var(--ink);
+  cursor: pointer;
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.pager__btn:hover:not(:disabled) {
+  border-color: var(--border);
+  background: var(--surface-sunken);
+}
+
+.pager__btn[aria-current="page"] {
+  border-color: var(--border);
+  background: var(--surface-sunken);
+  color: var(--brand);
+}
+
+.pager__btn:disabled {
+  color: var(--ink-soft);
+  cursor: default;
+}
+
+.pager__btn svg { color: var(--gold); }
+
+.pager__gap {
+  padding-inline: var(--space-2xs);
+  color: var(--ink-soft);
+}
+
+/* --- Узкий экран ---------------------------------------------------------- */
+
+@media (max-width: 680px) {
+  /* Подпись уходит на свою строку — выравнивать её больше не с чем */
+  .entry-row {
+    grid-template-columns: minmax(0, 1fr) 2rem;
+    align-items: start;
+  }
+
+  .entry-row__meta { grid-column: 1 / -1; }
+}

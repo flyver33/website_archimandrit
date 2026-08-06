@@ -1,0 +1,190 @@
+/* ==========================================================================
+   Книги: список раздела и чтение книги на странице
+   ========================================================================== */
+
+/* --- Список книг ---------------------------------------------------------- */
+
+.books {
+  position: relative;
+  z-index: 1;
+  padding-bottom: var(--space-3xl);
+}
+
+.book {
+  display: grid;
+  gap: var(--space-lg) var(--space-xl);
+  padding-block: var(--space-xl);
+  border-top: 1px solid var(--border-soft);
+}
+
+.book:last-child { border-bottom: 1px solid var(--border-soft); }
+
+@media (min-width: 860px) {
+  .book {
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+    align-items: start;
+    padding-block: var(--space-2xl);
+  }
+}
+
+/* До появления настоящих обложек — тихая плашка с корешком */
+.book__cover {
+  margin: 0;
+  aspect-ratio: 3 / 4;
+  max-width: 15rem;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  display: grid;
+  place-items: center;
+  color: var(--ink-soft);
+}
+
+.book__cover svg { width: 42%; height: auto; }
+
+.book__title { font-size: var(--fs-h3); }
+
+.book__meta {
+  margin-top: var(--space-sm);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.book__text {
+  margin-top: var(--space-md);
+  max-width: 58ch;
+}
+
+.book__actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-sm) var(--space-md);
+  margin-top: var(--space-lg);
+}
+
+/* Кнопка без адреса: файла ещё нет, но место под него уже размечено */
+.btn.is-disabled {
+  pointer-events: none;
+  color: var(--ink-soft);
+  border-color: var(--border-soft);
+}
+
+.btn__note {
+  font-family: var(--font-text);
+  font-size: var(--fs-eyebrow);
+  font-weight: 400;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+/* --- Чтение книги ---------------------------------------------------------
+   Разворот рисует pdf.js в canvas и кладёт прямо на бумажный фон сайта.
+   Блок живёт в общем потоке: страница прокручивается как любая другая,
+   книга занимает столько высоты, сколько ей отвели. */
+
+.pdf {
+  position: relative;
+  z-index: 1;
+}
+
+/* Стрелка — книга — стрелка в одном ряду: кнопки стоят в потоке слева и
+   справа от листа, а не висят поверх него.
+
+   Ширину книжной колонки ставит сценарий по эталонному развороту (--sheet-w):
+   бумага одной меры на всю книгу, а стрелки — вплотную к её краям и на месте.
+   Пока книга не открылась, колонка тянется по свободному месту. */
+.pdf__stage {
+  display: grid;
+  grid-template-columns: auto var(--sheet-w, minmax(0, 1fr)) auto;
+  justify-content: center;
+  align-items: center;
+  gap: var(--space-md);
+  /* Предел высоты: разворот виден целиком и не съедает экран. Точную высоту
+     сценарий подгоняет под лист, чтобы под книгой не было пустой полосы */
+  height: min(84vh, 56rem);
+}
+
+/* Сам лист: белая бумага с тенью, как книга на столе */
+.pdf__sheet {
+  display: grid;
+  place-items: center;
+  height: 100%;
+  min-width: 0;
+}
+
+.pdf__sheet canvas {
+  display: block;
+  max-width: 100%;
+  max-height: 100%;
+  background: var(--surface);
+  border: 1px solid var(--border-hair);
+  /* Три слоя: контактная тень у самой бумаги, средняя под листом и длинная
+     мягкая — лист лежит на столе, а не наклеен на фон */
+  box-shadow:
+    0 1px 2px rgba(42, 33, 24, .10),
+    0 8px 18px -8px rgba(42, 33, 24, .22),
+    0 28px 60px -24px rgba(42, 33, 24, .38);
+}
+
+.pdf__status {
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+/* Стрелки по краям книги */
+.pdf__nav {
+  display: grid;
+  place-items: center;
+  width: 3rem;
+  height: 3rem;
+  flex: none;
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius-pill);
+  background: color-mix(in srgb, var(--bg) 90%, transparent);
+  color: var(--accent);
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+}
+
+.pdf__nav:hover { border-color: var(--border); color: var(--accent-hover); }
+.pdf__nav:disabled { opacity: .3; cursor: default; }
+
+/* Счётчик стоит внутри страницы элемента, где абзацы ограничены мерой чтения.
+   Селектор с двумя классами перебивает `.entry-body p`: счётчик не абзац,
+   он центрируется по книге, а не по колонке текста. */
+.entry-body .pdf__counter { max-width: none; }
+
+.pdf__counter {
+  margin-top: var(--space-md);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .12em;
+  color: var(--ink-soft);
+}
+
+/* Файлы под книгой */
+.pdf__downloads {
+  justify-content: center;
+  margin-top: var(--space-lg);
+  padding-bottom: var(--space-3xl);
+}
+
+/* Запасной путь: модули или pdf.js не поднялись — просмотрщик браузера */
+.pdf__fallback {
+  display: block;
+  width: 100%;
+  height: min(72vh, 46rem);
+  border: 0;
+  background: var(--surface-sunken);
+}
+
+/* --- Телефон: книга ниже, листается свайпом ------------------------------- */
+
+@media (max-width: 860px), (pointer: coarse) {
+  .pdf__stage { height: min(58vh, 30rem); gap: var(--space-xs); }
+
+  /* Кнопки остаются по краям, но уже: листу нужна ширина */
+  .pdf__nav { width: 2.25rem; height: 2.25rem; }
+}

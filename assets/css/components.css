@@ -1,0 +1,1017 @@
+/* ==========================================================================
+   Компоненты
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. Шапка
+   -------------------------------------------------------------------------- */
+
+/* Шапка вынута из потока. Была sticky — и при уплотнении её слот в потоке
+   становился ниже, весь документ подтягивался вверх, страница уезжала
+   из-под курсора и порог прокрутки пересекался снова: шапка застревала
+   между состояниями. Теперь место под неё резервирует padding у body,
+   и оно постоянное — сжатие ничего под собой не двигает. */
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-header);
+  background: var(--bg);
+  border-bottom: 1px solid transparent;
+  transition: border-color var(--dur-header) var(--ease-header), background var(--dur-header) var(--ease-header);
+}
+
+.header.is-stuck { border-bottom-color: var(--border-soft); }
+
+/* Кадр замера: скрипт снимает уплотнение, чтобы прочитать высоту развёрнутой
+   шапки. Без остановки переходов он прочитал бы высоту на середине анимации —
+   резерв вышел бы меньше шапки, и она накрыла бы первую строку страницы. */
+.header.is-measuring,
+.header.is-measuring * {
+  transition: none !important;
+}
+
+/* Резерв места под шапку стоит рядом с самим `fixed`: правило и его
+   следствие всегда приезжают одним файлом, иначе устаревший кэш одного
+   из файлов оставит первый экран под шапкой.
+   --header-space проставляет скрипт по фактической высоте развёрнутой
+   шапки; токен — запасное значение, когда скрипта нет. */
+body { padding-top: var(--header-space, var(--header-total)); }
+
+.header__inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(var(--space-lg), 3.5vw, var(--space-2xl));
+  min-height: var(--header-h);
+  transition: min-height var(--dur-header) var(--ease-header);
+}
+
+.header.is-stuck .header__inner { min-height: var(--header-h-compact); }
+
+/* Орнаментальная лента: картинка повторяется по горизонтали без зазоров,
+   тайл зеркально-симметричен, поэтому стык не читается.
+   Лента лежит ВНУТРИ липкой шапки — прокрутка её не режет. Правило одно:
+   узор либо есть целиком, либо его нет. Поэтому при уплотнении он сперва
+   гаснет по прозрачности (быстро, всей полосой), и только потом схлопывается
+   высота обёртки; при разворачивании — наоборот. Высота самой полосы
+   постоянна: анимировать её нельзя, background-size пересчитал бы тайл
+   каждый кадр («дёрганье»). */
+.header-ornament {
+  height: var(--ornament-h);
+  overflow: hidden;
+  pointer-events: none;
+  transition: height var(--dur-header) var(--ease-header);
+}
+
+.header-ornament__strip {
+  display: block;
+  height: var(--ornament-h);
+  background: url("../img/pattern.webp") repeat-x center center / auto 100%;
+  opacity: 1;
+  /* появляется, когда высота уже развернулась */
+  transition: opacity 220ms linear calc(var(--dur-header) * .65);
+}
+
+.header.is-stuck .header-ornament {
+  height: 0;
+  /* схлопывается после того, как узор погас */
+  transition-delay: 170ms;
+}
+
+.header.is-stuck .header-ornament__strip {
+  opacity: 0;
+  transition: opacity 160ms linear 0ms;
+}
+
+/* Логотип: имя в две строки, крупно — главный якорь шапки */
+.logo {
+  display: inline-flex;
+  flex-direction: column;
+  font-family: var(--font-display);
+  font-size: clamp(1.3125rem, .95rem + 1.25vw, 2.125rem);
+  line-height: 1.04;
+  letter-spacing: .005em;
+  color: var(--brand);
+  white-space: nowrap;
+  transition: font-size var(--dur-header) var(--ease-header);
+}
+
+.logo__line { display: block; }
+
+.header.is-stuck .logo { font-size: clamp(1rem, .86rem + .65vw, 1.3125rem); }
+
+
+/* Навигация. Действий в шапке нет — пункты прижаты к правому краю */
+.nav {
+  display: flex;
+  align-items: center;
+  gap: clamp(.75rem, 1.9vw, 2.25rem);
+  margin-left: auto;
+}
+
+.nav__item { position: relative; }
+
+.nav__link {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  padding: var(--space-md) var(--space-2xs);
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  white-space: nowrap;
+  transition: color var(--dur) var(--ease);
+}
+
+.nav__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 1rem;
+  height: 1px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur) var(--ease);
+}
+
+.nav__item:hover .nav__link,
+.nav__item:focus-within .nav__link { color: var(--brand); }
+
+.nav__item:hover .nav__link::after,
+.nav__item:focus-within .nav__link::after { transform: scaleX(1); }
+
+/* Пока виден полный список пунктов, действий в шапке нет вовсе: контейнер
+   не должен съедать зазор справа от меню */
+.header__actions { display: none; align-items: center; gap: var(--space-md); }
+
+.icon-btn {
+  display: inline-grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius);
+  color: var(--brand);
+  transition: background var(--dur) var(--ease);
+}
+
+.icon-btn:hover { background: var(--surface-sunken); }
+
+.burger { display: none; }
+
+/* --------------------------------------------------------------------------
+   2. Мобильное меню
+   -------------------------------------------------------------------------- */
+
+.mobile-menu {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-menu);
+  background: var(--bg);
+  padding: var(--space-2xl) var(--gutter) var(--space-xl);
+  overflow-y: auto;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--dur) var(--ease), visibility var(--dur);
+}
+
+.mobile-menu.is-open { opacity: 1; visibility: visible; }
+
+.mobile-menu__close {
+  position: absolute;
+  top: var(--space-md);
+  right: var(--gutter);
+}
+
+.mobile-menu a {
+  display: block;
+  padding: var(--space-md) 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--ink);
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* --------------------------------------------------------------------------
+   3. Первый экран: портрет во всю высоту, цитата слева
+   -------------------------------------------------------------------------- */
+
+.hero {
+  position: relative;
+  display: grid;
+  align-items: end;
+  /* Ровно остаток экрана под шапкой — считаем от того же значения, что и
+     резерв места, иначе разница в пиксель даёт лишнюю прокрутку */
+  min-height: calc(100svh - var(--header-space, var(--header-total)));
+  overflow: hidden;
+  /* подложка на случай, если слой с текстурой не отрисуется */
+  background: radial-gradient(105% 105% at 0% -4%, #FFFFFD 0%, #FDF2D8 26%, #F3DCA8 58%, #E2C084 82%, #D4AE69 100%);
+}
+
+/* Бумага: волокно и зерно, смешанные с самим градиентом — фактура «в бумаге»,
+   а не плёнкой поверх неё. Слой лежит под портретом. */
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  /* Волокно (тёплые тени) + зерно (мягкие блики) + сам градиент:
+     фактура живёт внутри бумаги, а не лежит серой плёнкой сверху */
+  background-image:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.025 .8' numOctaves='5' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.22' intercept='.78'/%3E%3CfeFuncG type='linear' slope='.30' intercept='.70'/%3E%3CfeFuncB type='linear' slope='.42' intercept='.56'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23f)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.5' intercept='.5'/%3E%3CfeFuncG type='linear' slope='.5' intercept='.48'/%3E%3CfeFuncB type='linear' slope='.5' intercept='.44'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23g)'/%3E%3C/svg%3E"),
+    radial-gradient(105% 105% at 0% -4%, #FFFFFD 0%, #FDF2D8 26%, #F3DCA8 58%, #E2C084 82%, #D4AE69 100%);
+  background-size: 500px 500px, 320px 320px, cover;
+  background-blend-mode: multiply, soft-light, normal;
+}
+
+.hero__photo {
+  position: absolute;
+  inset: 0 0 0 auto;
+  width: min(70%, 66rem);
+  height: 100%;
+}
+
+/* cover, а не contain: над головой не остаётся пустой полосы */
+.hero__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 50% 0;
+  transform: scaleX(var(--portrait-flip));
+}
+
+.hero__quote {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: calc(var(--container) + var(--gutter) * 2);
+  margin: 0 auto;
+  padding: 0 var(--gutter) clamp(3rem, 11vh, 7rem);
+}
+
+/* Кавычки — декор: тёплое золото в тон бумаге, а не холодный серый */
+.hero__marks {
+  display: block;
+  font-family: var(--font-text);
+  font-size: clamp(4.5rem, 2.6rem + 5.7vw, 7.5rem);
+  /* Кегль крупный, но кавычки жмутся к цитате: высота строки и отступ
+     заданы в em, поэтому просвет не растёт вслед за размером */
+  line-height: .24;
+  color: #C2A063;
+  margin-bottom: .04em;
+}
+
+.hero__quote blockquote {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.75rem, 1rem + 2.4vw, 2.875rem);
+  line-height: 1.0;
+  /* Золотисто-коричневый вместо почти-чёрного: на золотом градиенте текст
+     не спорит с фоном. Светлее не уходим — 3:1 для крупного кегля предел */
+  color: #8E6A2C;
+  max-width: 21ch;
+  text-wrap: balance;
+}
+
+.hero__quote figcaption {
+  margin-top: var(--space-md);
+  font-size: var(--fs-small);
+  letter-spacing: .06em;
+  /* насыщенная часть градиента темнее фона страницы — берём тон потемнее */
+  color: #463F33;
+}
+
+/* --------------------------------------------------------------------------
+   4. Мероприятия: ближайшее крупно, остальные списком
+   -------------------------------------------------------------------------- */
+
+.events {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 4.5rem);
+  align-items: stretch;
+}
+
+/* Карточка тянется на всю высоту списка — при переключении ничего не прыгает */
+.events__feature { display: grid; }
+
+/* --- Крупная карточка выбранного события --- */
+
+.event-detail {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  height: 100%;
+  padding: clamp(1.5rem, 2.4vw, 2.25rem);
+  padding-top: clamp(1.1rem, 1.6vw, 1.5rem);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--accent);
+}
+
+/* display: flex перебил бы атрибут hidden — возвращаем ему силу */
+.event-detail[hidden] { display: none; }
+
+.event-detail:focus-visible { outline-offset: -2px; }
+
+/* Дата слева, тип события — в правом верхнем углу, обе по нижней линии */
+.event-detail__head {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: var(--space-md);
+  margin-bottom: var(--space-sm);
+}
+
+.event-detail__when {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.event-detail__when b {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3.5rem, 2.2rem + 3.6vw, 5.5rem);
+  line-height: .85;
+  color: var(--gold-deep);
+}
+
+.event-detail__when span {
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.event-detail__type {
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Плейсхолдер до появления реальных снимков: та же геометрия, что у <img> */
+.event-detail__photo {
+  width: 100%;
+  margin: 0 0 var(--space-sm);
+  aspect-ratio: 21 / 9;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: var(--surface-sunken);
+}
+
+.event-detail__photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.event-detail__photo svg {
+  width: clamp(3rem, 12%, 5rem);
+  height: auto;
+  color: var(--ink-soft);
+}
+
+.event-detail__title {
+  font-size: clamp(1.35rem, 1.1rem + 1.15vw, 1.9rem);
+  line-height: var(--lh-tight);
+  color: var(--brand);
+  margin-bottom: var(--space-xs);
+  max-width: 20ch;
+}
+
+.event-detail__text {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: var(--fs-body);
+  line-height: var(--lh-lead);
+  color: var(--ink-soft);
+  max-width: 46ch;
+}
+
+/* Место — без разделителя, иконкой вместо подписи. Цвет — как у тэга и подписи
+   даты: это тоже метаданные, а не тело текста */
+.event-detail__place {
+  width: 100%;
+  margin: var(--space-lg) 0 0;
+  margin-top: auto;
+  padding-top: var(--space-lg);
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-sm);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+/* Иконка несёт смысл (заменяет подпись «Место») — значит наследует цвет текста,
+   а не красится в декоративный --gold */
+.event-detail__place svg {
+  flex: none;
+  align-self: flex-start;
+  margin-top: .1em;
+}
+
+/* У новости о публикации внизу карточки не место, а переход к самому тексту —
+   геометрия та же, чтобы при переключении подвал карточки не прыгал */
+.event-detail__more {
+  width: 100%;
+  margin: var(--space-lg) 0 0;
+  margin-top: auto;
+  padding-top: var(--space-lg);
+  font-size: var(--fs-small);
+}
+
+/* --- Список остальных --- */
+
+.events__list { padding-top: var(--space-xs); }
+
+.event-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-lg);
+  border-left: 2px solid transparent;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+
+.event-item + .event-item { margin-top: 1px; }
+.events__list li + li { border-top: 1px solid var(--border-soft); }
+
+.event-item:hover { background: var(--surface-sunken); }
+
+.event-item[aria-selected="true"] {
+  border-left-color: var(--accent);
+  background: var(--surface-sunken);
+}
+
+.event-item__date {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  letter-spacing: .08em;
+  color: var(--gold-deep);
+  margin-bottom: var(--space-2xs);
+}
+
+.event-item__title {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: 1.125rem;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.event-item[aria-selected="true"] .event-item__title { color: var(--brand); }
+
+.event-item__meta {
+  display: block;
+  margin-top: var(--space-2xs);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+/* --------------------------------------------------------------------------
+   5. Плейсхолдер изображения
+   -------------------------------------------------------------------------- */
+
+.ph {
+  position: relative;
+  background: var(--surface-sunken);
+  border-bottom: 1px solid var(--border-hair);
+  overflow: hidden;
+}
+
+.ph::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, #F2E9D6, #EADFC6);
+}
+
+/* --------------------------------------------------------------------------
+   8. Видеозаписи: карусель
+   -------------------------------------------------------------------------- */
+
+.carousel { position: relative; }
+
+/* Стрелки живут в шапке секции, рядом с заголовком: отдельного ряда
+   управления под каруселью нет */
+.carousel__nav { display: flex; gap: var(--space-xs); }
+
+.carousel__arrow { border: 1px solid var(--border); }
+.carousel__arrow:disabled { opacity: .35; cursor: default; }
+.carousel__arrow:disabled:hover { background: transparent; }
+
+/* Полоса прокручивается пальцем и колесом; snap ставит карточку к левому
+   краю. Отступ сверху — чтобы подъём карточки и фокус не срезались
+   переполнением, снизу — под направляющую */
+.carousel__track {
+  display: flex;
+  gap: var(--space-lg);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  scrollbar-width: none;
+  padding-block: var(--space-xs) var(--space-lg);
+}
+
+.carousel__track::-webkit-scrollbar { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .carousel__track { scroll-behavior: auto; }
+}
+
+/* Направляющая: доля видимого ряда и место в нём. Не декор — единственный
+   индикатор длины на сенсорном экране, где стрелками не пользуются */
+.carousel__rail {
+  position: relative;
+  height: 1px;
+  background: var(--border-soft);
+}
+
+.carousel__thumb {
+  position: absolute;
+  inset-block: -1px;
+  left: 0;
+  width: 30%;
+  background: var(--gold);
+  transition: left var(--dur) var(--ease), width var(--dur) var(--ease);
+}
+
+.video-card {
+  position: relative;
+  flex: 0 0 calc((100% - var(--space-lg) * 2) / 3);
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+
+.video-card:hover,
+.video-card:focus-within {
+  border-color: var(--gold);
+  transform: translateY(-4px);
+  box-shadow: 0 24px 48px -36px rgba(42, 33, 24, .5);
+}
+
+/* Постер — кнопка: она же точка входа с клавиатуры. Клик по остальной
+   карточке скрипт переводит на неё же */
+.video-card { cursor: pointer; }
+
+.video-card__poster {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+/* Превью записи. Если кадр не отдался (нет сети, запись убрана) — картинка
+   убирает себя сама, и под ней остаётся орнаментальный плейсхолдер .ph */
+.video-card__img,
+.video-embed__img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: scale var(--dur) var(--ease);
+}
+
+.video-card:hover .video-card__img { scale: 1.04; }
+
+@media (prefers-reduced-motion: reduce) {
+  .video-card:hover .video-card__img { scale: 1; }
+}
+
+/* Затемнение снизу: под ним читаются кружок и хронометраж на любом кадре */
+.video-card__poster::after,
+.video-embed::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(42, 33, 24, .16) 0%, rgba(42, 33, 24, 0) 38%, rgba(42, 33, 24, .38) 100%);
+}
+
+.video-card__play {
+  position: absolute;
+  z-index: 1; /* выше затемнения постера */
+  left: 50%;
+  top: 50%;
+  translate: -50% -50%;
+  display: grid;
+  place-items: center;
+  width: 3.5rem;
+  height: 3.5rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, .82);
+  color: var(--accent);
+  transition: background var(--dur) var(--ease), scale var(--dur) var(--ease);
+}
+
+.video-card:hover .video-card__play,
+.video-card:focus-within .video-card__play { background: var(--bg); scale: 1.06; }
+
+.video-card__time {
+  position: absolute;
+  z-index: 1;
+  right: var(--space-sm);
+  bottom: var(--space-sm);
+  padding: 2px var(--space-xs);
+  background: rgba(255, 253, 248, .88);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .06em;
+  color: var(--ink-soft);
+}
+
+.video-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  flex: 1;
+  padding: var(--space-lg);
+}
+
+.video-card__body h3 {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  color: var(--brand);
+  transition: color var(--dur) var(--ease);
+}
+
+.video-card:hover .video-card__body h3 { color: var(--accent); }
+
+.video-card__meta { margin-top: auto; font-size: var(--fs-small); color: var(--ink-soft); }
+
+/* --------------------------------------------------------------------------
+   8.1 Плеер поверх страницы
+   -------------------------------------------------------------------------- */
+
+.player {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-menu);
+  display: grid;
+  place-items: center;
+  padding: var(--gutter);
+  background: rgba(42, 33, 24, .92);
+  opacity: 0;
+  transition: opacity var(--dur) var(--ease);
+}
+
+/* display: grid сильнее UA-правила для [hidden] — без этой строки закрытое
+   окно остаётся растянутым на весь экран и перехватывает клики */
+.player[hidden] { display: none; }
+
+.player.is-open { opacity: 1; }
+
+.player__inner { position: relative; width: min(1024px, 100%); }
+
+.player__frame {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border: 1px solid rgba(218, 169, 83, .35);
+}
+
+.player__frame iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.player__title {
+  margin-top: var(--space-md);
+  font-family: var(--font-display);
+  font-size: var(--fs-lead);
+  color: var(--bg);
+}
+
+.player__close {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + var(--space-xs));
+  color: var(--bg);
+}
+
+.player__close:hover { background: rgba(255, 253, 248, .12); }
+
+/* --------------------------------------------------------------------------
+   8.2 Встроенный плеер: постер вместо кадра до первого клика
+
+   Кадр RuTube тянет свой плеер целиком, поэтому до нажатия на месте плеера
+   стоит превью с кнопкой. По клику превью подменяется настоящим кадром с
+   автозапуском — страница со списком записей не грузит пять плееров разом.
+   Без скрипта работает <noscript>: кадр стоит сразу.
+   -------------------------------------------------------------------------- */
+
+.video-embed {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+}
+
+.video-embed:hover { border-color: var(--gold); }
+
+/* Кадр встал на место постера: затемнение и рамка-подсветка больше не нужны */
+.video-embed.is-playing { background: #000; }
+.video-embed.is-playing::after { content: none; }
+
+.video-embed iframe,
+.video-embed noscript iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Кнопка занимает весь постер: попасть по ней легко и пальцем, и мышью */
+.video-embed__play {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.video-embed__icon {
+  display: grid;
+  place-items: center;
+  width: 4rem;
+  height: 4rem;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: rgba(255, 253, 248, .82);
+  color: var(--accent);
+  transition: background var(--dur) var(--ease), scale var(--dur) var(--ease);
+}
+
+.video-embed__play:hover .video-embed__icon,
+.video-embed__play:focus-visible .video-embed__icon { background: var(--bg); scale: 1.06; }
+
+.video-embed__time {
+  position: absolute;
+  z-index: 1;
+  right: var(--space-sm);
+  bottom: var(--space-sm);
+  padding: 2px var(--space-xs);
+  background: rgba(255, 253, 248, .88);
+  border: 1px solid var(--border-soft);
+  border-radius: var(--radius);
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .06em;
+  color: var(--ink-soft);
+}
+
+.video-embed.is-playing .video-embed__time { display: none; }
+
+/* Без скрипта подменять нечего: кадр из <noscript> стоит сразу, а кнопка и
+   хронометраж только перекрывали бы его */
+html:not(.js) .video-embed__play,
+html:not(.js) .video-embed__time,
+html:not(.js) .video-embed__img,
+html:not(.js) .video-embed::after { display: none; }
+
+/* --- Раздел «Видео»: сетка записей ---------------------------------------- */
+
+.video-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2xl) var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.video-grid__item { display: flex; flex-direction: column; gap: var(--space-md); }
+
+.video-grid__title {
+  font-size: var(--fs-h3);
+  line-height: var(--lh-snug);
+  color: var(--brand);
+}
+
+.video-grid__title a { color: inherit; transition: color var(--dur) var(--ease); }
+.video-grid__title a:hover { color: var(--accent); }
+
+.video-grid__meta { margin-top: var(--space-2xs); font-size: var(--fs-small); color: var(--ink-soft); }
+
+@media (max-width: 860px) {
+  .video-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
+}
+
+/* --------------------------------------------------------------------------
+   9. Цитата-разделитель
+   -------------------------------------------------------------------------- */
+
+.pull-quote {
+  position: relative;
+  text-align: center;
+  padding-block: var(--section-gap);
+  overflow: hidden;
+}
+
+.pull-quote blockquote {
+  position: relative;
+  margin: 0 auto;
+  max-width: 62ch;
+  font-family: var(--font-display);
+  font-size: clamp(1.15rem, 0.55rem + 1.65vw, 2.25rem);
+  line-height: 1.35;
+  color: var(--brand);
+  text-wrap: nowrap;
+}
+
+/* На узких экранах строки не влезают — снимаем жёсткие переносы */
+@media (max-width: 640px) {
+  .pull-quote blockquote {
+    max-width: 30ch;
+    font-size: clamp(1.35rem, 1.05rem + 1.9vw, 1.75rem);
+    text-wrap: balance;
+  }
+  .pull-quote blockquote br { display: none; }
+}
+
+.pull-quote blockquote b { font-weight: 400; color: var(--gold-deep); }
+
+.pull-quote figcaption {
+  margin-top: var(--space-lg);
+  font-size: var(--fs-small);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  font-family: var(--font-display);
+  color: var(--ink-soft);
+}
+
+
+/* --------------------------------------------------------------------------
+   11. Подвал
+   -------------------------------------------------------------------------- */
+
+.footer { position: relative; z-index: 1; border-top: 1px solid var(--border-soft); }
+
+.footer__inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+  gap: var(--space-2xl);
+  padding-block: var(--space-2xl);
+}
+
+.footer h2 {
+  font-size: clamp(1.375rem, 1.15rem + .8vw, 1.75rem);
+  margin-bottom: var(--space-sm);
+}
+
+/* Левая колонка тянется на высоту ряда, чтобы подпись легла по нижней
+   кромке списка разделов — без разделительной линии */
+.footer__brand { display: flex; flex-direction: column; }
+
+.footer__contacts { margin-top: var(--space-md); font-size: var(--fs-body); }
+.footer__contacts a { color: var(--brand); }
+
+.footer__place {
+  margin-top: auto;          /* дожимает подпись к низу списка разделов */
+  padding-top: var(--space-md);   /* минимальный зазор, когда дожимать нечем */
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.footer__col h3 {
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+  margin-bottom: var(--space-md);
+}
+
+.footer__col li + li { margin-top: var(--space-sm); }
+.footer__col a { color: var(--ink); font-size: var(--fs-small); }
+.footer__col a:hover { color: var(--brand); }
+
+/* --------------------------------------------------------------------------
+   12. Адаптив
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 1180px) {
+  .nav { display: none; }
+  .header__actions { display: flex; }
+  .burger { display: inline-grid; }
+}
+
+@media (max-width: 900px) {
+  .events { grid-template-columns: 1fr; gap: var(--space-xl); }
+  .event-detail__photo { aspect-ratio: 3 / 2; }
+}
+
+@media (max-width: 1024px) {
+  .footer__inner { grid-template-columns: 1fr 1fr; }
+
+  /* Две карточки в ряд, третья выглядывает краем — ряд читается как
+     продолжающийся, без подсказок и стрелок-приманок */
+  .video-card { flex-basis: calc((100% - var(--space-lg)) / 2); }
+}
+
+@media (max-width: 640px) {
+  .video-card { flex-basis: 84%; }
+  .video-card__body { padding: var(--space-md); }
+  .player__title { font-size: var(--fs-small); }
+}
+
+@media (max-width: 860px) {
+  .header__inner { gap: var(--space-sm); }
+  :root { --header-h: 7rem; --header-h-compact: 5.25rem; }
+}
+
+@media (max-width: 760px) {
+  /* Портрет сверху, цитата под ним — текст не спорит с лицом */
+  .hero {
+    display: block;
+    min-height: 0;
+    padding-bottom: var(--space-2xl);
+  }
+
+  .hero__photo {
+    position: relative;
+    inset: auto;
+    width: 100%;
+    height: min(52vh, 26rem);
+  }
+
+  .hero__photo img { object-position: bottom center; }
+
+  .hero__quote {
+    padding-top: var(--space-lg);
+    padding-bottom: 0;
+  }
+
+  .hero__quote blockquote { max-width: none; }
+
+  .footer__inner { grid-template-columns: 1fr; gap: var(--space-xl); }
+}
+
+/* --------------------------------------------------------------------------
+   13. Вертикальный ритм: паузы разной длины, а не одна константа
+   -------------------------------------------------------------------------- */
+
+#news   { padding-block: clamp(4.5rem, 9vw, 8rem) clamp(3.5rem, 6vw, 5.5rem); }
+#slovo  { padding-block: clamp(3rem, 5vw, 4.5rem) clamp(5rem, 10vw, 9rem); }
+.pull-quote { padding-block: clamp(5.5rem, 12vw, 11rem) clamp(6rem, 13vw, 12rem); }
+
+.section__more {
+  margin-top: var(--space-xl);
+  font-size: var(--fs-lead);
+}
+
+/* Смена выбранного мероприятия — проявление, а не подмена */
+.event-detail.is-entering {
+  animation: event-in 520ms var(--ease) both;
+}
+
+@keyframes event-in {
+  from { opacity: 0; transform: translateY(12px); clip-path: inset(0 0 12% 0); }
+  to   { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .event-detail.is-entering { animation: none; }
+}
+
+/* Строка списка мероприятий подаётся вперёд при наведении */
+.event-item:hover { transform: translateX(3px); }
+.event-item { transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease); }
