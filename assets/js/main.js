@@ -350,9 +350,9 @@
 
   /* --- Встроенный плеер: постер уступает место кадру ---------------------- */
 
-  // До клика на месте плеера стоит превью: страница раздела иначе тянула бы
-  // плеер RuTube на каждую запись сразу. Клик подменяет превью кадром с
-  // автозапуском — второго действия от человека не требуется.
+  // До клика на месте плеера стоит превью: иначе страница передачи тянула бы
+  // плеер RuTube ещё до того, как запись попросили. Клик подменяет превью
+  // кадром с автозапуском — второго действия от человека не требуется.
   Array.prototype.forEach.call(document.querySelectorAll('[data-embed]'), function (embed) {
     var btn = embed.querySelector('.video-embed__play');
     if (!btn) return;
@@ -368,79 +368,5 @@
       frame.focus();
     });
   });
-
-  /* --- Плеер поверх страницы --------------------------------------------- */
-
-  var player = document.getElementById('player');
-  var playerFrame = document.getElementById('player-frame');
-  var playerTitle = document.getElementById('player-title');
-  var playerClose = document.getElementById('player-close');
-  var playerOpener = null;
-
-  function openPlayer(id, title) {
-    playerOpener = document.activeElement;
-
-    var frame = document.createElement('iframe');
-    frame.src = 'https://rutube.ru/play/embed/' + id + '/?autoplay=1';
-    frame.title = title || 'Видеозапись';
-    // fullscreen перечислен в allow — отдельный allowfullscreen браузер
-    // считает устаревшим и ругается в консоли
-    frame.setAttribute('allow', 'clipboard-write; autoplay; fullscreen');
-
-    playerFrame.replaceChildren(frame);
-    playerTitle.textContent = title || '';
-
-    player.hidden = false;
-    requestAnimationFrame(function () { player.classList.add('is-open'); });
-    document.body.style.overflow = 'hidden';
-    playerClose.focus();
-  }
-
-  function closePlayer() {
-    player.classList.remove('is-open');
-    document.body.style.overflow = '';
-
-    // Кадр удаляем — иначе звук продолжает идти за закрытым окном
-    var hide = function () {
-      player.hidden = true;
-      playerFrame.replaceChildren();
-    };
-    reduceMotion ? hide() : window.setTimeout(hide, 240);
-
-    if (playerOpener) playerOpener.focus();
-  }
-
-  if (player && carousel) {
-    // Клик по любой части карточки открывает её запись: заголовок и мета
-    // ведут туда же, куда кнопка постера
-    carousel.addEventListener('click', function (e) {
-      var card = e.target.closest('.video-card');
-      if (!card) return;
-      var poster = card.querySelector('[data-video]');
-      if (poster) openPlayer(poster.dataset.video, poster.dataset.title);
-    });
-
-    playerClose.addEventListener('click', closePlayer);
-
-    // Клик по затемнению — но не по самому кадру и подписи
-    player.addEventListener('click', function (e) {
-      if (e.target === player) closePlayer();
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && !player.hidden) closePlayer();
-    });
-
-    // Ловушка фокуса: внутри окна только кнопка закрытия и сам кадр
-    player.addEventListener('keydown', function (e) {
-      if (e.key !== 'Tab') return;
-      var items = player.querySelectorAll('button, iframe');
-      if (!items.length) return;
-      var first = items[0];
-      var last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    });
-  }
 
 })();
