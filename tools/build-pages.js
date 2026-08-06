@@ -3,9 +3,14 @@
 
      node tools/build-pages.js
 
-   Пишет: events/, books/, texts/, video/, bio/ — страницу раздела и страницы
-   элементов. Содержимое берётся из tools/content.js, расшифровки — из
+   Пишет страницу раздела и страницы элементов для каждого раздела из SECTIONS;
+   разделы с `empty: true` выходят одним заголовком. Содержимое берётся из
+   tools/content.js, расшифровки — из
    assets/docs/texts/besedy-s-batyushkoy.source.html (там их 63 подряд).
+
+   Расшифровка — не самостоятельный раздел: текст эфира стоит на странице своей
+   телепередачи, а рядом с ним лежит файл для скачивания. Он собирается сюда же,
+   в assets/docs/transcripts/.
 
    Главная (index.html) собирается руками: она одна и живёт по своим правилам.
    ========================================================================== */
@@ -195,37 +200,40 @@ function emptySectionPage({ key, title, description }) {
 ` + footer();
 }
 
-/* --- Раздел «Видео»: сетка записей с плеерами -------------------------------
-   Список записей — не строки со стрелкой, а сами плееры: превью с кнопкой,
-   которая по клику подменяется кадром RuTube с автозапуском. Пять плееров
-   сразу страница не грузит. Без скрипта на месте превью стоит <noscript>
-   с обычным кадром, страница остаётся рабочей. */
+/* --- Раздел «Телепередачи»: сетка карточек ----------------------------------
+   Карточка та же, что в карусели на главной: превью, хронометраж, название.
+   Плеера в списке нет — карточка целиком ведёт на страницу передачи, где
+   стоят и запись, и расшифровка. Ссылка одна, на названии; остальную площадь
+   карточки она добирает псевдоэлементом (.video-card__link::after). */
 
 function videoPoster(id) {
   return `https://rutube.ru/api/video/${id}/thumbnail/?redirect=1`;
 }
 
-function videoSectionPage({ title, description, items }) {
-  const cards = items.map((v) => `      <li class="video-grid__item">
-        <div class="video-embed ph" data-embed="${v.id}" data-title="${v.title}">
-          <img class="video-embed__img" alt="" loading="lazy" decoding="async"
-               src="${videoPoster(v.id)}" onerror="this.remove()">
-          <button class="video-embed__play" type="button">
-            <span class="visually-hidden">Смотреть: ${v.title}</span>
-            <span class="video-embed__icon" aria-hidden="true">
-              <svg width="18" height="20" viewBox="0 0 16 18" fill="currentColor"><path d="M0 0l16 9-16 9z"/></svg>
-            </span>
-          </button>
-          <span class="video-embed__time" aria-hidden="true">${v.length}</span>
-          <noscript><iframe src="https://rutube.ru/play/embed/${v.id}/" title="${v.title}"
-                            allow="clipboard-write; autoplay; fullscreen" loading="lazy"></iframe></noscript>
-        </div>
+function videoCard(v, { level = 'h3', href = `${v.slug}.html`, indent = '      ' } = {}) {
+  const pad = (s) => indent + s;
 
-        <div>
-          <h2 class="video-grid__title"><a href="${v.slug}.html">${v.title}</a></h2>
-          <p class="video-grid__meta">${v.dateText} · ${v.source} · ${v.length}</p>
-        </div>
-      </li>`).join('\n\n');
+  return [
+    `<li class="video-card reveal reveal--fade">`,
+    `  <div class="video-card__poster ph">`,
+    `    <img class="video-card__img" alt="" loading="lazy" decoding="async"`,
+    `         src="${videoPoster(v.id)}" onerror="this.remove()">`,
+    `    <span class="video-card__play" aria-hidden="true">`,
+    `      <svg width="16" height="18" viewBox="0 0 16 18" fill="currentColor"><path d="M0 0l16 9-16 9z"/></svg>`,
+    `    </span>`,
+    `    <span class="video-card__time" aria-hidden="true">${v.length}</span>`,
+    `  </div>`,
+    ``,
+    `  <div class="video-card__body">`,
+    `    <${level}><a class="video-card__link" href="${href}">${v.title}</a></${level}>`,
+    `    <p class="video-card__meta">${v.dateText} · ${v.source}</p>`,
+    `  </div>`,
+    `</li>`,
+  ].map((line) => (line ? pad(line) : '')).join('\n');
+}
+
+function videoSectionPage({ title, description, items }) {
+  const cards = items.map((v) => videoCard(v, { level: 'h2' })).join('\n\n');
 
   return head({
     title: `${title} — архимандрит Мелхиседек (Артюхин)`,
@@ -286,7 +294,9 @@ ${body}${nav}
   );
 }
 
-/* --- Расшифровки: разбор общего исходника на отдельные эфиры ---------------- */
+/* --- Расшифровки: разбор общего исходника на отдельные эфиры ----------------
+   Раздела под них больше нет: разбираются все 63, но на сайт попадают только
+   те, что названы в VIDEO — по одной на страницу своей передачи. */
 
 function readTranscripts() {
   const src = fs.readFileSync(path.join(ROOT, 'assets/docs/texts/besedy-s-batyushkoy.source.html'), 'utf8');
@@ -313,6 +323,42 @@ function readTranscripts() {
       body: body.trim().split('\n').map((line) => '    ' + line.trim()).join('\n'),
     };
   });
+}
+
+/* Файл для скачивания: тот же текст без разметки. Простой .txt открывается
+   везде и не тянет за собой ни шрифтов, ни конвертера. BOM — чтобы блокнот
+   Windows не принял кириллицу в UTF-8 за однобайтовую кодировку. */
+
+function transcriptText(t, video) {
+  const body = t.body
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/p>/gi, '\n\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&laquo;/g, '«')
+    .replace(/&raquo;/g, '»')
+    .replace(/&mdash;/g, '—')
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&amp;/g, '&')
+    .split('\n')
+    .map((line) => line.trim())
+    .join('\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+
+  const head = [
+    video.title,
+    'Расшифровка эфира программы «Беседы с батюшкой», телеканал «Союз»',
+    `Эфир от ${t.dateText}`,
+    'Архимандрит Мелхиседек (Артюхин)',
+    '',
+    '—'.repeat(30),
+    '',
+  ].join('\r\n');
+
+  return '﻿' + head + body.replace(/\n/g, '\r\n') + '\r\n';
 }
 
 /* --- Сборка ---------------------------------------------------------------- */
@@ -403,48 +449,70 @@ BOOKS.filter((b) => !b.locked).forEach((b) => {
   })));
 });
 
-/* Расшифровки */
+/* Телепередачи: запись и расшифровка на одной странице */
 
 const texts = readTranscripts();
-
-written.push(write('texts/index.html', sectionPage({
-  key: 'texts',
-  title: 'Расшифровки',
-  description: 'Расшифровки эфиров программы «Беседы с батюшкой» с участием архимандрита Мелхиседека (Артюхина), 2011–2021 годы.',
-  items: texts.map((t) => ({ meta: t.dateText, title: t.title, href: `${t.slug}.html` })),
-})));
-
-texts.forEach((t, i) => {
-  written.push(write(`texts/${t.slug}.html`, entryPage({
-    key: 'texts',
-    title: t.title,
-    description: `Расшифровка эфира программы «Беседы с батюшкой» от ${t.dateText}: архимандрит Мелхиседек (Артюхин) отвечает на вопросы телезрителей.`,
-    lead: `Эфир от <time datetime="${t.date}">${t.dateText}</time> · программа «Беседы с батюшкой», телеканал «Союз»`,
-    body: t.body,
-    prev: i > 0 ? { href: `${texts[i - 1].slug}.html`, title: texts[i - 1].title } : null,
-    next: i < texts.length - 1 ? { href: `${texts[i + 1].slug}.html`, title: texts[i + 1].title } : null,
-  })));
-});
-
-/* Видеозаписи */
+let transcriptCount = 0;
 
 written.push(write('video/index.html', videoSectionPage({
   title: SECTIONS.find((s) => s.key === 'video').title,
-  description: 'Телепередачи с участием архимандрита Мелхиседека (Артюхина) в записи.',
+  description: 'Телепередачи с участием архимандрита Мелхиседека (Артюхина): запись и расшифровка эфира.',
   items: VIDEO,
 })));
 
 VIDEO.forEach((v, i) => {
-  const body = `    <div class="entry-media">
-      <iframe src="https://rutube.ru/play/embed/${v.id}/" title="${v.title}"
-              allow="clipboard-write; autoplay; fullscreen" loading="lazy"></iframe>
+  // Расшифровка есть не у всякой передачи: без неё страница просто короче
+  const t = v.transcript ? texts[v.transcript - 1] : null;
+
+  let transcript = '';
+
+  if (t) {
+    const file = `${UP}assets/docs/transcripts/${v.slug}.txt`;
+    written.push(write(`assets/docs/transcripts/${v.slug}.txt`, transcriptText(t, v)));
+    transcriptCount++;
+
+    // Расшифровка длиннее самой страницы, поэтому свёрнута. <details> открывает
+    // её без скрипта, и поиск по странице в браузере её всё равно находит.
+    transcript = `
+    <section class="transcript" aria-labelledby="transcript-title">
+      <div class="transcript__head">
+        <h2 class="transcript__title" id="transcript-title">Расшифровка эфира</h2>
+        <p class="transcript__note">Программа «Беседы с батюшкой», эфир от <time datetime="${t.date}">${t.dateText}</time></p>
+        <a class="btn btn--secondary transcript__download" href="${file}" download>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M1.5 13.5h13"/></svg>
+          Скачать расшифровку
+        </a>
+      </div>
+
+      <details class="transcript__reader">
+        <summary class="transcript__toggle">Читать расшифровку</summary>
+        <div class="transcript__text">
+${t.body}
+        </div>
+      </details>
+    </section>`;
+  }
+
+  const body = `    <div class="entry-media video-embed ph" data-embed="${v.id}" data-title="${v.title}">
+      <img class="video-embed__img" alt="" loading="lazy" decoding="async"
+           src="${videoPoster(v.id)}" onerror="this.remove()">
+      <button class="video-embed__play" type="button">
+        <span class="visually-hidden">Смотреть: ${v.title}</span>
+        <span class="video-embed__icon" aria-hidden="true">
+          <svg width="18" height="20" viewBox="0 0 16 18" fill="currentColor"><path d="M0 0l16 9-16 9z"/></svg>
+        </span>
+      </button>
+      <span class="video-embed__time" aria-hidden="true">${v.length}</span>
+      <noscript><iframe src="https://rutube.ru/play/embed/${v.id}/" title="${v.title}"
+                        allow="clipboard-write; autoplay; fullscreen" loading="lazy"></iframe></noscript>
     </div>
 
     <div class="entry-facts">
-      <p><b>Запись:</b> ${v.dateText} · ${v.source}</p>
+      <p><b>Эфир:</b> ${v.dateText} · ${v.source}</p>
       <p><b>Длительность:</b> ${v.length}</p>
       <p><a class="link" href="https://rutube.ru/video/${v.id}/" target="_blank" rel="noopener">Смотреть на RuTube</a></p>
-    </div>`;
+    </div>
+${transcript}`;
 
   written.push(write(`video/${v.slug}.html`, entryPage({
     key: 'video',
@@ -498,5 +566,5 @@ SECTIONS.filter((s) => s.empty).forEach((s) => {
   })));
 });
 
-console.log(`Собрано страниц: ${written.length}`);
-console.log(`  расшифровок: ${texts.length}`);
+console.log(`Собрано файлов: ${written.length}`);
+console.log(`  телепередач: ${VIDEO.length}, из них с расшифровкой: ${transcriptCount}`);

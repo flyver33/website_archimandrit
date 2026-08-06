@@ -552,10 +552,6 @@ body { padding-top: var(--header-space, var(--header-total)); }
   box-shadow: 0 24px 48px -36px rgba(42, 33, 24, .5);
 }
 
-/* Постер — кнопка: она же точка входа с клавиатуры. Клик по остальной
-   карточке скрипт переводит на неё же */
-.video-card { cursor: pointer; }
-
 .video-card__poster {
   position: relative;
   display: block;
@@ -634,78 +630,35 @@ body { padding-top: var(--header-space, var(--header-total)); }
   padding: var(--space-lg);
 }
 
-.video-card__body h3 {
+.video-card__body :is(h2, h3) {
   font-size: var(--fs-h3);
   line-height: var(--lh-snug);
   color: var(--brand);
   transition: color var(--dur) var(--ease);
 }
 
-.video-card:hover .video-card__body h3 { color: var(--accent); }
+.video-card:hover .video-card__body :is(h2, h3) { color: var(--accent); }
+
+/* Ссылка одна — на названии; клик по остальной карточке она добирает
+   растянутым псевдоэлементом. Отдельная кнопка на постере не нужна: смотреть
+   запись уводит на страницу передачи, а не в плеер поверх списка */
+.video-card__link { color: inherit; }
+
+.video-card__link::after {
+  content: "";
+  position: absolute;
+  z-index: 2;
+  inset: 0;
+}
 
 .video-card__meta { margin-top: auto; font-size: var(--fs-small); color: var(--ink-soft); }
 
 /* --------------------------------------------------------------------------
-   8.1 Плеер поверх страницы
-   -------------------------------------------------------------------------- */
-
-.player {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-menu);
-  display: grid;
-  place-items: center;
-  padding: var(--gutter);
-  background: rgba(42, 33, 24, .92);
-  opacity: 0;
-  transition: opacity var(--dur) var(--ease);
-}
-
-/* display: grid сильнее UA-правила для [hidden] — без этой строки закрытое
-   окно остаётся растянутым на весь экран и перехватывает клики */
-.player[hidden] { display: none; }
-
-.player.is-open { opacity: 1; }
-
-.player__inner { position: relative; width: min(1024px, 100%); }
-
-.player__frame {
-  position: relative;
-  aspect-ratio: 16 / 9;
-  background: #000;
-  border: 1px solid rgba(218, 169, 83, .35);
-}
-
-.player__frame iframe {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  border: 0;
-}
-
-.player__title {
-  margin-top: var(--space-md);
-  font-family: var(--font-display);
-  font-size: var(--fs-lead);
-  color: var(--bg);
-}
-
-.player__close {
-  position: absolute;
-  right: 0;
-  bottom: calc(100% + var(--space-xs));
-  color: var(--bg);
-}
-
-.player__close:hover { background: rgba(255, 253, 248, .12); }
-
-/* --------------------------------------------------------------------------
-   8.2 Встроенный плеер: постер вместо кадра до первого клика
+   8.1 Встроенный плеер: постер вместо кадра до первого клика
 
    Кадр RuTube тянет свой плеер целиком, поэтому до нажатия на месте плеера
    стоит превью с кнопкой. По клику превью подменяется настоящим кадром с
-   автозапуском — страница со списком записей не грузит пять плееров разом.
+   автозапуском — страница передачи не грузит плеер, пока его не попросили.
    Без скрипта работает <noscript>: кадр стоит сразу.
    -------------------------------------------------------------------------- */
 
@@ -785,32 +738,25 @@ html:not(.js) .video-embed__time,
 html:not(.js) .video-embed__img,
 html:not(.js) .video-embed::after { display: none; }
 
-/* --- Раздел «Видео»: сетка записей ---------------------------------------- */
+/* --- Раздел «Телепередачи»: сетка карточек ---------------------------------
+   Карточка та же, что в карусели на главной. В карусели ширину ряда держит
+   flex-basis, здесь — колонка сетки: элемент сетки flex-свойства не читает. */
 
 .video-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: var(--space-2xl) var(--space-lg);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-xl) var(--space-lg);
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.video-grid__item { display: flex; flex-direction: column; gap: var(--space-md); }
-
-.video-grid__title {
-  font-size: var(--fs-h3);
-  line-height: var(--lh-snug);
-  color: var(--brand);
+@media (max-width: 1040px) {
+  .video-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
-.video-grid__title a { color: inherit; transition: color var(--dur) var(--ease); }
-.video-grid__title a:hover { color: var(--accent); }
-
-.video-grid__meta { margin-top: var(--space-2xs); font-size: var(--fs-small); color: var(--ink-soft); }
-
-@media (max-width: 860px) {
-  .video-grid { grid-template-columns: minmax(0, 1fr); gap: var(--space-xl); }
+@media (max-width: 680px) {
+  .video-grid { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* --------------------------------------------------------------------------
@@ -949,7 +895,6 @@ html:not(.js) .video-embed::after { display: none; }
 @media (max-width: 640px) {
   .video-card { flex-basis: 84%; }
   .video-card__body { padding: var(--space-md); }
-  .player__title { font-size: var(--fs-small); }
 }
 
 @media (max-width: 860px) {
