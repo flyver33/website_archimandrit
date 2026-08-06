@@ -85,12 +85,14 @@ body { padding-top: var(--header-space, var(--header-total)); }
   transition: opacity 160ms linear 0ms;
 }
 
-/* Логотип: имя в две строки, крупно — главный якорь шапки */
+/* Логотип: имя одной строкой, крупно — единственный текст шапки.
+   Разделы ушли в полосу-меню под первым экраном, поэтому имени отдана вся
+   ширина: кегль растёт до размера заголовка. */
 .logo {
   display: inline-flex;
-  flex-direction: column;
+  align-items: center;
   font-family: var(--font-display);
-  font-size: clamp(1.3125rem, .95rem + 1.25vw, 2.125rem);
+  font-size: clamp(1.375rem, .8rem + 2.1vw, 2.875rem);
   line-height: 1.04;
   letter-spacing: .005em;
   color: var(--brand);
@@ -98,58 +100,12 @@ body { padding-top: var(--header-space, var(--header-total)); }
   transition: font-size var(--dur-header) var(--ease-header);
 }
 
-.logo__line { display: block; }
+.header.is-stuck .logo { font-size: clamp(1.125rem, .82rem + 1.15vw, 1.875rem); }
 
-.header.is-stuck .logo { font-size: clamp(1rem, .86rem + .65vw, 1.3125rem); }
+/* Единственное действие шапки — «Автобиография» у правого края */
+.header__actions { display: flex; align-items: center; gap: var(--space-md); }
 
-
-/* Навигация. Действий в шапке нет — пункты прижаты к правому краю */
-.nav {
-  display: flex;
-  align-items: center;
-  gap: clamp(.75rem, 1.9vw, 2.25rem);
-  margin-left: auto;
-}
-
-.nav__item { position: relative; }
-
-.nav__link {
-  display: inline-flex;
-  align-items: center;
-  gap: .4rem;
-  padding: var(--space-md) var(--space-2xs);
-  font-family: var(--font-display);
-  font-size: var(--fs-eyebrow);
-  font-weight: 700;
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--ink);
-  white-space: nowrap;
-  transition: color var(--dur) var(--ease);
-}
-
-.nav__link::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 1rem;
-  height: 1px;
-  background: var(--gold);
-  transform: scaleX(0);
-  transform-origin: left;
-  transition: transform var(--dur) var(--ease);
-}
-
-.nav__item:hover .nav__link,
-.nav__item:focus-within .nav__link { color: var(--brand); }
-
-.nav__item:hover .nav__link::after,
-.nav__item:focus-within .nav__link::after { transform: scaleX(1); }
-
-/* Пока виден полный список пунктов, действий в шапке нет вовсе: контейнер
-   не должен съедать зазор справа от меню */
-.header__actions { display: none; align-items: center; gap: var(--space-md); }
+.header__bio { white-space: nowrap; }
 
 .icon-btn {
   display: inline-grid;
@@ -163,39 +119,60 @@ body { padding-top: var(--header-space, var(--header-total)); }
 
 .icon-btn:hover { background: var(--surface-sunken); }
 
-.burger { display: none; }
-
 /* --------------------------------------------------------------------------
-   2. Мобильное меню
+   2. Полоса-меню: разделы сайта
    -------------------------------------------------------------------------- */
 
-.mobile-menu {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-menu);
-  background: var(--bg);
-  padding: var(--space-2xl) var(--gutter) var(--space-xl);
-  overflow-y: auto;
-  opacity: 0;
-  visibility: hidden;
-  transition: opacity var(--dur) var(--ease), visibility var(--dur);
+/* Тёмная полоса во всю ширину: на главной — под первым экраном, на остальных
+   страницах — сразу под шапкой. Меню одно на все ширины, бургера нет.
+   Разделители не рисуются рамками: сетка идёт с зазором в 1px, зазор
+   подсвечивает фон полосы. При переносе на узких экранах линии появляются
+   и между рядами сами, без отдельных правил. */
+.sitebar {
+  position: relative;
+  z-index: 2;
+  background: var(--accent);
 }
 
-.mobile-menu.is-open { opacity: 1; visibility: visible; }
-
-.mobile-menu__close {
-  position: absolute;
-  top: var(--space-md);
-  right: var(--gutter);
+/* Фон списка виден только в зазорах — он и есть разделительная линия */
+.sitebar__list {
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 1px;
+  max-width: var(--container);
+  margin: 0 auto;
+  padding: 0;
+  list-style: none;
+  background: rgba(255, 253, 248, .22);
 }
 
-.mobile-menu a {
-  display: block;
-  padding: var(--space-md) 0;
+.sitebar__link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: clamp(4rem, 6vw, 5.5rem);
+  padding: var(--space-md) var(--space-sm);
+  background: var(--accent);
   font-family: var(--font-display);
-  font-size: 1.25rem;
-  color: var(--ink);
-  border-bottom: 1px solid var(--border-soft);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: .08em;
+  line-height: 1.3;
+  text-align: center;
+  text-transform: uppercase;
+  text-wrap: balance;
+  color: var(--on-accent);
+  transition: background var(--dur) var(--ease);
+}
+
+.sitebar__link:hover,
+.sitebar__link:focus-visible { background: var(--accent-hover); }
+
+/* Текущий раздел: тонкая золотая подсечка снизу, без сдвига раскладки */
+.sitebar__link[aria-current="page"] {
+  background: var(--accent-hover);
+  box-shadow: inset 0 -3px 0 var(--gold);
 }
 
 /* --------------------------------------------------------------------------
@@ -920,7 +897,12 @@ html:not(.js) .video-embed::after { display: none; }
   margin-bottom: var(--space-md);
 }
 
-.footer__col li + li { margin-top: var(--space-sm); }
+/* Разделов больше, чем помещается в одну колонку — список идёт в два ряда */
+.footer__col ul {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-sm) var(--space-lg);
+}
 .footer__col a { color: var(--ink); font-size: var(--fs-small); }
 .footer__col a:hover { color: var(--brand); }
 
@@ -928,10 +910,27 @@ html:not(.js) .video-embed::after { display: none; }
    12. Адаптив
    -------------------------------------------------------------------------- */
 
-@media (max-width: 1180px) {
-  .nav { display: none; }
-  .header__actions { display: flex; }
-  .burger { display: inline-grid; }
+/* Полоса-меню сужается ступенями: семь пунктов в ряд держатся только на
+   широком экране, дальше — четыре, три и два столбца. Бургера нет: меню
+   всегда на виду, кликабельная зона каждой ячейки остаётся крупной. */
+/* Пунктов восемь: в ряды по четыре и по два они ложатся ровно, а в ряд из
+   трёх остаётся хвост — там последний пункт растягивается на остаток ряда,
+   иначе на его месте зияет пустая ячейка светлее полосы. */
+/* Ряд из восьми держится только на полной ширине контейнера: уже — и
+   «РАДИОПЕРЕДАЧИ» одним словом перестаёт помещаться в ячейку */
+@media (max-width: 1279px) {
+  .sitebar__list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+}
+
+@media (max-width: 860px) {
+  .sitebar__list { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .sitebar__item:last-child { grid-column: span 2; }
+}
+
+@media (max-width: 560px) {
+  .sitebar__list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .sitebar__item:last-child { grid-column: auto; }
+  .sitebar__link { min-height: 3.5rem; }
 }
 
 @media (max-width: 900px) {
@@ -956,6 +955,20 @@ html:not(.js) .video-embed::after { display: none; }
 @media (max-width: 860px) {
   .header__inner { gap: var(--space-sm); }
   :root { --header-h: 7rem; --header-h-compact: 5.25rem; }
+}
+
+/* Имя остаётся одной строкой: на узком экране в ряд с кнопкой оно не влезает,
+   поэтому кнопка переносится под него, а не имя дробится на две строки */
+@media (max-width: 640px) {
+  .header__inner {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-xs);
+    padding-block: var(--space-sm);
+  }
+
+  .header__actions { width: 100%; justify-content: center; }
+  :root { --header-h: 0rem; --header-h-compact: 0rem; }
 }
 
 @media (max-width: 760px) {
