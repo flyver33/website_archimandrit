@@ -79,53 +79,8 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
-  /* --- Мобильное меню ---------------------------------------------------- */
-
-  var burger = document.getElementById('burger');
-  var menu = document.getElementById('mobile-menu');
-  var menuClose = document.getElementById('menu-close');
-
-  function openMenu() {
-    menu.hidden = false;
-    // Дать браузеру применить display перед анимацией прозрачности
-    requestAnimationFrame(function () { menu.classList.add('is-open'); });
-    burger.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-    menuClose.focus();
-  }
-
-  function closeMenu() {
-    menu.classList.remove('is-open');
-    burger.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-    burger.focus();
-    var hide = function () { menu.hidden = true; };
-    reduceMotion ? hide() : window.setTimeout(hide, 240);
-  }
-
-  if (burger && menu && menuClose) {
-    burger.addEventListener('click', openMenu);
-    menuClose.addEventListener('click', closeMenu);
-
-    menu.addEventListener('click', function (e) {
-      if (e.target.tagName === 'A') closeMenu();
-    });
-
-    document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape' && menu.classList.contains('is-open')) closeMenu();
-    });
-
-    // Ловушка фокуса внутри открытого меню
-    menu.addEventListener('keydown', function (e) {
-      if (e.key !== 'Tab') return;
-      var items = menu.querySelectorAll('a, button');
-      if (!items.length) return;
-      var first = items[0];
-      var last = items[items.length - 1];
-      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
-      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
-    });
-  }
+  /* Разделы живут в полосе-меню под шапкой — она видна на любой ширине,
+     всплывающего меню и бургера на сайте нет. */
 
   /* --- Появление блоков при прокрутке ------------------------------------ */
 

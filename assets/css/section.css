@@ -67,6 +67,14 @@ a.entry-row:hover .entry-row__arrow { transform: translateX(6px); }
 .entry-row.is-locked .entry-row__meta,
 .entry-row.is-locked .entry-row__title { color: var(--ink-soft); }
 
+/* Раздел, которого ещё нет: одна строка вместо списка */
+.section-empty {
+  padding-top: var(--space-lg);
+  border-top: 1px solid var(--border-soft);
+  font-size: var(--fs-lead);
+  color: var(--ink-soft);
+}
+
 /* --- Пагинация ------------------------------------------------------------
    Строит скрипт: без него список отдаётся целиком, и это рабочая страница. */
 
