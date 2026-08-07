@@ -460,7 +460,7 @@ written.push(write('video/index.html', videoSectionPage({
   items: VIDEO,
 })));
 
-VIDEO.forEach((v, i) => {
+VIDEO.forEach((v) => {
   // Расшифровка есть не у всякой передачи: без неё страница просто короче
   const t = v.transcript ? texts[v.transcript - 1] : null;
 
@@ -475,19 +475,17 @@ VIDEO.forEach((v, i) => {
     // её без скрипта, и поиск по странице в браузере её всё равно находит.
     transcript = `
     <section class="transcript" aria-label="Расшифровка эфира">
-      <div class="transcript__head">
-        <a class="btn btn--secondary transcript__download" href="${file}" download>
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M1.5 13.5h13"/></svg>
-          Скачать расшифровку
-        </a>
-      </div>
-
       <details class="transcript__reader">
         <summary class="transcript__toggle">Расшифровка эфира</summary>
         <div class="transcript__text">
 ${t.body}
         </div>
       </details>
+
+      <a class="btn btn--secondary transcript__download" href="${file}" download>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M1.5 13.5h13"/></svg>
+        Скачать расшифровку
+      </a>
     </section>`;
   }
 
@@ -512,8 +510,8 @@ ${transcript}`;
     description: v.lead,
     lead: v.lead,
     body,
-    prev: i > 0 ? { href: `${VIDEO[i - 1].slug}.html`, title: VIDEO[i - 1].title } : null,
-    next: i < VIDEO.length - 1 ? { href: `${VIDEO[i + 1].slug}.html`, title: VIDEO[i + 1].title } : null,
+    // Соседних передач под расшифровкой нет: после длинного текста переход
+    // к следующей записи только мешает — из списка её видно лучше
   })));
 });
 
