@@ -474,10 +474,8 @@ VIDEO.forEach((v, i) => {
     // Расшифровка длиннее самой страницы, поэтому свёрнута. <details> открывает
     // её без скрипта, и поиск по странице в браузере её всё равно находит.
     transcript = `
-    <section class="transcript" aria-labelledby="transcript-title">
+    <section class="transcript" aria-label="Расшифровка эфира">
       <div class="transcript__head">
-        <h2 class="transcript__title" id="transcript-title">Расшифровка эфира</h2>
-        <p class="transcript__note">Программа «Беседы с батюшкой», эфир от <time datetime="${t.date}">${t.dateText}</time></p>
         <a class="btn btn--secondary transcript__download" href="${file}" download>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 1v9M4.5 6.5 8 10l3.5-3.5M1.5 13.5h13"/></svg>
           Скачать расшифровку
@@ -485,7 +483,7 @@ VIDEO.forEach((v, i) => {
       </div>
 
       <details class="transcript__reader">
-        <summary class="transcript__toggle">Читать расшифровку</summary>
+        <summary class="transcript__toggle">Расшифровка эфира</summary>
         <div class="transcript__text">
 ${t.body}
         </div>
@@ -505,12 +503,6 @@ ${t.body}
       <span class="video-embed__time" aria-hidden="true">${v.length}</span>
       <noscript><iframe src="https://rutube.ru/play/embed/${v.id}/" title="${v.title}"
                         allow="clipboard-write; autoplay; fullscreen" loading="lazy"></iframe></noscript>
-    </div>
-
-    <div class="entry-facts">
-      <p><b>Эфир:</b> ${v.dateText} · ${v.source}</p>
-      <p><b>Длительность:</b> ${v.length}</p>
-      <p><a class="link" href="https://rutube.ru/video/${v.id}/" target="_blank" rel="noopener">Смотреть на RuTube</a></p>
     </div>
 ${transcript}`;
 
