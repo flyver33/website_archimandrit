@@ -151,7 +151,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   align-items: center;
   justify-content: center;
   height: 100%;
-  min-height: clamp(4rem, 6vw, 5.5rem);
+  min-height: var(--sitebar-h);
   padding: var(--space-md) var(--space-sm);
   background: var(--accent);
   font-family: var(--font-display);
@@ -183,9 +183,17 @@ body { padding-top: var(--header-space, var(--header-total)); }
   position: relative;
   display: grid;
   align-items: end;
-  /* Ровно остаток экрана под шапкой — считаем от того же значения, что и
-     резерв места, иначе разница в пиксель даёт лишнюю прокрутку */
-  min-height: calc(100svh - var(--header-space, var(--header-total)));
+  /* Остаток экрана под шапкой минус полоса-меню: считаем от тех же значений,
+     что и резерв места, иначе разница в пиксель даёт лишнюю прокрутку.
+     Полоса разделов должна попадать в первый экран целиком — иначе при
+     первом заходе кажется, что кроме портрета на сайте ничего нет.
+     --sitebar-space проставляет скрипт по фактической высоте полосы: уже
+     1280px она переносится в несколько рядов, и одной строки мало. */
+  min-height: calc(
+    100svh
+    - var(--header-space, var(--header-total))
+    - var(--sitebar-space, var(--sitebar-h))
+  );
   overflow: hidden;
   /* подложка на случай, если слой с текстурой не отрисуется */
   background: radial-gradient(105% 105% at 0% -4%, #FFFFFD 0%, #FDF2D8 26%, #F3DCA8 58%, #E2C084 82%, #D4AE69 100%);
