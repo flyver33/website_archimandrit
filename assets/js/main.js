@@ -79,6 +79,22 @@
     window.addEventListener('scroll', onScroll, { passive: true });
   }
 
+  // Полоса разделов стоит сразу под первым экраном, и он вычитает её высоту
+  // из своей: полоса видна без прокрутки. Токен задаёт высоту одной строки —
+  // фактических рядов бывает до четырёх, поэтому меряем по месту.
+  var sitebar = document.querySelector('.sitebar');
+
+  if (sitebar) {
+    var measureSitebar = function () {
+      var h = Math.ceil(sitebar.getBoundingClientRect().height);
+      document.documentElement.style.setProperty('--sitebar-space', h + 'px');
+    };
+
+    measureSitebar();
+    window.addEventListener('resize', measureSitebar);
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureSitebar);
+  }
+
   /* Разделы живут в полосе-меню под шапкой — она видна на любой ширине,
      всплывающего меню и бургера на сайте нет. */
 
