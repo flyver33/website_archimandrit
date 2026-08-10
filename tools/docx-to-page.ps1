@@ -394,22 +394,46 @@ $footer = @"
       <div class="footer__col">
         <h3>Разделы</h3>
         <ul>
-          <li><a href="${rel}index.html#bio">Биография</a></li>
-          <li><a href="${rel}index.html#events">Анонсы мероприятий</a></li>
-          <li><a href="${rel}index.html#posts">Текстовые материалы</a></li>
+          <li><a href="${rel}news/index.html">Новости</a></li>
+          <li><a href="${rel}propovedi/index.html">Проповеди</a></li>
+          <li><a href="${rel}besedy/index.html">Беседы и встречи</a></li>
+          <li><a href="${rel}video/index.html">Телепередачи</a></li>
+          <li><a href="${rel}radio/index.html">Радиопередачи</a></li>
           <li><a href="${rel}books/index.html">Книги</a></li>
-          <li><a href="${rel}index.html#media">Видеоматериалы</a></li>
+          <li><a href="${rel}stati/index.html">Статьи</a></li>
+          <li><a href="${rel}foto/index.html">Фото</a></li>
+          <li><a href="${rel}events/index.html">Мероприятия</a></li>
+          <li><a href="${rel}bio/index.html">Автобиография</a></li>
         </ul>
       </div>
 
-      <div class="footer__col">
-        <h3>Ещё</h3>
+      <div class="footer__col footer__col--contacts">
+        <h3>Контакты</h3>
         <ul>
-          <li><a href="${rel}index.html#posts">Новости</a></li>
-          <li><a href="${rel}index.html#media">Радиопередачи</a></li>
-          <li><a href="${rel}index.html#slovo">Ответы от Писания</a></li>
-          <li><a href="${rel}index.html#slovo">Толкование Библии</a></li>
-          <li><a href="${rel}index.html#posts">Архив</a></li>
+          <li>
+            <a class="footer__contact" href="https://hrampokrov.ru/" target="_blank" rel="noopener">
+              Храм Покрова Пресвятой Богородицы
+              <span class="footer__contact-note">hrampokrov.ru</span>
+            </a>
+          </li>
+          <li>
+            <a class="footer__contact" href="http://optina-msk.ru/" target="_blank" rel="noopener">
+              Подворье Оптиной пустыни в Москве
+              <span class="footer__contact-note">optina-msk.ru</span>
+            </a>
+          </li>
+          <li>
+            <a class="footer__contact" href="https://max.ru/melkhisedek_artyukhin_official" target="_blank" rel="noopener">
+              MAX
+              <span class="footer__contact-note">melkhisedek_artyukhin_official</span>
+            </a>
+          </li>
+          <li>
+            <a class="footer__contact" href="https://t.me/melkhisedek_artyukhin_official" target="_blank" rel="noopener">
+              Telegram
+              <span class="footer__contact-note">@melkhisedek_artyukhin_official</span>
+            </a>
+          </li>
         </ul>
       </div>
     </div>
