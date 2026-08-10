@@ -74,7 +74,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
-::selection { background: rgba(218, 169, 83, .3); color: var(--ink); }
+::selection { background: rgba(201, 162, 74, .32); color: var(--ink); }
 
 /* --- Раскладка ----------------------------------------------------------- */
 
