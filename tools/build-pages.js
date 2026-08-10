@@ -37,7 +37,7 @@ function head({ title, description, css }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 <meta name="description" content="${description}">
-<meta name="theme-color" content="#FFFDF8">
+<meta name="theme-color" content="#FAF6EC">
 
 <link rel="icon" href="${UP}assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="${UP}assets/fonts/arsenal-400-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
