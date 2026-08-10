@@ -143,7 +143,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   margin: 0 auto;
   padding: 0;
   list-style: none;
-  background: rgba(255, 253, 248, .22);
+  background: rgba(250, 246, 236, .22);
 }
 
 .sitebar__link {
@@ -196,7 +196,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   );
   overflow: hidden;
   /* подложка на случай, если слой с текстурой не отрисуется */
-  background: radial-gradient(105% 105% at 0% -4%, #FFFFFD 0%, #FDF2D8 26%, #F3DCA8 58%, #E2C084 82%, #D4AE69 100%);
+  background: radial-gradient(105% 105% at 0% -4%, #FFFEF7 0%, #F7F2DE 26%, #E8E7C9 58%, #D2DBB8 82%, #B9C7A2 100%);
 }
 
 /* Бумага: волокно и зерно, смешанные с самим градиентом — фактура «в бумаге»,
@@ -211,7 +211,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.025 .8' numOctaves='5' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.22' intercept='.78'/%3E%3CfeFuncG type='linear' slope='.30' intercept='.70'/%3E%3CfeFuncB type='linear' slope='.42' intercept='.56'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23f)'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.5' intercept='.5'/%3E%3CfeFuncG type='linear' slope='.5' intercept='.48'/%3E%3CfeFuncB type='linear' slope='.5' intercept='.44'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23g)'/%3E%3C/svg%3E"),
-    radial-gradient(105% 105% at 0% -4%, #FFFFFD 0%, #FDF2D8 26%, #F3DCA8 58%, #E2C084 82%, #D4AE69 100%);
+    radial-gradient(105% 105% at 0% -4%, #FFFEF7 0%, #F7F2DE 26%, #E8E7C9 58%, #D2DBB8 82%, #B9C7A2 100%);
   background-size: 500px 500px, 320px 320px, cover;
   background-blend-mode: multiply, soft-light, normal;
 }
@@ -241,7 +241,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   padding: 0 var(--gutter) clamp(3rem, 11vh, 7rem);
 }
 
-/* Кавычки — декор: тёплое золото в тон бумаге, а не холодный серый */
+/* Кавычки — декор: золото держит акцент на зеленовато-бежевой бумаге */
 .hero__marks {
   display: block;
   font-family: var(--font-text);
@@ -249,7 +249,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   /* Кегль крупный, но кавычки жмутся к цитате: высота строки и отступ
      заданы в em, поэтому просвет не растёт вслед за размером */
   line-height: .24;
-  color: #C2A063;
+  color: #BE9B4E;
   margin-bottom: .04em;
 }
 
@@ -258,9 +258,9 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 1rem + 2.4vw, 2.875rem);
   line-height: 1.0;
-  /* Золотисто-коричневый вместо почти-чёрного: на золотом градиенте текст
-     не спорит с фоном. Светлее не уходим — 3:1 для крупного кегля предел */
-  color: #8E6A2C;
+  /* Тёмная зелень: на бежево-шалфейной бумаге держит 5.6:1 даже в самой
+     насыщенной части градиента — крупная цитата читается на любом экране */
+  color: #2E4B36;
   max-width: 21ch;
   text-wrap: balance;
 }
@@ -270,7 +270,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-size: var(--fs-small);
   letter-spacing: .06em;
   /* насыщенная часть градиента темнее фона страницы — берём тон потемнее */
-  color: #463F33;
+  color: #3A4438;
 }
 
 /* --------------------------------------------------------------------------
@@ -486,7 +486,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   content: "";
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, #F2E9D6, #EADFC6);
+  background: linear-gradient(180deg, #EFEBD8, #E2E3CA);
 }
 
 /* --------------------------------------------------------------------------
@@ -557,7 +557,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
 .video-card:focus-within {
   border-color: var(--gold);
   transform: translateY(-4px);
-  box-shadow: 0 24px 48px -36px rgba(42, 33, 24, .5);
+  box-shadow: 0 24px 48px -36px rgba(26, 38, 29, .5);
 }
 
 .video-card__poster {
@@ -592,7 +592,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  background: linear-gradient(180deg, rgba(42, 33, 24, .16) 0%, rgba(42, 33, 24, 0) 38%, rgba(42, 33, 24, .38) 100%);
+  background: linear-gradient(180deg, rgba(26, 38, 29, .16) 0%, rgba(26, 38, 29, 0) 38%, rgba(26, 38, 29, .38) 100%);
 }
 
 .video-card__play {
@@ -607,7 +607,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   height: 3.5rem;
   border: 1px solid var(--border);
   border-radius: 50%;
-  background: rgba(255, 253, 248, .82);
+  background: rgba(250, 246, 236, .82);
   color: var(--accent);
   transition: background var(--dur) var(--ease), scale var(--dur) var(--ease);
 }
@@ -621,7 +621,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   right: var(--space-sm);
   bottom: var(--space-sm);
   padding: 2px var(--space-xs);
-  background: rgba(255, 253, 248, .88);
+  background: rgba(250, 246, 236, .88);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius);
   font-family: var(--font-display);
@@ -714,7 +714,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   height: 4rem;
   border: 1px solid var(--border);
   border-radius: 50%;
-  background: rgba(255, 253, 248, .82);
+  background: rgba(250, 246, 236, .82);
   color: var(--accent);
   transition: background var(--dur) var(--ease), scale var(--dur) var(--ease);
 }
@@ -728,7 +728,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   right: var(--space-sm);
   bottom: var(--space-sm);
   padding: 2px var(--space-xs);
-  background: rgba(255, 253, 248, .88);
+  background: rgba(250, 246, 236, .88);
   border: 1px solid var(--border-soft);
   border-radius: var(--radius);
   font-family: var(--font-display);
