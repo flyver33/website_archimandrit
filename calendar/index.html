@@ -3,9 +3,9 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Толкование Евангелия от Марка. Первая встреча цикла — архимандрит Мелхиседек (Артюхин)</title>
-<meta name="description" content="Разбор по главам: исторический контекст, святоотеческие толкования и приложение к сегодняшней жизни.">
-<meta name="theme-color" content="#FAF5E9">
+<title>Церковный календарь — архимандрит Мелхиседек (Артюхин)</title>
+<meta name="description" content="Полный церковный календарь: праздники, памяти святых, посты, седмица и глас на каждый день. Новый и старый стиль.">
+<meta name="theme-color" content="#FAF6EC">
 
 <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="../assets/fonts/arsenal-400-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
@@ -15,6 +15,8 @@
 <link rel="stylesheet" href="../assets/css/base.css">
 <link rel="stylesheet" href="../assets/css/components.css">
 <link rel="stylesheet" href="../assets/css/reading.css">
+<link rel="stylesheet" href="../assets/css/section.css">
+<link rel="stylesheet" href="../assets/css/calendar.css">
 <script>document.documentElement.classList.add('js');</script>
 </head>
 <body>
@@ -30,7 +32,7 @@
     </a>
 
     <div class="header__actions">
-      <a class="btn btn--primary header__bio" href="../bio/index.html">Биография</a>
+      <a class="btn btn--primary header__bio" href="../bio/index.html">Автобиография</a>
     </div>
 
   </div>
@@ -55,26 +57,49 @@
 <main id="main">
 
   <div class="container page-head">
-    <a class="back-link" href="../events/index.html">
-      <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M13 7H1M6 2 1 7l5 5"/></svg>
-      Мероприятия
-    </a>
-    <h1 class="page-head__title entry-head__title">Толкование Евангелия от Марка. Первая встреча цикла</h1>
-    <p class="page-head__lead">Разбор по главам: исторический контекст, святоотеческие толкования и приложение к сегодняшней жизни.</p>
+    <h1 class="page-head__title">Церковный календарь</h1>
   </div>
 
-  <div class="container entry-body">
-    <div class="entry-facts">
-      <p><b>Когда:</b> <time datetime="2026-09-11T19:00">11 сентября 2026, 19:00</time></p>
-      <p><b>Что это:</b> Лекция</p>
-      <p><b>Где:</b> Просветительский центр при храме апостолов Петра и Павла</p>
+  <div class="container section-page">
+
+    <!-- Месяц и день считает скрипт: заготовки в разметке нет, чтобы на
+         странице не осталось устаревших дат, если скрипт не выполнится -->
+    <div class="calendar" id="calendar">
+
+      <div class="calendar__body">
+        <div class="calendar__bar">
+          <p class="calendar__month" data-month-label aria-live="polite">Календарь</p>
+
+          <div class="calendar__nav">
+            <button class="icon-btn calendar__arrow" type="button" data-month-step="-1" aria-label="Предыдущий месяц">
+              <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M17 7H1M7 1L1 7l6 6"/></svg>
+            </button>
+            <button class="calendar__today" type="button" data-month-today hidden>Сегодня</button>
+            <button class="icon-btn calendar__arrow" type="button" data-month-step="1" aria-label="Следующий месяц">
+              <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M1 7h16M11 1l6 6-6 6"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="calendar__grid" data-grid></div>
+
+        <p class="calendar__legend">
+          <span><i></i> постный день</span>
+          <span><i class="is-strict"></i> строгий пост</span>
+          <span>Золотом — воскресенья и великие праздники</span>
+        </p>
+      </div>
+
+      <aside class="calendar__day" data-day-card aria-live="polite"></aside>
     </div>
-    <p>Встреча открыта для всех желающих, запись не нужна. После беседы —
-    ответы на вопросы из зала.</p>
-    <nav class="entry-nav" aria-label="Соседние материалы">
-      <a class="link" href="mesta-s-horoshey-energetikoy.html">← Строились ли храмы в местах с «хорошей энергетикой»?</a>
-      <a class="link entry-nav__next" href="rozhdestvo-bogorodicy-liturgiya.html">Рождество Пресвятой Богородицы. Литургия →</a>
-    </nav>
+
+    <p class="calendar__note">
+      Даты приведены по новому стилю, рядом — соответствующее число старого стиля.
+      Пасха и переходящие праздники считаются по александрийской пасхалии, посты и глас —
+      от неё же. В календаре собраны главные праздники и наиболее чтимые памяти;
+      полный круг памятей каждого дня открывается по ссылке в карточке дня.
+    </p>
+
   </div>
 
 </main>
@@ -125,7 +150,8 @@
   </div>
 </footer>
 
+<script src="../assets/js/church-calendar.js" defer></script>
 <script src="../assets/js/main.js" defer></script>
-
+<script src="../assets/js/calendar-page.js" defer></script>
 </body>
 </html>

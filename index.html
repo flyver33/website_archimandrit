@@ -83,209 +83,123 @@
   </nav>
 
   <!-- ================================================ Новости -->
-  <!-- Одна лента: ближайшие встречи, за ними — сообщения о новых публикациях -->
+  <!-- Слева лента: одна новость крупно и три строкой — половина умещается
+       в экран. Справа — сегодняшний церковный день с перелистыванием. -->
   <section class="section" id="news">
     <div class="container">
       <div class="section__head">
         <h2 class="reveal reveal--mask">Новости</h2>
+        <p class="section__link reveal"><a class="link" href="events/index.html">Все мероприятия</a></p>
       </div>
 
-      <div class="events reveal">
-        <div class="events__feature">
-        <div class="event-detail" id="event-panel-1" role="tabpanel" aria-labelledby="event-tab-1" tabindex="0">
-          <div class="event-detail__head">
-            <p class="event-detail__when">
-              <b>9</b>
-              <span>августа<br><time datetime="2026-08-09T18:00">18:00</time></span>
+      <div class="news reveal">
+
+        <div class="news__main">
+
+          <!-- Крупная новость: лид виден сразу, остальное раскрывается -->
+          <article class="news-lead" id="news-lead">
+            <p class="news-lead__meta">
+              <span class="news-lead__date">9 августа, 18:00</span>
+              <span class="news-lead__kind">Беседа</span>
             </p>
-            <p class="event-detail__type">Беседа</p>
-          </div>
-          <figure class="event-detail__photo" aria-hidden="true">
-            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
-              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
-              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
-              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
-            </svg>
-          </figure>
-          <h3 class="event-detail__title">Как жить после развода? Ответ священника</h3>
-          <p class="event-detail__text">Что помогает настроиться на духовную жизнь, есть ли в ней правила и какие вопросы не стоит обсуждать с батюшкой.</p>
-          <p class="event-detail__place">
-            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
-            <span>Храм Покрова Пресвятой Богородицы в Ясеневе, приходской дом</span>
-          </p>
+
+            <h3 class="news-lead__title">
+              <a href="events/kak-zhit-posle-razvoda.html">Как жить после развода? Ответ священника</a>
+            </h3>
+
+            <p class="news-lead__text">Что помогает настроиться на духовную жизнь, есть ли в ней правила
+              и какие вопросы не стоит обсуждать с батюшкой.</p>
+
+            <div class="news-lead__full" id="news-lead-full">
+              <div class="news-lead__full-inner">
+                <p>Разговор о том, как пережить распад семьи и не потерять веру: что делать
+                  с обидой и как говорить о случившемся с детьми.</p>
+                <p class="news-lead__place">
+                  <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
+                  <span>Храм Покрова Пресвятой Богородицы в Ясеневе, приходской дом</span>
+                </p>
+                <p class="news-lead__more"><a class="link" href="events/kak-zhit-posle-razvoda.html">Страница встречи</a></p>
+              </div>
+            </div>
+
+            <button class="news-lead__toggle" type="button"
+                    aria-expanded="false" aria-controls="news-lead-full">
+              <span data-toggle-text>Раскрыть новость</span>
+              <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M1 1.5 6 6.5l5-5"/></svg>
+            </button>
+          </article>
+
+          <!-- Следующие три — строкой, без карточек: список читается за раз -->
+          <ul class="news-list" data-stagger="60">
+            <li>
+              <a class="news-row" href="events/chennelling-i-meditacii.html">
+                <span class="news-row__date">14 авг</span>
+                <span class="news-row__title">Куда ведут «ченнелинг» и «молитвенные медитации»?</span>
+                <span class="news-row__kind">Лекция</span>
+              </a>
+            </li>
+            <li>
+              <a class="news-row" href="events/uspenie-vsenoshchnoe-bdenie.html">
+                <span class="news-row__date">27 авг</span>
+                <span class="news-row__title">Успение Пресвятой Богородицы. Всенощное бдение</span>
+                <span class="news-row__kind">Богослужение</span>
+              </a>
+            </li>
+            <li>
+              <a class="news-row" href="events/mesta-s-horoshey-energetikoy.html">
+                <span class="news-row__date">3 сен</span>
+                <span class="news-row__title">Строились ли храмы в местах с «хорошей энергетикой»?</span>
+                <span class="news-row__kind">Беседа</span>
+              </a>
+            </li>
+          </ul>
         </div>
 
-        <div class="event-detail" id="event-panel-2" role="tabpanel" aria-labelledby="event-tab-2" tabindex="0" hidden>
-          <div class="event-detail__head">
-            <p class="event-detail__when">
-              <b>14</b>
-              <span>августа<br><time datetime="2026-08-14T19:00">19:00</time></span>
+        <!-- Правая половина: церковный день. Считается на месте скриптом,
+             стрелки листают дни, ссылка ведёт в полный календарь. -->
+        <aside class="church-day" id="church-day" aria-labelledby="church-day-eyebrow">
+          <div class="church-day__head">
+            <p class="church-day__eyebrow" id="church-day-eyebrow">Церковный день</p>
+
+            <div class="church-day__nav">
+              <button class="icon-btn church-day__arrow" type="button" data-day-step="-1" aria-label="Предыдущий день">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M17 7H1M7 1L1 7l6 6"/></svg>
+              </button>
+              <button class="church-day__today" type="button" data-day-today hidden>Сегодня</button>
+              <button class="icon-btn church-day__arrow" type="button" data-day-step="1" aria-label="Следующий день">
+                <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M1 7h16M11 1l6 6-6 6"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="church-day__body" data-day-body aria-live="polite">
+            <p class="church-day__date">
+              <b data-day-num>—</b>
+              <span>
+                <span data-day-month>церковный календарь</span><br>
+                <span class="church-day__weekday" data-day-weekday></span>
+              </span>
             </p>
-            <p class="event-detail__type">Лекция</p>
+
+            <p class="church-day__old" data-day-old></p>
+            <p class="church-day__week" data-day-week></p>
+
+            <p class="church-day__feast" data-day-feast hidden></p>
+            <ul class="church-day__saints" data-day-saints></ul>
+
+            <p class="church-day__fast" data-day-fast></p>
           </div>
-          <figure class="event-detail__photo" aria-hidden="true">
-            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
-              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
-              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
-              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
-            </svg>
-          </figure>
-          <h3 class="event-detail__title">Куда ведут «ченнелинг» и «молитвенные медитации»?</h3>
-          <p class="event-detail__text">Вера или магия, духовная жизнь или оккультизм — что доставит душе человека желанное счастье.</p>
-          <p class="event-detail__place">
-            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
-            <span>Просветительский центр при храме апостолов Петра и Павла</span>
+
+          <!-- Ближайший великий праздник: подсказка, куда листать дальше -->
+          <button class="church-day__next" type="button" data-day-jump hidden>
+            <span class="church-day__next-label">Ближайший праздник</span>
+            <span class="church-day__next-text" data-day-next></span>
+          </button>
+
+          <p class="church-day__links">
+            <a class="link" href="calendar/index.html" data-day-calendar>Полный календарь</a>
           </p>
-        </div>
-
-        <div class="event-detail" id="event-panel-3" role="tabpanel" aria-labelledby="event-tab-3" tabindex="0" hidden>
-          <div class="event-detail__head">
-            <p class="event-detail__when">
-              <b>27</b>
-              <span>августа<br><time datetime="2026-08-27T17:00">17:00</time></span>
-            </p>
-            <p class="event-detail__type">Богослужение</p>
-          </div>
-          <figure class="event-detail__photo" aria-hidden="true">
-            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
-              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
-              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
-              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
-            </svg>
-          </figure>
-          <h3 class="event-detail__title">Успение Пресвятой Богородицы. Всенощное бдение</h3>
-          <p class="event-detail__text">Праздничная служба с чтением акафиста и проповедью после литургии.</p>
-          <p class="event-detail__place">
-            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
-            <span>Храм Покрова Пресвятой Богородицы в Ясеневе</span>
-          </p>
-        </div>
-
-        <div class="event-detail" id="event-panel-4" role="tabpanel" aria-labelledby="event-tab-4" tabindex="0" hidden>
-          <div class="event-detail__head">
-            <p class="event-detail__when">
-              <b>3</b>
-              <span>сентября<br><time datetime="2026-09-03T18:30">18:30</time></span>
-            </p>
-            <p class="event-detail__type">Беседа</p>
-          </div>
-          <figure class="event-detail__photo" aria-hidden="true">
-            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
-              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
-              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
-              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
-            </svg>
-          </figure>
-          <h3 class="event-detail__title">Строились ли храмы в местах с «хорошей энергетикой»?</h3>
-          <p class="event-detail__text">Как на самом деле выбирали места для христианских храмов и причём здесь мистическая энергия.</p>
-          <p class="event-detail__place">
-            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
-            <span>Приходской дом в Ясеневе, малый зал</span>
-          </p>
-        </div>
-
-        <div class="event-detail" id="event-panel-5" role="tabpanel" aria-labelledby="event-tab-5" tabindex="0" hidden>
-          <div class="event-detail__head">
-            <p class="event-detail__when">
-              <b>11</b>
-              <span>сентября<br><time datetime="2026-09-11T19:00">19:00</time></span>
-            </p>
-            <p class="event-detail__type">Лекция</p>
-          </div>
-          <figure class="event-detail__photo" aria-hidden="true">
-            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
-              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
-              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
-              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
-            </svg>
-          </figure>
-          <h3 class="event-detail__title">Толкование Евангелия от Марка. Первая встреча цикла</h3>
-          <p class="event-detail__text">Разбор по главам: исторический контекст, святоотеческие толкования и приложение к сегодняшней жизни.</p>
-          <p class="event-detail__place">
-            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
-            <span>Просветительский центр при храме апостолов Петра и Павла</span>
-          </p>
-        </div>
-
-        <div class="event-detail" id="event-panel-6" role="tabpanel" aria-labelledby="event-tab-6" tabindex="0" hidden>
-          <div class="event-detail__head">
-            <p class="event-detail__when">
-              <b>21</b>
-              <span>сентября<br><time datetime="2026-09-21T09:00">9:00</time></span>
-            </p>
-            <p class="event-detail__type">Богослужение</p>
-          </div>
-          <figure class="event-detail__photo" aria-hidden="true">
-            <svg viewBox="0 0 32 24" fill="none" stroke="currentColor" stroke-width="1">
-              <path d="M1 17.4 9.8 9.6l6.9 6.2 4.7-4 8.6 7.6" vector-effect="non-scaling-stroke"/>
-              <circle cx="22.2" cy="6.4" r="2.3" vector-effect="non-scaling-stroke"/>
-              <rect x=".5" y=".5" width="31" height="23" vector-effect="non-scaling-stroke"/>
-            </svg>
-          </figure>
-          <h3 class="event-detail__title">Рождество Пресвятой Богородицы. Литургия</h3>
-          <p class="event-detail__text">Праздничная литургия, по окончании — беседа с прихожанами и ответы на вопросы.</p>
-          <p class="event-detail__place">
-            <svg width="14" height="16" viewBox="0 0 14 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M7 15s5.5-5.2 5.5-8.9A5.5 5.5 0 0 0 1.5 6.1C1.5 9.8 7 15 7 15z"/><circle cx="7" cy="6.1" r="2.1"/></svg>
-            <span>Храм святых апостолов Петра и Павла</span>
-          </p>
-        </div>
-        </div>
-
-        <ul class="events__list" data-stagger="60" role="tablist" aria-label="Лента новостей" aria-orientation="vertical">
-          <li role="presentation">
-            <button class="event-item" type="button" role="tab" id="event-tab-1"
-                    aria-controls="event-panel-1" aria-selected="true" tabindex="0">
-              <span class="event-item__date">9 авг · 18:00</span>
-              <span class="event-item__title">Как жить после развода? Ответ священника</span>
-              <span class="event-item__meta">Беседа</span>
-            </button>
-          </li>
-
-          <li role="presentation">
-            <button class="event-item" type="button" role="tab" id="event-tab-2"
-                    aria-controls="event-panel-2" aria-selected="false" tabindex="-1">
-              <span class="event-item__date">14 авг · 19:00</span>
-              <span class="event-item__title">Куда ведут «ченнелинг» и «молитвенные медитации»?</span>
-              <span class="event-item__meta">Лекция</span>
-            </button>
-          </li>
-
-          <li role="presentation">
-            <button class="event-item" type="button" role="tab" id="event-tab-3"
-                    aria-controls="event-panel-3" aria-selected="false" tabindex="-1">
-              <span class="event-item__date">27 авг · 17:00</span>
-              <span class="event-item__title">Успение Пресвятой Богородицы. Всенощное бдение</span>
-              <span class="event-item__meta">Богослужение</span>
-            </button>
-          </li>
-
-          <li role="presentation">
-            <button class="event-item" type="button" role="tab" id="event-tab-4"
-                    aria-controls="event-panel-4" aria-selected="false" tabindex="-1">
-              <span class="event-item__date">3 сен · 18:30</span>
-              <span class="event-item__title">Строились ли храмы в местах с «хорошей энергетикой»?</span>
-              <span class="event-item__meta">Беседа</span>
-            </button>
-          </li>
-
-          <li role="presentation">
-            <button class="event-item" type="button" role="tab" id="event-tab-5"
-                    aria-controls="event-panel-5" aria-selected="false" tabindex="-1">
-              <span class="event-item__date">11 сен · 19:00</span>
-              <span class="event-item__title">Толкование Евангелия от Марка. Первая встреча цикла</span>
-              <span class="event-item__meta">Лекция</span>
-            </button>
-          </li>
-
-          <li role="presentation">
-            <button class="event-item" type="button" role="tab" id="event-tab-6"
-                    aria-controls="event-panel-6" aria-selected="false" tabindex="-1">
-              <span class="event-item__date">21 сен · 9:00</span>
-              <span class="event-item__title">Рождество Пресвятой Богородицы. Литургия</span>
-              <span class="event-item__meta">Богослужение</span>
-            </button>
-          </li>
-        </ul>
+        </aside>
       </div>
     </div>
   </section>
@@ -454,6 +368,7 @@
           <li><a href="foto/index.html">Фото</a></li>
           <li><a href="events/index.html">Мероприятия</a></li>
           <li><a href="bio/index.html">Автобиография</a></li>
+          <li><a href="calendar/index.html">Церковный календарь</a></li>
         </ul>
       </div>
 
@@ -470,6 +385,7 @@
   </div>
 </footer>
 
+<script src="assets/js/church-calendar.js" defer></script>
 <script src="assets/js/main.js" defer></script>
 </body>
 </html>

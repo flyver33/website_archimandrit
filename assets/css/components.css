@@ -274,201 +274,368 @@ body { padding-top: var(--header-space, var(--header-total)); }
 }
 
 /* --------------------------------------------------------------------------
-   4. Мероприятия: ближайшее крупно, остальные списком
+   4. Новости и церковный день
+   Слева лента: одна новость крупно и три строкой. Справа — сегодняшний
+   церковный день с перелистыванием и переходом в полный календарь.
    -------------------------------------------------------------------------- */
 
-.events {
+.news {
   display: grid;
-  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr);
   gap: clamp(2rem, 4vw, 4.5rem);
   align-items: stretch;
 }
 
-/* Карточка тянется на всю высоту списка — при переключении ничего не прыгает */
-.events__feature { display: grid; }
-
-/* --- Крупная карточка выбранного события --- */
-
-.event-detail {
+/* Левая половина умещается в экран: крупная новость и три строки — вся
+   высота колонки. Раскрытая часть новости прокручивается внутри себя,
+   поэтому раскрытие не выталкивает список за нижний край. */
+.news__main {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  height: 100%;
-  padding: clamp(1.5rem, 2.4vw, 2.25rem);
-  padding-top: clamp(1.1rem, 1.6vw, 1.5rem);
+  gap: var(--space-md);
+  min-height: 0;
+}
+
+/* Потолок ставится только там, где он не давит: на низком окне колонка
+   растёт свободно, иначе раскрытой новости не осталось бы места */
+@media (min-width: 901px) and (min-height: 800px) {
+  .news__main { max-height: calc(100svh - var(--header-h-compact) - var(--space-xl)); }
+}
+
+/* --- Крупная новость --- */
+
+.news-lead {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden;
+  padding: clamp(1.25rem, 2vw, 1.75rem);
   background: var(--surface);
   border: 1px solid var(--border-soft);
   border-left: 3px solid var(--accent);
 }
 
-/* display: flex перебил бы атрибут hidden — возвращаем ему силу */
-.event-detail[hidden] { display: none; }
-
-.event-detail:focus-visible { outline-offset: -2px; }
-
-/* Дата слева, тип события — в правом верхнем углу, обе по нижней линии */
-.event-detail__head {
+.news-lead__meta {
   display: flex;
-  width: 100%;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: var(--space-md);
-  margin-bottom: var(--space-sm);
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-xs);
 }
 
-.event-detail__when {
-  display: flex;
-  align-items: flex-end;
-  gap: var(--space-sm);
-}
-
-.event-detail__when b {
+.news-lead__date {
   font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(3.5rem, 2.2rem + 3.6vw, 5.5rem);
-  line-height: .85;
+  font-size: var(--fs-small);
+  letter-spacing: .08em;
   color: var(--gold-deep);
 }
 
-.event-detail__when span {
-  font-size: var(--fs-small);
-  line-height: 1.35;
-  color: var(--ink-soft);
-}
-
-.event-detail__type {
+.news-lead__kind {
   font-family: var(--font-display);
-  font-size: var(--fs-small);
+  font-size: var(--fs-eyebrow);
   letter-spacing: .12em;
   text-transform: uppercase;
   color: var(--ink-soft);
-  text-align: right;
-  white-space: nowrap;
 }
 
-/* Плейсхолдер до появления реальных снимков: та же геометрия, что у <img> */
-.event-detail__photo {
-  width: 100%;
-  margin: 0 0 var(--space-sm);
-  aspect-ratio: 21 / 9;
-  overflow: hidden;
-  display: grid;
-  place-items: center;
-  background: var(--surface-sunken);
-}
-
-.event-detail__photo img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.event-detail__photo svg {
-  width: clamp(3rem, 12%, 5rem);
-  height: auto;
-  color: var(--ink-soft);
-}
-
-.event-detail__title {
-  font-size: clamp(1.35rem, 1.1rem + 1.15vw, 1.9rem);
+.news-lead__title {
+  font-size: clamp(1.3rem, 1.05rem + 1vw, 1.75rem);
   line-height: var(--lh-tight);
-  color: var(--brand);
   margin-bottom: var(--space-xs);
-  max-width: 20ch;
+  max-width: 22ch;
 }
 
-.event-detail__text {
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 3;
-  overflow: hidden;
+.news-lead__title a { color: inherit; }
+.news-lead__title a:hover { color: var(--accent); }
+
+.news-lead__text {
   font-size: var(--fs-body);
   line-height: var(--lh-lead);
   color: var(--ink-soft);
   max-width: 46ch;
 }
 
-/* Место — без разделителя, иконкой вместо подписи. Цвет — как у тэга и подписи
-   даты: это тоже метаданные, а не тело текста */
-.event-detail__place {
-  width: 100%;
-  margin: var(--space-lg) 0 0;
-  margin-top: auto;
-  padding-top: var(--space-lg);
+/* Раскрытие: строка сетки растёт с 0fr до 1fr — переход идёт по высоте
+   без замера скриптом. Без JS часть открыта: содержимое не пропадает. */
+.js .news-lead__full {
+  display: grid;
+  grid-template-rows: 0fr;
+  min-height: 0;
+  transition: grid-template-rows var(--dur-slow) var(--ease);
+}
+
+.js .news-lead.is-open .news-lead__full { grid-template-rows: 1fr; }
+
+.js .news-lead__full-inner { overflow: hidden; min-height: 0; }
+
+/* Раскрытая новость не выталкивает список из экрана: когда места не хватает,
+   прокручивается сама раскрытая часть */
+.js .news-lead.is-open .news-lead__full-inner { overflow-y: auto; min-height: 7rem; }
+
+.news-lead__full-inner > * + * { margin-top: var(--space-xs); }
+.news-lead__full-inner p { font-size: var(--fs-body); color: var(--ink-body); max-width: 52ch; }
+.news-lead__full-inner > :first-child { margin-top: var(--space-sm); }
+
+.news-lead__place {
   display: flex;
   align-items: baseline;
   gap: var(--space-sm);
   font-size: var(--fs-small);
-  color: var(--ink-soft);
+  color: var(--ink-soft) !important;
 }
 
-/* Иконка несёт смысл (заменяет подпись «Место») — значит наследует цвет текста,
-   а не красится в декоративный --gold */
-.event-detail__place svg {
-  flex: none;
+.news-lead__place svg { flex: none; align-self: flex-start; margin-top: .1em; }
+
+.news-lead__more { font-size: var(--fs-small); }
+
+.news-lead__toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
   align-self: flex-start;
-  margin-top: .1em;
+  flex: none;
+  margin-top: var(--space-sm);
+  padding: var(--space-2xs) 0;
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brand);
 }
 
-/* У новости о публикации внизу карточки не место, а переход к самому тексту —
-   геометрия та же, чтобы при переключении подвал карточки не прыгал */
-.event-detail__more {
-  width: 100%;
-  margin: var(--space-lg) 0 0;
-  margin-top: auto;
-  padding-top: var(--space-lg);
-  font-size: var(--fs-small);
-}
+.news-lead__toggle:hover { color: var(--accent); }
+.news-lead__toggle svg { transition: transform var(--dur) var(--ease); }
+.news-lead__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 
-/* --- Список остальных --- */
+/* --- Три новости строкой --- */
 
-.events__list { padding-top: var(--space-xs); }
+/* Список не ужимается: при нехватке места сжимается раскрытая новость */
+.news-list { flex: none; border-top: 1px solid var(--border-soft); }
+.news-list li + li { border-top: 1px solid var(--border-soft); }
 
-.event-item {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: var(--space-md) var(--space-md) var(--space-md) var(--space-lg);
+.news-row {
+  display: grid;
+  grid-template-columns: 4.5rem minmax(0, 1fr);
+  gap: var(--space-2xs) var(--space-md);
+  padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-sm);
   border-left: 2px solid transparent;
-  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease),
+              transform var(--dur) var(--ease);
 }
 
-.event-item + .event-item { margin-top: 1px; }
-.events__list li + li { border-top: 1px solid var(--border-soft); }
-
-.event-item:hover { background: var(--surface-sunken); }
-
-.event-item[aria-selected="true"] {
-  border-left-color: var(--accent);
+.news-row:hover {
   background: var(--surface-sunken);
+  border-left-color: var(--accent);
+  transform: translateX(3px);
 }
 
-.event-item__date {
-  display: block;
+.news-row__date {
   font-family: var(--font-display);
   font-size: var(--fs-small);
   letter-spacing: .08em;
   color: var(--gold-deep);
-  margin-bottom: var(--space-2xs);
 }
 
-.event-item__title {
-  display: block;
+.news-row__title {
   font-family: var(--font-display);
   font-weight: 700;
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   line-height: 1.3;
   color: var(--ink);
 }
 
-.event-item[aria-selected="true"] .event-item__title { color: var(--brand); }
+.news-row:hover .news-row__title { color: var(--brand); }
 
-.event-item__meta {
-  display: block;
-  margin-top: var(--space-2xs);
+.news-row__kind {
+  grid-column: 2;
   font-size: var(--fs-small);
   color: var(--ink-soft);
+}
+
+/* --- Церковный день --- */
+
+.church-day {
+  display: flex;
+  flex-direction: column;
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-top: 3px solid var(--gold);
+}
+
+.church-day__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-hair);
+}
+
+.church-day__eyebrow {
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.church-day__nav { display: flex; align-items: center; gap: var(--space-2xs); }
+
+.church-day__arrow {
+  border: 1px solid var(--border);
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.church-day__today {
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brand);
+  padding: 0 var(--space-xs);
+}
+
+.church-day__today[hidden] { display: none; }
+.church-day__today:hover { color: var(--accent); }
+
+.church-day__body { padding-top: var(--space-md); }
+
+.church-day__date {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.church-day__date b {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 2rem + 3vw, 4.5rem);
+  line-height: .85;
+  color: var(--gold-deep);
+}
+
+.church-day__date span {
+  font-size: var(--fs-small);
+  line-height: 1.35;
+  color: var(--ink-soft);
+}
+
+.church-day__weekday { color: var(--ink-soft); }
+
+.church-day__old,
+.church-day__week {
+  margin-top: var(--space-xs);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.church-day__week { color: var(--ink-body); }
+
+.church-day__feast {
+  margin-top: var(--space-md);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 1rem + .7vw, 1.5rem);
+  line-height: var(--lh-snug);
+  color: var(--brand);
+  max-width: 26ch;
+}
+
+.church-day__feast[hidden] { display: none; }
+
+/* Двунадесятый и великий праздники подчёркиваются золотой чертой сверху:
+   ранг видно, не раскрашивая заголовок в другой цвет */
+.church-day__feast--great {
+  padding-top: var(--space-sm);
+  border-top: 2px solid var(--gold);
+}
+
+.church-day__saints {
+  margin-top: var(--space-sm);
+  display: grid;
+  gap: var(--space-2xs);
+}
+
+.church-day__saints li {
+  font-size: var(--fs-small);
+  line-height: var(--lh-lead);
+  color: var(--ink-body);
+  padding-left: var(--space-md);
+  position: relative;
+}
+
+.church-day__saints li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .65em;
+  width: 6px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.church-day__fast {
+  max-width: none;
+  margin-top: var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--surface-sunken);
+  font-size: var(--fs-small);
+  color: var(--ink-body);
+  border-left: 2px solid var(--border);
+}
+
+.church-day__fast--strict { border-left-color: var(--accent); }
+.church-day__fast--none { border-left-color: var(--gold); }
+
+/* Ближайший праздник стоит внизу карточки: подсказка, куда листать дальше */
+.church-day__next {
+  display: block;
+  width: 100%;
+  margin-top: auto;
+  padding: var(--space-sm) 0 0;
+  text-align: left;
+  border-top: 1px solid var(--border-hair);
+  transition: color var(--dur) var(--ease);
+}
+
+.church-day__next[hidden] { display: none; }
+
+.church-day__next-label {
+  display: block;
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: var(--space-2xs);
+}
+
+.church-day__next-text {
+  display: block;
+  font-size: var(--fs-small);
+  line-height: var(--lh-lead);
+  color: var(--ink-body);
+}
+
+.church-day__next:hover .church-day__next-text { color: var(--brand); }
+
+.church-day__links {
+  padding-top: var(--space-md);
+  font-size: var(--fs-small);
+}
+
+/* Смена дня — проявление, а не подмена */
+.church-day__body.is-entering { animation: church-day-in 320ms var(--ease) both; }
+
+@keyframes church-day-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .church-day__body.is-entering { animation: none; }
 }
 
 /* --------------------------------------------------------------------------
@@ -890,9 +1057,11 @@ html:not(.js) .video-embed::after { display: none; }
   .sitebar__link { min-height: 3.5rem; }
 }
 
+/* Узкий экран: колонки встают друг под друга, ограничение по высоте снимается —
+   иначе лента и церковный день сжались бы в две тесные полосы */
 @media (max-width: 900px) {
-  .events { grid-template-columns: 1fr; gap: var(--space-xl); }
-  .event-detail__photo { aspect-ratio: 3 / 2; }
+  .news { grid-template-columns: 1fr; gap: var(--space-xl); }
+  .news__main { max-height: none; }
 }
 
 @media (max-width: 1024px) {
@@ -971,20 +1140,5 @@ html:not(.js) .video-embed::after { display: none; }
   font-size: var(--fs-lead);
 }
 
-/* Смена выбранного мероприятия — проявление, а не подмена */
-.event-detail.is-entering {
-  animation: event-in 520ms var(--ease) both;
-}
-
-@keyframes event-in {
-  from { opacity: 0; transform: translateY(12px); clip-path: inset(0 0 12% 0); }
-  to   { opacity: 1; transform: none; clip-path: inset(0 0 0 0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .event-detail.is-entering { animation: none; }
-}
-
-/* Строка списка мероприятий подаётся вперёд при наведении */
-.event-item:hover { transform: translateX(3px); }
-.event-item { transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease), transform var(--dur) var(--ease); }
+/* Ссылка в шапке секции — на второй линии заголовка, а не под блоком */
+.section__link { font-size: var(--fs-small); }
