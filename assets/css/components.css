@@ -819,7 +819,7 @@ html:not(.js) .video-embed::after { display: none; }
 
 .footer__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, .9fr);
   gap: var(--space-2xl);
   padding-block: var(--space-2xl);
 }
@@ -860,6 +860,20 @@ html:not(.js) .video-embed::after { display: none; }
 .footer__col a { color: var(--ink); font-size: var(--fs-small); }
 .footer__col a:hover { color: var(--brand); }
 
+/* Контакты — по одному в строке: под названием идёт адрес, и в две колонки
+   такая пара уже не читается */
+.footer__col--contacts ul { grid-template-columns: minmax(0, 1fr); }
+
+.footer__contact { display: block; }
+.footer__contact-note {
+  display: block;
+  margin-top: 2px;
+  font-size: var(--fs-eyebrow);
+  color: var(--ink-soft);
+  word-break: break-word;
+}
+.footer__contact:hover .footer__contact-note { color: inherit; }
+
 /* --------------------------------------------------------------------------
    12. Адаптив
    -------------------------------------------------------------------------- */
@@ -893,7 +907,11 @@ html:not(.js) .video-embed::after { display: none; }
 }
 
 @media (max-width: 1024px) {
+  /* Три колонки в ряд уже не помещаются: визитка занимает всю ширину,
+     под ней — разделы и контакты рядом */
   .footer__inner { grid-template-columns: 1fr 1fr; }
+  .footer__brand { grid-column: 1 / -1; }
+  .footer__place { margin-top: var(--space-md); }
 
   /* Две карточки в ряд, третья выглядывает краем — ряд читается как
      продолжающийся, без подсказок и стрелок-приманок */

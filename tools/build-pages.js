@@ -94,6 +94,24 @@ ${items}
 `;
 }
 
+/* Контакты подвала: приходы и авторские каналы. Порядок фиксирован —
+   сначала сайты приходов, потом мессенджеры. */
+const CONTACTS = [
+  { title: 'Храм Покрова Пресвятой Богородицы', note: 'hrampokrov.ru', href: 'https://hrampokrov.ru/' },
+  { title: 'Подворье Оптиной пустыни в Москве', note: 'optina-msk.ru', href: 'http://optina-msk.ru/' },
+  { title: 'MAX', note: 'melkhisedek_artyukhin_official', href: 'https://max.ru/melkhisedek_artyukhin_official' },
+  { title: 'Telegram', note: '@melkhisedek_artyukhin_official', href: 'https://t.me/melkhisedek_artyukhin_official' },
+];
+
+function contactItems(indent) {
+  return CONTACTS.map((c) => `${indent}<li>
+${indent}  <a class="footer__contact" href="${c.href}" target="_blank" rel="noopener">
+${indent}    ${c.title}
+${indent}    <span class="footer__contact-note">${c.note}</span>
+${indent}  </a>
+${indent}</li>`).join('\n');
+}
+
 function footer() {
   const links = SECTIONS.map((s) => `          <li><a href="${UP}${s.dir}/index.html">${s.title}</a></li>`).join('\n');
 
@@ -115,8 +133,16 @@ function footer() {
       </div>
 
       <div class="footer__col">
+        <h3>Разделы</h3>
         <ul>
 ${links}
+        </ul>
+      </div>
+
+      <div class="footer__col footer__col--contacts">
+        <h3>Контакты</h3>
+        <ul>
+${contactItems('          ')}
         </ul>
       </div>
     </div>
