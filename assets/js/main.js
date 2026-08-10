@@ -220,20 +220,97 @@
     }
   }
 
-  /* --- Крупная новость: раскрытие ---------------------------------------- */
+  /* --- Лента новостей: ближайшая встреча крупно --------------------------- */
 
-  // Без скрипта раскрытая часть просто видна: CSS прячет её только под .js
-  var lead = document.querySelector('.news-lead');
+  // Крупной становится ближайшая встреча, а не первая в разметке: иначе
+  // спустя неделю сверху висит то, что уже прошло, и по блоку не понять,
+  // что происходит сейчас. Прошедшие встречи из блока уходят целиком.
+  var feed = document.querySelector('[data-news]');
 
-  if (lead) {
-    var toggle = lead.querySelector('.news-lead__toggle');
-    var label = toggle && toggle.querySelector('[data-toggle-text]');
+  if (feed) {
+    var MONTHS = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня',
+      'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
+    var MONTHS_SHORT = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн',
+      'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
+    var WEEKDAYS = ['воскресенье', 'понедельник', 'вторник', 'среда',
+      'четверг', 'пятница', 'суббота'];
+    var WEEKDAYS_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
+
+    var startOfDay = function (d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
+    var pad = function (n) { return n < 10 ? '0' + n : String(n); };
+    var todayLocal = startOfDay(new Date());
+
+    // Дата разбирается вручную: строка без часового пояса читается разными
+    // браузерами то как местное время, то как UTC
+    var parseDate = function (s) {
+      var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(s || '');
+      return m ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) : null;
+    };
+
+    var plural = function (n, one, few, many) {
+      var d10 = n % 10;
+      var d100 = n % 100;
+      if (d10 === 1 && d100 !== 11) return one;
+      if (d10 >= 2 && d10 <= 4 && (d100 < 10 || d100 >= 20)) return few;
+      return many;
+    };
+
+    var relative = function (days) {
+      if (days <= 0) return 'сегодня';
+      if (days === 1) return 'завтра';
+      if (days === 2) return 'послезавтра';
+      if (days < 7) return 'через ' + days + ' ' + plural(days, 'день', 'дня', 'дней');
+      if (days < 28) {
+        var w = Math.round(days / 7);
+        return 'через ' + w + ' ' + plural(w, 'неделю', 'недели', 'недель');
+      }
+      var mo = Math.round(days / 30);
+      return 'через ' + mo + ' ' + plural(mo, 'месяц', 'месяца', 'месяцев');
+    };
+
+    var cards = Array.prototype.slice.call(feed.children);
+
+    var upcoming = cards.filter(function (c) {
+      var d = parseDate(c.dataset.date);
+      return d && startOfDay(d) >= todayLocal;
+    });
+
+    // Всё прошло — показываем последние встречи, а не пустой блок
+    var shownCards = (upcoming.length ? upcoming : cards.slice(-4)).slice(0, 4);
+
+    cards.forEach(function (c) { c.hidden = shownCards.indexOf(c) === -1; });
+
+    shownCards.forEach(function (card, i) {
+      var d = parseDate(card.dataset.date);
+      var days = Math.round((startOfDay(d) - todayLocal) / 86400000);
+      var when = card.querySelector('[data-when]');
+      var status = card.querySelector('[data-status]');
+
+      if (i === 0) {
+        card.classList.add('news-card--lead');
+        when.textContent = d.getDate() + ' ' + MONTHS[d.getMonth()] + ', ' +
+          WEEKDAYS[d.getDay()] + ', ' + d.getHours() + ':' + pad(d.getMinutes());
+        status.textContent = days < 0
+          ? 'Прошедшая встреча'
+          : 'Ближайшая встреча — ' + relative(days);
+        status.hidden = false;
+      } else {
+        when.textContent = d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()] + ', ' + WEEKDAYS_SHORT[d.getDay()];
+        status.hidden = true;
+      }
+    });
+
+    // Раскрытие — только у крупной карточки. Без скрипта подробности видны
+    // сразу: CSS прячет их лишь под .js
+    var leadCard = shownCards[0];
+    var toggle = leadCard && leadCard.querySelector('.news-card__toggle');
 
     if (toggle) {
+      var label = toggle.querySelector('[data-toggle-text]');
       toggle.addEventListener('click', function () {
-        var open = lead.classList.toggle('is-open');
+        var open = leadCard.classList.toggle('is-open');
         toggle.setAttribute('aria-expanded', String(open));
-        if (label) label.textContent = open ? 'Свернуть' : 'Раскрыть новость';
+        if (label) label.textContent = open ? 'Свернуть' : 'Подробности';
       });
     }
   }
@@ -296,6 +373,18 @@
 
       // Календарь открывается на показанном месяце и подсвечивает этот день
       if (calendarLink) calendarLink.href = 'calendar/index.html?date=' + info.iso;
+
+      // Приписка у заголовка: какой день открыт — сегодняшний или отлистанный
+      var note = pick('[data-day-note]');
+      var shift = Math.round((date.getTime() - today.getTime()) / 86400000);
+
+      if (note) {
+        note.textContent = shift === 0 ? ' · сегодня'
+          : shift === 1 ? ' · завтра'
+          : shift === -1 ? ' · вчера'
+          : shift > 0 ? ' · +' + shift + ' дн.'
+          : ' · −' + Math.abs(shift) + ' дн.';
+      }
 
       if (todayBtn) todayBtn.hidden = info.iso === CC.iso(today);
 

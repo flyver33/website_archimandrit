@@ -196,7 +196,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   );
   overflow: hidden;
   /* подложка на случай, если слой с текстурой не отрисуется */
-  background: radial-gradient(105% 105% at 0% -4%, #FFFEF8 0%, #FAF4DE 28%, #F0EBC7 60%, #DFE3B3 84%, #CBD5A0 100%);
+  background: radial-gradient(105% 105% at 0% -4%, #FFFEF8 0%, #FAF4DE 28%, #F1EBC5 60%, #E1E2AF 84%, #CED49B 100%);
 }
 
 /* Бумага: волокно и зерно, смешанные с самим градиентом — фактура «в бумаге»,
@@ -211,7 +211,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   background-image:
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.025 .8' numOctaves='5' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.22' intercept='.78'/%3E%3CfeFuncG type='linear' slope='.30' intercept='.70'/%3E%3CfeFuncB type='linear' slope='.42' intercept='.56'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23f)'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.5' intercept='.5'/%3E%3CfeFuncG type='linear' slope='.5' intercept='.48'/%3E%3CfeFuncB type='linear' slope='.5' intercept='.44'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23g)'/%3E%3C/svg%3E"),
-    radial-gradient(105% 105% at 0% -4%, #FFFEF8 0%, #FAF4DE 28%, #F0EBC7 60%, #DFE3B3 84%, #CBD5A0 100%);
+    radial-gradient(105% 105% at 0% -4%, #FFFEF8 0%, #FAF4DE 28%, #F1EBC5 60%, #E1E2AF 84%, #CED49B 100%);
   background-size: 500px 500px, 320px 320px, cover;
   background-blend-mode: multiply, soft-light, normal;
 }
@@ -260,7 +260,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   line-height: 1.0;
   /* Тёмная зелень: на бежево-шалфейной бумаге держит 5.6:1 даже в самой
      насыщенной части градиента — крупная цитата читается на любом экране */
-  color: #33502A;
+  color: #3C4D30;
   max-width: 21ch;
   text-wrap: balance;
 }
@@ -270,13 +270,13 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-size: var(--fs-small);
   letter-spacing: .06em;
   /* насыщенная часть градиента темнее фона страницы — берём тон потемнее */
-  color: #3D4632;
+  color: #40462F;
 }
 
 /* --------------------------------------------------------------------------
    4. Новости и церковный день
-   Слева лента: одна новость крупно и три строкой. Справа — сегодняшний
-   церковный день с перелистыванием и переходом в полный календарь.
+   Слева лента встреч: ближайшая — крупной карточкой, следующие три строками.
+   Справа — сегодняшний церковный день с перелистыванием.
    -------------------------------------------------------------------------- */
 
 .news {
@@ -286,51 +286,60 @@ body { padding-top: var(--header-space, var(--header-total)); }
   align-items: stretch;
 }
 
-/* Левая половина умещается в экран: крупная новость и три строки — вся
-   высота колонки. Раскрытая часть новости прокручивается внутри себя,
-   поэтому раскрытие не выталкивает список за нижний край. */
+/* Лента: карточка сверху, строки под ней. Крупной становится ближайшая
+   встреча — класс проставляет скрипт, разметка у всех элементов одна. */
 .news__main {
   display: flex;
   flex-direction: column;
-  gap: var(--space-md);
   min-height: 0;
+  /* Колонка живёт по своей высоте: растянутая по строке сетки, она не
+     подросла бы при раскрытии карточки, и последняя строка вылезла бы наружу */
+  align-self: start;
 }
 
 /* Потолок ставится только там, где он не давит: на низком окне колонка
-   растёт свободно, иначе раскрытой новости не осталось бы места */
+   растёт свободно, иначе раскрытой карточке не осталось бы места */
 @media (min-width: 901px) and (min-height: 800px) {
   .news__main { max-height: calc(100svh - var(--header-h-compact) - var(--space-xl)); }
 }
 
-/* --- Крупная новость --- */
+.news-card[hidden] { display: none; }
 
-.news-lead {
-  display: flex;
-  flex-direction: column;
-  min-height: 0;
-  overflow: hidden;
-  padding: clamp(1.25rem, 2vw, 1.75rem);
-  background: var(--surface);
-  border: 1px solid var(--border-soft);
-  border-left: 3px solid var(--accent);
-}
+/* --- Строка ленты (состояние по умолчанию) --- */
 
-.news-lead__meta {
-  display: flex;
-  flex-wrap: wrap;
+.news-card {
+  display: grid;
+  grid-template-columns: 7.5rem minmax(0, 1fr);
+  gap: var(--space-2xs) var(--space-md);
   align-items: baseline;
-  gap: var(--space-sm) var(--space-md);
-  margin-bottom: var(--space-xs);
+  padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-sm);
+  border-top: 1px solid var(--border-soft);
+  border-left: 2px solid transparent;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease),
+              transform var(--dur) var(--ease);
 }
 
-.news-lead__date {
+.news-card:hover {
+  background: var(--surface-sunken);
+  border-left-color: var(--accent);
+  transform: translateX(3px);
+}
+
+/* Строке нужны только дата, название и тип: лид, подробности и кнопка
+   принадлежат крупной карточке */
+.news-card .news-card__text,
+.news-card .news-card__full,
+.news-card .news-card__toggle { display: none; }
+
+.news-card__when {
   font-family: var(--font-display);
   font-size: var(--fs-small);
-  letter-spacing: .08em;
+  letter-spacing: .04em;
   color: var(--gold-deep);
+  white-space: nowrap;
 }
 
-.news-lead__kind {
+.news-card__kind {
   font-family: var(--font-display);
   font-size: var(--fs-eyebrow);
   letter-spacing: .12em;
@@ -338,17 +347,101 @@ body { padding-top: var(--header-space, var(--header-total)); }
   color: var(--ink-soft);
 }
 
-.news-lead__title {
+/* Обёртка мета-строки в строке ленты не рисуется: дата уходит в свою
+   колонку, тип — под название */
+.news-card__meta { display: contents; }
+
+.news-card__when { grid-row: 1; grid-column: 1; }
+
+/* Порядок в разметке — дата, тип, название; читается наоборот:
+   сперва название, тип под ним подписью */
+.news-card__title {
+  grid-row: 1;
+  grid-column: 2;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  line-height: 1.3;
+  color: var(--ink);
+}
+
+.news-card__kind { grid-row: 2; grid-column: 2; }
+
+.news-card__title a { color: inherit; }
+.news-card:hover .news-card__title a { color: var(--brand); }
+
+.news-card__status { display: none; }
+
+/* --- Ближайшая встреча: крупная карточка --- */
+
+.news-card--lead {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  min-height: 0;
+  overflow: hidden;
+  margin-bottom: var(--space-md);
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-left: 3px solid var(--accent);
+  transform: none;
+}
+
+.news-card--lead:hover { background: var(--surface); transform: none; }
+
+/* Надпись «Ближайшая встреча — послезавтра»: она и отвечает на вопрос,
+   что в ленте происходит сейчас */
+.news-card--lead .news-card__status {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xs);
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+.news-card--lead .news-card__status::before {
+  content: "";
+  width: 1.75rem;
+  height: 2px;
+  background: var(--gold);
+}
+
+.news-card--lead .news-card__status[hidden] { display: none; }
+
+.news-card--lead .news-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-sm) var(--space-md);
+  margin-bottom: var(--space-2xs);
+}
+
+.news-card--lead .news-card__when {
+  font-size: var(--fs-body);
+  letter-spacing: .02em;
+  color: var(--ink-body);
+  white-space: normal;
+}
+
+.news-card--lead .news-card__title {
+  font-family: var(--font-display);
   font-size: clamp(1.3rem, 1.05rem + 1vw, 1.75rem);
+  font-weight: 400;
   line-height: var(--lh-tight);
+  color: var(--brand);
   margin-bottom: var(--space-xs);
   max-width: 22ch;
 }
 
-.news-lead__title a { color: inherit; }
-.news-lead__title a:hover { color: var(--accent); }
+.news-card--lead .news-card__title a:hover { color: var(--accent); }
 
-.news-lead__text {
+.news-card--lead .news-card__text {
+  display: block;
   font-size: var(--fs-body);
   line-height: var(--lh-lead);
   color: var(--ink-soft);
@@ -356,39 +449,42 @@ body { padding-top: var(--header-space, var(--header-total)); }
 }
 
 /* Раскрытие: строка сетки растёт с 0fr до 1fr — переход идёт по высоте
-   без замера скриптом. Без JS часть открыта: содержимое не пропадает. */
-.js .news-lead__full {
+   без замера скриптом. Без JS подробности видны сразу. */
+.news-card--lead .news-card__full { display: block; }
+
+.js .news-card--lead .news-card__full {
   display: grid;
   grid-template-rows: 0fr;
   min-height: 0;
   transition: grid-template-rows var(--dur-slow) var(--ease);
 }
 
-.js .news-lead.is-open .news-lead__full { grid-template-rows: 1fr; }
+.js .news-card--lead.is-open .news-card__full { grid-template-rows: 1fr; }
 
-.js .news-lead__full-inner { overflow: hidden; min-height: 0; }
+.js .news-card--lead .news-card__full-inner { overflow: hidden; min-height: 0; }
 
-/* Раскрытая новость не выталкивает список из экрана: когда места не хватает,
-   прокручивается сама раскрытая часть */
-.js .news-lead.is-open .news-lead__full-inner { overflow-y: auto; min-height: 7rem; }
+/* Раскрытая карточка не выталкивает список из экрана: когда места не хватает,
+   прокручиваются сами подробности */
+/* Нижняя граница — чтобы на тесном экране подробности не схлопнулись в ноль;
+   выше неё она не действует и лишнего отступа под текстом не появляется */
+.js .news-card--lead.is-open .news-card__full-inner { overflow-y: auto; min-height: 4rem; }
 
-.news-lead__full-inner > * + * { margin-top: var(--space-xs); }
-.news-lead__full-inner p { font-size: var(--fs-body); color: var(--ink-body); max-width: 52ch; }
-.news-lead__full-inner > :first-child { margin-top: var(--space-sm); }
+.news-card__full-inner > * + * { margin-top: var(--space-xs); }
+.news-card__full-inner > :first-child { margin-top: var(--space-sm); }
 
-.news-lead__place {
+.news-card__place {
   display: flex;
   align-items: baseline;
   gap: var(--space-sm);
   font-size: var(--fs-small);
-  color: var(--ink-soft) !important;
+  color: var(--ink-soft);
 }
 
-.news-lead__place svg { flex: none; align-self: flex-start; margin-top: .1em; }
+.news-card__place svg { flex: none; align-self: flex-start; margin-top: .1em; }
 
-.news-lead__more { font-size: var(--fs-small); }
+.news-card__more { font-size: var(--fs-small); }
 
-.news-lead__toggle {
+.news-card--lead .news-card__toggle {
   display: inline-flex;
   align-items: center;
   gap: var(--space-xs);
@@ -403,54 +499,15 @@ body { padding-top: var(--header-space, var(--header-total)); }
   color: var(--brand);
 }
 
-.news-lead__toggle:hover { color: var(--accent); }
-.news-lead__toggle svg { transition: transform var(--dur) var(--ease); }
-.news-lead__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
+.news-card__toggle:hover { color: var(--accent); }
+.news-card__toggle svg { transition: transform var(--dur) var(--ease); }
+.news-card__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
 
-/* --- Три новости строкой --- */
+/* Список строк не ужимается: при нехватке места сжимается крупная карточка */
+.news-card:not(.news-card--lead) { flex: none; }
 
-/* Список не ужимается: при нехватке места сжимается раскрытая новость */
-.news-list { flex: none; border-top: 1px solid var(--border-soft); }
-.news-list li + li { border-top: 1px solid var(--border-soft); }
-
-.news-row {
-  display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr);
-  gap: var(--space-2xs) var(--space-md);
-  padding: var(--space-sm) var(--space-md) var(--space-sm) var(--space-sm);
-  border-left: 2px solid transparent;
-  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease),
-              transform var(--dur) var(--ease);
-}
-
-.news-row:hover {
-  background: var(--surface-sunken);
-  border-left-color: var(--accent);
-  transform: translateX(3px);
-}
-
-.news-row__date {
-  font-family: var(--font-display);
-  font-size: var(--fs-small);
-  letter-spacing: .08em;
-  color: var(--gold-deep);
-}
-
-.news-row__title {
-  font-family: var(--font-display);
-  font-weight: 700;
-  font-size: 1.0625rem;
-  line-height: 1.3;
-  color: var(--ink);
-}
-
-.news-row:hover .news-row__title { color: var(--brand); }
-
-.news-row__kind {
-  grid-column: 2;
-  font-size: var(--fs-small);
-  color: var(--ink-soft);
-}
+/* Последняя строка ленты закрывает список линией — иначе он обрывается */
+.news__main > .news-card:last-child { border-bottom: 1px solid var(--border-soft); }
 
 /* --- Церковный день --- */
 
@@ -479,6 +536,10 @@ body { padding-top: var(--header-space, var(--header-total)); }
   text-transform: uppercase;
   color: var(--ink-soft);
 }
+
+/* Приписка «сегодня» / «+3 дн.» — тем же кеглем, но золотом: она отвечает,
+   какой именно день сейчас в карточке */
+.church-day__note { color: var(--gold-deep); }
 
 .church-day__nav { display: flex; align-items: center; gap: var(--space-2xs); }
 
