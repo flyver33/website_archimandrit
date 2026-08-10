@@ -220,56 +220,124 @@
     }
   }
 
-  /* --- Мероприятия: список выбирает событие, оно показывается крупно ------ */
+  /* --- Крупная новость: раскрытие ---------------------------------------- */
 
-  var tablist = document.querySelector('.events__list');
+  // Без скрипта раскрытая часть просто видна: CSS прячет её только под .js
+  var lead = document.querySelector('.news-lead');
 
-  if (tablist) {
-    var tabs = Array.prototype.slice.call(tablist.querySelectorAll('[role="tab"]'));
+  if (lead) {
+    var toggle = lead.querySelector('.news-lead__toggle');
+    var label = toggle && toggle.querySelector('[data-toggle-text]');
 
-    var select = function (tab, moveFocus) {
-      tabs.forEach(function (t) {
-        var current = t === tab;
-        t.setAttribute('aria-selected', String(current));
-        t.tabIndex = current ? 0 : -1;
-        var p = document.getElementById(t.getAttribute('aria-controls'));
-        p.hidden = !current;
-        if (current && !reduceMotion) {
-          p.classList.remove('is-entering');
-          void p.offsetWidth; // перезапуск анимации
-          p.classList.add('is-entering');
-        }
+    if (toggle) {
+      toggle.addEventListener('click', function () {
+        var open = lead.classList.toggle('is-open');
+        toggle.setAttribute('aria-expanded', String(open));
+        if (label) label.textContent = open ? 'Свернуть' : 'Раскрыть новость';
+      });
+    }
+  }
+
+  /* --- Церковный день: карточка с перелистыванием -------------------------- */
+
+  var dayCard = document.getElementById('church-day');
+
+  if (dayCard && window.ChurchCalendar) {
+    var CC = window.ChurchCalendar;
+    var today = CC.today();
+    var shown = today;
+
+    var body = dayCard.querySelector('[data-day-body]');
+    var todayBtn = dayCard.querySelector('[data-day-today]');
+    var calendarLink = dayCard.querySelector('[data-day-calendar]');
+    var pick = function (sel) { return dayCard.querySelector(sel); };
+
+    var draw = function (date, animate) {
+      var info = CC.day(date);
+
+      pick('[data-day-num]').textContent = info.dayNum;
+      pick('[data-day-month]').textContent = info.monthName;
+      pick('[data-day-weekday]').textContent = info.weekday;
+      pick('[data-day-old]').textContent = info.oldStyle + ' по старому стилю';
+      pick('[data-day-week]').textContent = info.tone ? info.week + ', ' + info.tone : info.week;
+
+      var feast = pick('[data-day-feast]');
+      feast.textContent = info.title;
+      feast.hidden = !info.title;
+      feast.classList.toggle('church-day__feast--great', info.rank > 0);
+
+      // Первую память показывает заголовок — в списке идут остальные
+      var saints = pick('[data-day-saints]');
+      saints.innerHTML = '';
+      info.items.slice(1).forEach(function (t) {
+        var li = document.createElement('li');
+        li.textContent = t;
+        saints.appendChild(li);
       });
 
-      if (moveFocus) tab.focus();
+      var fast = pick('[data-day-fast]');
+      fast.textContent = info.fast.text;
+      fast.className = 'church-day__fast' +
+        (info.fast.level === 'strict' ? ' church-day__fast--strict' : '') +
+        (info.fast.level === 'none' || info.fast.level === 'solid' ? ' church-day__fast--none' : '');
 
-      // На узком экране крупная карточка стоит над списком — подводим её к глазам
-      if (window.matchMedia('(max-width: 900px)').matches) {
-        var panel = document.getElementById(tab.getAttribute('aria-controls'));
-        var top = panel.getBoundingClientRect().top + window.scrollY - 100;
-        window.scrollTo({ top: top, behavior: reduceMotion ? 'auto' : 'smooth' });
+      // Ближайший великий праздник — подсказка и переход к нему одним нажатием
+      var jump = pick('[data-day-jump]');
+      var ahead = CC.nextGreat(date);
+
+      if (jump && ahead) {
+        pick('[data-day-next]').textContent =
+          ahead.dayNum + ' ' + ahead.monthName + ' — ' + ahead.title;
+        jump.dataset.dayTarget = ahead.iso;
+        jump.hidden = false;
+      } else if (jump) {
+        jump.hidden = true;
+      }
+
+      // Календарь открывается на показанном месяце и подсвечивает этот день
+      if (calendarLink) calendarLink.href = 'calendar/index.html?date=' + info.iso;
+
+      if (todayBtn) todayBtn.hidden = info.iso === CC.iso(today);
+
+      if (animate && !reduceMotion && body) {
+        body.classList.remove('is-entering');
+        void body.offsetWidth; // перезапуск анимации
+        body.classList.add('is-entering');
       }
     };
 
-    tabs.forEach(function (tab) {
-      tab.addEventListener('click', function () { select(tab, false); });
-    });
+    dayCard.addEventListener('click', function (e) {
+      var step = e.target.closest('[data-day-step]');
+      if (step) {
+        shown = CC.addDays(shown, parseInt(step.dataset.dayStep, 10));
+        draw(shown, true);
+        return;
+      }
 
-    tablist.addEventListener('keydown', function (e) {
-      var i = tabs.indexOf(document.activeElement);
-      if (i === -1) return;
+      if (e.target.closest('[data-day-today]')) {
+        shown = today;
+        draw(shown, true);
+        return;
+      }
 
-      var next = null;
-      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') next = tabs[(i + 1) % tabs.length];
-      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') next = tabs[(i - 1 + tabs.length) % tabs.length];
-      if (e.key === 'Home') next = tabs[0];
-      if (e.key === 'End') next = tabs[tabs.length - 1];
-
-      if (next) {
-        e.preventDefault();
-        select(next, true);
+      var jumpBtn = e.target.closest('[data-day-jump]');
+      if (jumpBtn && jumpBtn.dataset.dayTarget) {
+        var p = jumpBtn.dataset.dayTarget.split('-');
+        shown = CC.utc(parseInt(p[0], 10), parseInt(p[1], 10), parseInt(p[2], 10));
+        draw(shown, true);
       }
     });
+
+    // Стрелки клавиатуры листают дни, когда фокус внутри карточки
+    dayCard.addEventListener('keydown', function (e) {
+      if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+      if (!e.target.closest('[data-day-step]')) return;
+      e.preventDefault();
+      shown = CC.addDays(shown, e.key === 'ArrowRight' ? 1 : -1);
+      draw(shown, true);
+    });
+
+    draw(shown, false);
   }
 
   /* --- Видеозаписи: карусель --------------------------------------------- */

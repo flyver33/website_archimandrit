@@ -17,7 +17,7 @@
 
 const fs = require('fs');
 const path = require('path');
-const { SECTIONS, MENU, EVENTS, BOOKS, VIDEO, BIO } = require('./content.js');
+const { SECTIONS, MENU, EVENTS, BOOKS, VIDEO, BIO, EXTRA_PAGES } = require('./content.js');
 
 const ROOT = path.join(__dirname, '..');
 const UP = '../'; // все страницы лежат на один уровень ниже корня
@@ -110,7 +110,8 @@ function contactItems(indent) {
 }
 
 function footer() {
-  const links = SECTIONS.map((s) => `          <li><a href="${UP}${s.dir}/index.html">${s.title}</a></li>`).join('\n');
+  const links = SECTIONS.concat(EXTRA_PAGES)
+    .map((s) => `          <li><a href="${UP}${s.dir}/index.html">${s.title}</a></li>`).join('\n');
 
   return `
 <!-- ================================================ Подвал -->

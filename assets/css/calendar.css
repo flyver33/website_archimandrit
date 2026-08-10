@@ -1,0 +1,250 @@
+/* ==========================================================================
+   Полный церковный календарь: сетка месяца и карточка выбранного дня
+   ========================================================================== */
+
+.calendar {
+  display: grid;
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  gap: clamp(2rem, 4vw, 4rem);
+  align-items: start;
+}
+
+/* --- Управление месяцем --- */
+
+.calendar__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-bottom: var(--space-sm);
+  border-bottom: 1px solid var(--border-hair);
+  margin-bottom: var(--space-md);
+}
+
+.calendar__month {
+  font-family: var(--font-display);
+  font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem);
+  color: var(--brand);
+  line-height: var(--lh-tight);
+}
+
+.calendar__nav { display: flex; align-items: center; gap: var(--space-2xs); }
+
+.calendar__arrow {
+  border: 1px solid var(--border);
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.calendar__today {
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--brand);
+  padding: 0 var(--space-xs);
+}
+
+.calendar__today:hover { color: var(--accent); }
+
+/* --- Сетка --- */
+
+.calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--border-soft);
+  border: 1px solid var(--border-soft);
+}
+
+.calendar__weekday {
+  background: var(--surface-sunken);
+  padding: var(--space-xs);
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.calendar__cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  min-height: 5.5rem;
+  padding: var(--space-xs);
+  background: var(--surface);
+  text-align: left;
+  transition: background var(--dur) var(--ease);
+}
+
+.calendar__cell--empty { background: var(--bg); }
+
+.calendar__cell:hover { background: var(--surface-sunken); }
+
+.calendar__cell[aria-pressed="true"] {
+  background: var(--surface-sunken);
+  box-shadow: inset 0 0 0 2px var(--accent);
+}
+
+.calendar__num {
+  font-family: var(--font-display);
+  font-size: 1.125rem;
+  color: var(--ink);
+}
+
+/* Воскресенье и великие праздники — красная строка календаря, у нас золотая */
+.calendar__cell--sunday .calendar__num,
+.calendar__cell--great .calendar__num { color: var(--gold-deep); font-weight: 700; }
+
+.calendar__cell--today .calendar__num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  background: var(--accent);
+  color: var(--on-accent);
+  border-radius: var(--radius-pill);
+}
+
+.calendar__label {
+  font-size: .8125rem;
+  line-height: 1.25;
+  color: var(--ink-soft);
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+
+.calendar__cell--great .calendar__label { color: var(--brand); }
+
+/* Постный день помечается полосой у нижнего края — цвет ячейки не меняем */
+.calendar__cell--fast { border-bottom: 2px solid var(--gold); }
+.calendar__cell--strict { border-bottom: 2px solid var(--accent); }
+
+.calendar__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm) var(--space-lg);
+  margin-top: var(--space-md);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.calendar__legend span { display: inline-flex; align-items: center; gap: var(--space-xs); }
+.calendar__legend i { width: 1.5rem; height: 2px; background: var(--gold); }
+.calendar__legend i.is-strict { background: var(--accent); }
+
+/* --- Карточка дня --- */
+
+.calendar__day {
+  position: sticky;
+  top: calc(var(--header-h-compact) + 1rem);
+  padding: clamp(1.25rem, 2vw, 1.75rem);
+  background: var(--surface);
+  border: 1px solid var(--border-soft);
+  border-top: 3px solid var(--gold);
+}
+
+.calendar__day-date {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-sm);
+}
+
+.calendar__day-date b {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(3rem, 2rem + 3vw, 4.5rem);
+  line-height: .85;
+  color: var(--gold-deep);
+}
+
+.calendar__day-date span { font-size: var(--fs-small); line-height: 1.35; color: var(--ink-soft); }
+
+.calendar__day-old,
+.calendar__day-week {
+  margin-top: var(--space-xs);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+}
+
+.calendar__day-week { color: var(--ink-body); }
+
+.calendar__day-feast {
+  margin-top: var(--space-md);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(1.15rem, 1rem + .7vw, 1.5rem);
+  line-height: var(--lh-snug);
+  color: var(--brand);
+}
+
+.calendar__day-feast--great { padding-top: var(--space-sm); border-top: 2px solid var(--gold); }
+
+.calendar__day-saints { margin-top: var(--space-sm); display: grid; gap: var(--space-2xs); }
+
+.calendar__day-saints li {
+  position: relative;
+  padding-left: var(--space-md);
+  font-size: var(--fs-small);
+  line-height: var(--lh-lead);
+  color: var(--ink-body);
+}
+
+.calendar__day-saints li::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: .65em;
+  width: 6px;
+  height: 1px;
+  background: var(--gold);
+}
+
+.calendar__day-fast {
+  margin-top: var(--space-md);
+  padding: var(--space-xs) var(--space-sm);
+  background: var(--surface-sunken);
+  border-left: 2px solid var(--border);
+  font-size: var(--fs-small);
+  color: var(--ink-body);
+}
+
+.calendar__day-fast--strict { border-left-color: var(--accent); }
+.calendar__day-fast--none { border-left-color: var(--gold); }
+
+.calendar__day-links { margin-top: var(--space-lg); font-size: var(--fs-small); }
+
+/* Смена дня — проявление, а не подмена */
+.calendar__day.is-entering { animation: calendar-day-in 320ms var(--ease) both; }
+
+@keyframes calendar-day-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .calendar__day.is-entering { animation: none; }
+}
+
+.calendar__note {
+  margin-top: var(--space-xl);
+  font-size: var(--fs-small);
+  color: var(--ink-soft);
+  max-width: 70ch;
+}
+
+@media (max-width: 1024px) {
+  .calendar { grid-template-columns: 1fr; }
+  .calendar__day { position: static; }
+}
+
+@media (max-width: 640px) {
+  .calendar__cell { min-height: 3.5rem; }
+  .calendar__label { display: none; }
+}
