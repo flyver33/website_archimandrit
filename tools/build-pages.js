@@ -37,7 +37,7 @@ function head({ title, description, css }) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${title}</title>
 <meta name="description" content="${description}">
-<meta name="theme-color" content="#FFFDF8">
+<meta name="theme-color" content="#FAF6EC">
 
 <link rel="icon" href="${UP}assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="${UP}assets/fonts/arsenal-400-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
@@ -94,6 +94,21 @@ ${items}
 `;
 }
 
+/* Контакты подвала: приходы и авторские каналы. Порядок фиксирован —
+   сначала сайты приходов, потом мессенджеры. */
+const CONTACTS = [
+  { title: 'Храм Покрова Пресвятой Богородицы', href: 'https://hrampokrov.ru/' },
+  { title: 'Подворье Оптиной пустыни в Москве', href: 'http://optina-msk.ru/' },
+  { title: 'MAX', href: 'https://max.ru/melkhisedek_artyukhin_official' },
+  { title: 'Telegram', href: 'https://t.me/melkhisedek_artyukhin_official' },
+];
+
+function contactItems(indent) {
+  return CONTACTS.map((c) =>
+    `${indent}<li><a href="${c.href}" target="_blank" rel="noopener">${c.title}</a></li>`
+  ).join('\n');
+}
+
 function footer() {
   const links = SECTIONS.map((s) => `          <li><a href="${UP}${s.dir}/index.html">${s.title}</a></li>`).join('\n');
 
@@ -115,8 +130,16 @@ function footer() {
       </div>
 
       <div class="footer__col">
+        <h3>Разделы</h3>
         <ul>
 ${links}
+        </ul>
+      </div>
+
+      <div class="footer__col footer__col--contacts">
+        <h3>Контакты</h3>
+        <ul>
+${contactItems('          ')}
         </ul>
       </div>
     </div>
