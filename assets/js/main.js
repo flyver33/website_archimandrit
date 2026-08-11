@@ -232,8 +232,6 @@
       'июля', 'августа', 'сентября', 'октября', 'ноября', 'декабря'];
     var MONTHS_SHORT = ['янв', 'фев', 'мар', 'апр', 'мая', 'июн',
       'июл', 'авг', 'сен', 'окт', 'ноя', 'дек'];
-    var WEEKDAYS = ['воскресенье', 'понедельник', 'вторник', 'среда',
-      'четверг', 'пятница', 'суббота'];
     var WEEKDAYS_SHORT = ['вс', 'пн', 'вт', 'ср', 'чт', 'пт', 'сб'];
 
     var startOfDay = function (d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); };
@@ -245,27 +243,6 @@
     var parseDate = function (s) {
       var m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})/.exec(s || '');
       return m ? new Date(+m[1], +m[2] - 1, +m[3], +m[4], +m[5]) : null;
-    };
-
-    var plural = function (n, one, few, many) {
-      var d10 = n % 10;
-      var d100 = n % 100;
-      if (d10 === 1 && d100 !== 11) return one;
-      if (d10 >= 2 && d10 <= 4 && (d100 < 10 || d100 >= 20)) return few;
-      return many;
-    };
-
-    var relative = function (days) {
-      if (days <= 0) return 'сегодня';
-      if (days === 1) return 'завтра';
-      if (days === 2) return 'послезавтра';
-      if (days < 7) return 'через ' + days + ' ' + plural(days, 'день', 'дня', 'дней');
-      if (days < 28) {
-        var w = Math.round(days / 7);
-        return 'через ' + w + ' ' + plural(w, 'неделю', 'недели', 'недель');
-      }
-      var mo = Math.round(days / 30);
-      return 'через ' + mo + ' ' + plural(mo, 'месяц', 'месяца', 'месяцев');
     };
 
     var cards = Array.prototype.slice.call(feed.children);
@@ -280,39 +257,50 @@
 
     cards.forEach(function (c) { c.hidden = shownCards.indexOf(c) === -1; });
 
-    shownCards.forEach(function (card, i) {
-      var d = parseDate(card.dataset.date);
-      var days = Math.round((startOfDay(d) - todayLocal) / 86400000);
-      var when = card.querySelector('[data-when]');
-      var status = card.querySelector('[data-status]');
+    // Крупной становится выбранная встреча: у неё дата пишется полностью,
+    // у строк — коротко, с днём недели. Порядок в ленте тот же, только
+    // выбранная поднимается наверх.
+    var setLead = function (lead) {
+      shownCards.forEach(function (card) {
+        var d = parseDate(card.dataset.date);
+        var isLead = card === lead;
+        var when = card.querySelector('[data-when]');
+        var time = card.querySelector('[data-time]');
 
-      if (i === 0) {
-        card.classList.add('news-card--lead');
-        when.textContent = d.getDate() + ' ' + MONTHS[d.getMonth()] + ', ' +
-          WEEKDAYS[d.getDay()] + ', ' + d.getHours() + ':' + pad(d.getMinutes());
-        status.textContent = days < 0
-          ? 'Прошедшая встреча'
-          : 'Ближайшая встреча — ' + relative(days);
-        status.hidden = false;
-      } else {
-        when.textContent = d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()] + ', ' + WEEKDAYS_SHORT[d.getDay()];
-        status.hidden = true;
-      }
-    });
+        card.classList.toggle('news-card--lead', isLead);
 
-    // Раскрытие — только у крупной карточки. Без скрипта подробности видны
-    // сразу: CSS прячет их лишь под .js
-    var leadCard = shownCards[0];
-    var toggle = leadCard && leadCard.querySelector('.news-card__toggle');
+        if (isLead) card.setAttribute('aria-current', 'true');
+        else card.removeAttribute('aria-current');
 
-    if (toggle) {
-      var label = toggle.querySelector('[data-toggle-text]');
-      toggle.addEventListener('click', function () {
-        var open = leadCard.classList.toggle('is-open');
-        toggle.setAttribute('aria-expanded', String(open));
-        if (label) label.textContent = open ? 'Свернуть' : 'Подробности';
+        when.textContent = isLead
+          ? d.getDate() + ' ' + MONTHS[d.getMonth()]
+          : d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()] + ', ' + WEEKDAYS_SHORT[d.getDay()];
+
+        if (time) time.textContent = d.getHours() + ':' + pad(d.getMinutes());
       });
-    }
+
+      var order = [lead]
+        .concat(shownCards.filter(function (c) { return c !== lead; }))
+        .concat(cards.filter(function (c) { return shownCards.indexOf(c) === -1; }));
+
+      order.forEach(function (c) { feed.appendChild(c); });
+    };
+
+    setLead(shownCards[0]);
+
+    // Нажатие на строку не уводит со страницы: встреча поднимается в крупную
+    // карточку, а на её страницу ведёт уже сама карточка. Фокус переходит
+    // на заголовок — с клавиатуры следующий Enter открывает страницу встречи.
+    feed.addEventListener('click', function (e) {
+      var card = e.target.closest('.news-card');
+      if (!card || card.classList.contains('news-card--lead')) return;
+
+      e.preventDefault();
+      setLead(card);
+
+      var title = card.querySelector('.news-card__title a');
+      if (title) title.focus({ preventScroll: true });
+    });
   }
 
   /* --- Церковный день: карточка с перелистыванием -------------------------- */
@@ -338,6 +326,17 @@
       pick('[data-day-old]').textContent = info.oldStyle + ' по старому стилю';
       pick('[data-day-week]').textContent = info.tone ? info.week + ', ' + info.tone : info.week;
 
+      // Образ дня: праздничная икона, а в будни — образ дня седмицы.
+      // Путь к папке лежит в разметке: страницы находятся на разной глубине.
+      var image = pick('[data-day-image]');
+
+      if (image) {
+        var base = dayCard.dataset.imageBase || '';
+        image.hidden = false;
+        image.src = base + info.image + '.jpg';
+        image.alt = info.title || 'Образ дня';
+      }
+
       var feast = pick('[data-day-feast]');
       feast.textContent = info.title;
       feast.hidden = !info.title;
@@ -358,21 +357,11 @@
         (info.fast.level === 'strict' ? ' church-day__fast--strict' : '') +
         (info.fast.level === 'none' || info.fast.level === 'solid' ? ' church-day__fast--none' : '');
 
-      // Ближайший великий праздник — подсказка и переход к нему одним нажатием
-      var jump = pick('[data-day-jump]');
-      var ahead = CC.nextGreat(date);
-
-      if (jump && ahead) {
-        pick('[data-day-next]').textContent =
-          ahead.dayNum + ' ' + ahead.monthName + ' — ' + ahead.title;
-        jump.dataset.dayTarget = ahead.iso;
-        jump.hidden = false;
-      } else if (jump) {
-        jump.hidden = true;
-      }
-
       // Календарь открывается на показанном месяце и подсвечивает этот день
       if (calendarLink) calendarLink.href = 'calendar/index.html?date=' + info.iso;
+
+      var sourceLink = pick('[data-day-source]');
+      if (sourceLink) sourceLink.href = info.source;
 
       // Приписка у заголовка: какой день открыт — сегодняшний или отлистанный
       var note = pick('[data-day-note]');
@@ -405,14 +394,6 @@
 
       if (e.target.closest('[data-day-today]')) {
         shown = today;
-        draw(shown, true);
-        return;
-      }
-
-      var jumpBtn = e.target.closest('[data-day-jump]');
-      if (jumpBtn && jumpBtn.dataset.dayTarget) {
-        var p = jumpBtn.dataset.dayTarget.split('-');
-        shown = CC.utc(parseInt(p[0], 10), parseInt(p[1], 10), parseInt(p[2], 10));
         draw(shown, true);
       }
     });

@@ -76,6 +76,10 @@
     var rest = info.items.slice(1);
 
     card.innerHTML =
+      // Образ дня. Страница лежит в подпапке — путь идёт на уровень выше.
+      // Картинки нет — фигура убирает себя, карточка остаётся целой.
+      '<figure class="calendar__day-icon"><img src="../assets/img/feasts/' + info.image +
+        '.jpg" alt="" loading="lazy" decoding="async" onerror="this.parentNode.hidden = true"></figure>' +
       '<p class="calendar__day-date"><b>' + info.dayNum + '</b><span>' +
         info.monthName + ' ' + info.year + '<br>' + info.weekday +
       '</span></p>' +
