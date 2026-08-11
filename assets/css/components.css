@@ -18,11 +18,15 @@
   right: 0;
   z-index: var(--z-header);
   background: var(--bg);
-  border-bottom: 1px solid transparent;
-  transition: border-color var(--dur-header) var(--ease-header), background var(--dur-header) var(--ease-header);
+  /* Разделитель — тень, а не бордюр: бордюр добавлял шапке лишний пиксель
+     собственного фона, и на стыке с первым экраном он читался белой полоской
+     во всю ширину. Тень ничего не занимает и в развёрнутом состоянии
+     полностью прозрачна. */
+  box-shadow: 0 1px 0 transparent;
+  transition: box-shadow var(--dur-header) var(--ease-header), background var(--dur-header) var(--ease-header);
 }
 
-.header.is-stuck { border-bottom-color: var(--border-soft); }
+.header.is-stuck { box-shadow: 0 1px 0 var(--border-soft); }
 
 /* Кадр замера: скрипт снимает уплотнение, чтобы прочитать высоту развёрнутой
    шапки. Без остановки переходов он прочитал бы высоту на середине анимации —
@@ -62,6 +66,19 @@ body { padding-top: var(--header-space, var(--header-total)); }
   height: var(--ornament-h);
   overflow: hidden;
   pointer-events: none;
+  /* Подложка ленты — переход от фона шапки к верхней строке бумаги первого
+     экрана: сверху лента ещё шапка, снизу уже первый экран. Горизонтальный
+     слой повторяет тона хиро-градиента по ширине, поэтому линии стыка нет
+     ни слева (светлая бумага), ни справа (зеленоватая). */
+  background:
+    linear-gradient(to bottom, var(--bg) 0%, rgba(250, 245, 233, .82) 38%, rgba(250, 245, 233, 0) 100%),
+    linear-gradient(to right,
+      var(--paper-0) 0%, var(--paper-1) 25%, var(--paper-2) 50%,
+      var(--paper-3) 75%, var(--paper-4) 100%);
+  /* Высота ленты дробная (vw в clamp), и на стыке оставался волосок фона
+     шапки в полпикселя — светлая линия во всю ширину. Лента заходит на
+     первый экран на пиксель и закрывает его собой. */
+  margin-bottom: -1px;
   transition: height var(--dur-header) var(--ease-header);
 }
 
@@ -69,7 +86,12 @@ body { padding-top: var(--header-space, var(--header-total)); }
   display: block;
   height: var(--ornament-h);
   background: url("../img/pattern.webp") repeat-x center center / auto 100%;
-  opacity: 1;
+  /* Лента — продолжение шапки, а не отдельная тёмная полоса поперёк экрана.
+     Мозаика непрозрачна и темнее бумаги, поэтому её приглушаем: часть
+     подложки проступает сквозь узор, и он ложится в тон шапке и первому
+     экрану, оставаясь читаемым. */
+  opacity: .68;
+  filter: saturate(1.22) brightness(1.14) contrast(.9);
   /* появляется, когда высота уже развернулась */
   transition: opacity 220ms linear calc(var(--dur-header) * .65);
 }
@@ -206,14 +228,21 @@ body { padding-top: var(--header-space, var(--header-total)); }
   position: absolute;
   inset: 0;
   pointer-events: none;
-  /* Волокно (тёплые тени) + зерно (мягкие блики) + сам градиент:
-     фактура живёт внутри бумаги, а не лежит серой плёнкой сверху */
+  /* Слои сверху вниз: виньетка по краям, косой свет от окна, вержеры (частые
+     горизонтальные рубчики верже), облачность отлива (крупные пятна разной
+     плотности), волокно (тёплые тени), зерно (мягкие блики) и сам градиент.
+     Все смешаны с градиентом, а не лежат серой плёнкой сверху: фактура живёт
+     внутри бумаги. */
   background-image:
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.025 .8' numOctaves='5' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.22' intercept='.78'/%3E%3CfeFuncG type='linear' slope='.30' intercept='.70'/%3E%3CfeFuncB type='linear' slope='.42' intercept='.56'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23f)'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.5' intercept='.5'/%3E%3CfeFuncG type='linear' slope='.5' intercept='.48'/%3E%3CfeFuncB type='linear' slope='.5' intercept='.44'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23g)'/%3E%3C/svg%3E"),
+    radial-gradient(118% 100% at 40% 32%, rgba(255, 255, 255, 0) 42%, rgba(86, 78, 42, .13) 100%),
+    linear-gradient(104deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, .16) 30%, rgba(255, 255, 255, 0) 52%),
+    repeating-linear-gradient(to bottom, rgba(84, 76, 44, .07) 0 1px, rgba(255, 255, 255, 0) 1px 6px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.009' numOctaves='3' seed='23' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.12' intercept='.88'/%3E%3CfeFuncG type='linear' slope='.14' intercept='.86'/%3E%3CfeFuncB type='linear' slope='.18' intercept='.82'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='700' height='700' filter='url(%23c)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.025 .8' numOctaves='5' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.34' intercept='.66'/%3E%3CfeFuncG type='linear' slope='.42' intercept='.58'/%3E%3CfeFuncB type='linear' slope='.56' intercept='.44'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23f)'/%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.72' intercept='.4'/%3E%3CfeFuncG type='linear' slope='.72' intercept='.38'/%3E%3CfeFuncB type='linear' slope='.72' intercept='.34'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23g)'/%3E%3C/svg%3E"),
     radial-gradient(105% 105% at 0% -4%, #FFFDF4 0%, #FBEFCF 26%, #F2DCA6 56%, #E5C381 80%, #D8AE64 100%);
-  background-size: 500px 500px, 320px 320px, cover;
-  background-blend-mode: multiply, soft-light, normal;
+  background-size: cover, cover, auto, 700px 700px, 500px 500px, 320px 320px, cover;
+  background-blend-mode: multiply, soft-light, multiply, multiply, multiply, soft-light, normal;
 }
 
 .hero__photo {
@@ -241,7 +270,8 @@ body { padding-top: var(--header-space, var(--header-total)); }
   padding: 0 var(--gutter) clamp(3rem, 11vh, 7rem);
 }
 
-/* Кавычки — декор: на золотой бумаге золото читается только глубокое */
+/* Кавычки — декор: на золотой бумаге золото читается только глубокое, и оно
+   на полтона светлее самой цитаты — сперва читается текст, знак при нём */
 .hero__marks {
   display: block;
   font-family: var(--font-text);
@@ -258,9 +288,10 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 1rem + 2.4vw, 2.875rem);
   line-height: 1.0;
-  /* Тёмная олива: на золотой бумаге держит 4.7:1 даже в самой насыщенной
-     части градиента — крупная цитата читается на любом экране */
-  color: #3C4828;
+  /* Тёмное золото: цитата уходит от оливы навигации и держит одну линию с
+     орнаментом ленты. На золотой бумаге даёт 4.3:1 даже в самой насыщенной
+     части градиента — для этого кегля запас есть (крупный текст: порог 3:1) */
+  color: #63440E;
   max-width: 21ch;
   text-wrap: balance;
 }
@@ -269,8 +300,9 @@ body { padding-top: var(--header-space, var(--header-total)); }
   margin-top: var(--space-md);
   font-size: var(--fs-small);
   letter-spacing: .06em;
-  /* насыщенная часть градиента темнее фона страницы — берём тон потемнее */
-  color: #40462F;
+  /* Ссылка на стих идёт следом за цитатой — тон тёплый, а не зелёный,
+     иначе подпись спорит с ней по цвету */
+  color: #4A4130;
 }
 
 /* --------------------------------------------------------------------------
