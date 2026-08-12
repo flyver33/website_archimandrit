@@ -206,7 +206,8 @@
              Образ дня подбирается по празднику, а в будни — по кругу
              седмицы: у каждого дня свой день недели посвящён своей памяти. -->
         <aside class="church-day" id="church-day" aria-labelledby="church-day-eyebrow"
-               data-image-base="assets/img/feasts/">
+               data-image-base="assets/img/feasts/"
+               data-days-base="assets/data/days/">
           <div class="church-day__head">
             <!-- Приписка говорит, какой день сейчас открыт: сегодняшний или
                  на сколько дней отлистан -->
@@ -225,24 +226,28 @@
           </div>
 
           <div class="church-day__body" data-day-body aria-live="polite">
-            <!-- Образ дня. Не отдался — картинка убирает себя, и на её месте
-                 остаётся золотое поле с числом: блок не рассыпается -->
-            <figure class="church-day__icon">
-              <img data-day-image src="" alt="" width="720" height="900"
-                   loading="lazy" decoding="async" onerror="this.hidden = true">
-              <figcaption class="church-day__stamp">
-                <b data-day-num>—</b>
-                <span>
+            <!-- Образ дня стоит слева доской, справа — число и день недели.
+                 Картинка не отдалась — убирает себя вместе с рамкой,
+                 и дата занимает всю ширину: блок не рассыпается -->
+            <div class="church-day__top">
+              <figure class="church-day__icon">
+                <img data-day-image src="" alt="" width="720" height="900"
+                     loading="lazy" decoding="async"
+                     onerror="this.parentNode.hidden = true">
+              </figure>
+
+              <div class="church-day__date">
+                <p class="church-day__num"><b data-day-num>—</b></p>
+                <p class="church-day__cal">
                   <span data-day-month>церковный календарь</span><br>
                   <span class="church-day__weekday" data-day-weekday></span>
-                </span>
-              </figcaption>
-            </figure>
-
-            <p class="church-day__line">
-              <span data-day-old></span>
-              <span data-day-week></span>
-            </p>
+                </p>
+                <p class="church-day__line">
+                  <span data-day-old></span>
+                  <span data-day-week></span>
+                </p>
+              </div>
+            </div>
 
             <h3 class="church-day__feast" data-day-feast hidden></h3>
             <ul class="church-day__saints" data-day-saints></ul>
@@ -444,6 +449,7 @@
 </footer>
 
 <script src="assets/js/church-calendar.js" defer></script>
+<script src="assets/js/church-days.js" defer></script>
 <script src="assets/js/main.js" defer></script>
 </body>
 </html>

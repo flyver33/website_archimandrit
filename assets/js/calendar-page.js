@@ -67,6 +67,35 @@
 
     var atToday = view.year === today.getUTCFullYear() && view.month === today.getUTCMonth() + 1;
     if (todayBtn) todayBtn.hidden = atToday && CC.iso(selected) === CC.iso(today);
+
+    fillGrid(days[0].iso);
+  }
+
+  /* Клетки без своего праздника подписывает месяцеслов: в сетке проступает
+     память каждого дня, а не одни двунадесятые. Файл на месяц один, и он же
+     потом достаётся карточке дня — второго запроса не будет. */
+  function fillGrid(iso) {
+    if (!window.ChurchDays) return;
+
+    var month = iso.slice(0, 7);
+
+    window.ChurchDays.loadMonth(iso, card).then(function (data) {
+      var shown = grid.querySelector('[data-date]');
+      if (!data || !shown || shown.dataset.date.slice(0, 7) !== month) return;
+
+      grid.querySelectorAll('[data-date]').forEach(function (cell) {
+        if (cell.querySelector('.calendar__label')) return;
+
+        var day = data[String(Number(cell.dataset.date.slice(8, 10)))];
+        var lead = window.ChurchDays.lead(day);
+        if (lead < 0) return;
+
+        var label = document.createElement('span');
+        label.className = 'calendar__label calendar__label--plain';
+        label.textContent = day.i[lead][0];
+        cell.appendChild(label);
+      });
+    });
   }
 
   /* --- Карточка дня ------------------------------------------------------- */
@@ -98,6 +127,47 @@
       '<p class="calendar__day-links">' +
         '<a class="link" href="' + info.source + '" target="_blank" rel="noopener">Полный круг памятей дня</a>' +
       '</p>';
+
+    /* Полный круг памятей приходит из выгрузки месяцеслова: своя таблица
+       держит только праздники, а на странице календаря место есть под всё */
+    if (window.ChurchDays) {
+      window.ChurchDays.load(info.iso, card).then(function (day) {
+        if (!day || CC.iso(selected) !== info.iso) return;
+
+        var lead = window.ChurchDays.lead(day);
+        var items = day.i.map(function (item) { return item[0]; });
+        var head = lead >= 0 ? items.splice(lead, 1)[0] : '';
+        var title = info.title || head;
+
+        var feastEl = card.querySelector('.calendar__day-feast');
+        if (title && !feastEl) {
+          feastEl = document.createElement('p');
+          feastEl.className = 'calendar__day-feast';
+          card.querySelector('.calendar__day-week').insertAdjacentElement('afterend', feastEl);
+        }
+        if (feastEl) {
+          feastEl.textContent = title;
+          feastEl.classList.toggle('calendar__day-feast--great',
+            info.rank > 0 || (lead >= 0 && day.i[lead][1] <= 2));
+        }
+
+        var list = card.querySelector('.calendar__day-saints');
+        if (!list && items.length) {
+          list = document.createElement('ul');
+          list.className = 'calendar__day-saints';
+          (feastEl || card.querySelector('.calendar__day-week'))
+            .insertAdjacentElement('afterend', list);
+        }
+        if (list) {
+          list.innerHTML = '';
+          items.forEach(function (t) {
+            var li = document.createElement('li');
+            li.textContent = t;
+            list.appendChild(li);
+          });
+        }
+      });
+    }
 
     if (animate && !reduceMotion) {
       card.classList.remove('is-entering');

@@ -253,7 +253,7 @@
     });
 
     // Всё прошло — показываем последние встречи, а не пустой блок
-    var shownCards = (upcoming.length ? upcoming : cards.slice(-4)).slice(0, 4);
+    var shownCards = (upcoming.length ? upcoming : cards.slice(-5)).slice(0, 5);
 
     cards.forEach(function (c) { c.hidden = shownCards.indexOf(c) === -1; });
 
@@ -332,24 +332,50 @@
 
       if (image) {
         var base = dayCard.dataset.imageBase || '';
-        image.hidden = false;
+        // Доску прячет onerror у картинки: на новом дне возвращаем её обратно,
+        // иначе один неудачный образ убрал бы её до конца сеанса
+        if (image.parentNode) image.parentNode.hidden = false;
         image.src = base + info.image + '.jpg';
         image.alt = info.title || 'Образ дня';
       }
 
       var feast = pick('[data-day-feast]');
-      feast.textContent = info.title;
-      feast.hidden = !info.title;
-      feast.classList.toggle('church-day__feast--great', info.rank > 0);
+      var saints = pick('[data-day-saints]');
 
       // Первую память показывает заголовок — в списке идут остальные
-      var saints = pick('[data-day-saints]');
-      saints.innerHTML = '';
-      info.items.slice(1).forEach(function (t) {
-        var li = document.createElement('li');
-        li.textContent = t;
-        saints.appendChild(li);
-      });
+      var fill = function (title, great, items) {
+        feast.textContent = title;
+        feast.hidden = !title;
+        feast.classList.toggle('church-day__feast--great', great);
+
+        saints.innerHTML = '';
+        items.forEach(function (t) {
+          var li = document.createElement('li');
+          li.textContent = t;
+          saints.appendChild(li);
+        });
+      };
+
+      fill(info.title, info.rank > 0, info.items.slice(1));
+
+      /* Полный круг памятей лежит в выгрузке месяцеслова: она приходит позже
+         своей таблицы, поэтому карточка сперва рисуется по ней, а потом
+         дополняется — и только если день за это время не перелистнули */
+      if (window.ChurchDays) {
+        window.ChurchDays.load(info.iso, dayCard).then(function (day) {
+          if (!day || CC.iso(shown) !== info.iso) return;
+
+          var lead = window.ChurchDays.lead(day);
+          var items = day.i.map(function (item) { return item[0]; });
+          var head = lead >= 0 ? items.splice(lead, 1)[0] : '';
+
+          // Своё название праздника точнее и короче — оно и остаётся в шапке;
+          // весь круг памятей длиннее карточки, за ним ведёт нижняя ссылка
+          fill(info.title || head,
+            info.rank > 0 || (lead >= 0 && day.i[lead][1] <= 2),
+            items.slice(0, 3));
+        });
+      }
 
       var fast = pick('[data-day-fast]');
       fast.textContent = info.fast.text;

@@ -122,6 +122,15 @@
 
 .calendar__cell--great .calendar__label { color: var(--brand); }
 
+/* Подпись из месяцеслова — рядовая память дня: тише праздничной,
+   в две строки, чтобы клетки не разъезжались по высоте */
+.calendar__label--plain {
+  font-size: .75rem;
+  color: var(--ink-muted, var(--ink-soft));
+  opacity: .85;
+  -webkit-line-clamp: 2;
+}
+
 /* Постный день помечается полосой у нижнего края — цвет ячейки не меняем */
 .calendar__cell--fast { border-bottom: 2px solid var(--gold); }
 .calendar__cell--strict { border-bottom: 2px solid var(--accent); }
@@ -159,11 +168,14 @@
 
 .calendar__day-icon[hidden] { display: none; }
 
+/* Образ дня не должен выдавливать дату и памяти за нижний край экрана:
+   высота ограничена, срез идёт по верхней трети иконы */
 .calendar__day-icon img {
+  display: block;
   width: 100%;
-  aspect-ratio: 4 / 3;
+  height: clamp(11rem, 18vw, 15rem);
   object-fit: cover;
-  object-position: center 22%;
+  object-position: center 18%;
 }
 
 .calendar__day-date {
