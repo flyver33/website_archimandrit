@@ -48,7 +48,7 @@ body::before {
 h1, h2, h3, h4 {
   font-family: var(--font-display);
   font-weight: 400;
-  color: var(--brand);
+  color: var(--gold-deep);
   line-height: var(--lh-tight);
   margin: 0;
   text-wrap: balance;
@@ -60,7 +60,7 @@ h3 { font-size: var(--fs-h3); font-weight: 700; line-height: var(--lh-snug); }
 
 p { margin: 0; max-width: var(--measure); }
 
-a { color: var(--brand); text-decoration: none; }
+a { color: var(--gold-deep); text-decoration: none; }
 
 :where(a, button, summary, input, [tabindex]):focus-visible {
   outline: 2px solid var(--gold);
@@ -74,6 +74,7 @@ ul { list-style: none; margin: 0; padding: 0; }
 
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
+/* Выделение — тот же --gold, разведённый прозрачностью */
 ::selection { background: rgba(197, 154, 72, .30); color: var(--ink); }
 
 /* --- Раскладка ----------------------------------------------------------- */
@@ -133,8 +134,8 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   left: var(--space-sm);
   z-index: 999;
   padding: var(--space-sm) var(--space-md);
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--green);
+  color: var(--on-green);
   transform: translateY(-160%);
   transition: transform var(--dur) var(--ease);
 }
@@ -162,12 +163,14 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .btn svg { transition: transform var(--dur) var(--ease); flex: none; }
 .btn:hover svg { transform: translateX(4px); }
 
-.btn--primary { background: var(--accent); color: var(--on-accent); }
-.btn--primary:hover { background: var(--accent-hover); }
+/* Первичная кнопка — зелёная заливка: она принадлежит каркасу, а не тексту
+   секции. Её постоянное место — шапка, рядом с логотипом и полосой разделов */
+.btn--primary { background: var(--green); color: var(--on-green); }
+.btn--primary:hover { background: var(--green-deep); }
 
 .btn--secondary {
   border: 1px solid var(--border);
-  color: var(--brand);
+  color: var(--gold-deep);
   background: transparent;
 }
 

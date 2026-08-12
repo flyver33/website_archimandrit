@@ -25,7 +25,7 @@
 .calendar__month {
   font-family: var(--font-display);
   font-size: clamp(1.5rem, 1.2rem + 1.4vw, 2.25rem);
-  color: var(--brand);
+  color: var(--gold-deep);
   line-height: var(--lh-tight);
 }
 
@@ -42,11 +42,11 @@
   font-size: var(--fs-eyebrow);
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--brand);
+  color: var(--gold-deep);
   padding: 0 var(--space-xs);
 }
 
-.calendar__today:hover { color: var(--accent); }
+.calendar__today:hover { color: var(--gold-dark); }
 
 /* --- Сетка --- */
 
@@ -86,7 +86,7 @@
 
 .calendar__cell[aria-pressed="true"] {
   background: var(--surface-sunken);
-  box-shadow: inset 0 0 0 2px var(--accent);
+  box-shadow: inset 0 0 0 2px var(--gold-dark);
 }
 
 .calendar__num {
@@ -105,8 +105,8 @@
   justify-content: center;
   min-width: 1.75rem;
   height: 1.75rem;
-  background: var(--accent);
-  color: var(--on-accent);
+  background: var(--gold-dark);
+  color: var(--on-gold);
   border-radius: var(--radius-pill);
 }
 
@@ -120,20 +120,20 @@
   overflow: hidden;
 }
 
-.calendar__cell--great .calendar__label { color: var(--brand); }
+.calendar__cell--great .calendar__label { color: var(--gold-deep); }
 
 /* Подпись из месяцеслова — рядовая память дня: тише праздничной,
    в две строки, чтобы клетки не разъезжались по высоте */
 .calendar__label--plain {
   font-size: .75rem;
-  color: var(--ink-muted, var(--ink-soft));
+  color: var(--ink-soft);
   opacity: .85;
   -webkit-line-clamp: 2;
 }
 
 /* Постный день помечается полосой у нижнего края — цвет ячейки не меняем */
 .calendar__cell--fast { border-bottom: 2px solid var(--gold); }
-.calendar__cell--strict { border-bottom: 2px solid var(--accent); }
+.calendar__cell--strict { border-bottom: 2px solid var(--gold-dark); }
 
 .calendar__legend {
   display: flex;
@@ -146,7 +146,7 @@
 
 .calendar__legend span { display: inline-flex; align-items: center; gap: var(--space-xs); }
 .calendar__legend i { width: 1.5rem; height: 2px; background: var(--gold); }
-.calendar__legend i.is-strict { background: var(--accent); }
+.calendar__legend i.is-strict { background: var(--gold-dark); }
 
 /* --- Карточка дня --- */
 
@@ -209,7 +209,7 @@
   font-weight: 700;
   font-size: clamp(1.15rem, 1rem + .7vw, 1.5rem);
   line-height: var(--lh-snug);
-  color: var(--brand);
+  color: var(--gold-deep);
 }
 
 .calendar__day-feast--great { padding-top: var(--space-sm); border-top: 2px solid var(--gold); }
@@ -243,7 +243,7 @@
   color: var(--ink-body);
 }
 
-.calendar__day-fast--strict { border-left-color: var(--accent); }
+.calendar__day-fast--strict { border-left-color: var(--gold-dark); }
 .calendar__day-fast--none { border-left-color: var(--gold); }
 
 .calendar__day-links { margin-top: var(--space-lg); font-size: var(--fs-small); }
