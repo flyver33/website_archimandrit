@@ -338,11 +338,10 @@ body { padding-top: var(--header-space, var(--header-total)); }
 /* --- Строка ленты (состояние по умолчанию) --- */
 
 .news-card {
-  display: grid;
-  grid-template-columns: 4.75rem 2.9rem minmax(0, 1fr) auto;
-  gap: var(--space-2xs) var(--space-sm);
-  align-items: baseline;
-  padding: var(--space-xs) var(--space-sm) var(--space-xs) var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2xs);
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-sm);
   border-top: 1px solid var(--border-soft);
   border-left: 2px solid transparent;
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease),
@@ -376,36 +375,40 @@ body { padding-top: var(--header-space, var(--header-total)); }
   color: var(--ink-soft);
 }
 
-/* Обёртка мета-строки в строке ленты не рисуется: дата, время, название и тип
-   встают в одну линию, каждая величина в свою колонку */
-.news-card__meta { display: contents; }
-
-.news-card__when { grid-row: 1; grid-column: 1; }
+/* Строка устроена как крупная карточка: сверху дата со временем слева и формат
+   справа, под ними название. Разница только в кегле и в том, что описание
+   с местом строке не показываются */
+.news-card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2xs) var(--space-sm);
+}
 
 .news-card__time {
-  grid-row: 1;
-  grid-column: 2;
   font-family: var(--font-display);
   font-size: var(--fs-eyebrow);
   letter-spacing: .06em;
   color: var(--ink-soft);
 }
 
+/* Точку между датой и временем ставит стиль: в разметке лежат
+   отдельные величины, а не склеенная строка */
+.news-card__time::before {
+  content: "·";
+  margin-right: var(--space-sm);
+  color: var(--border);
+}
+
+/* Формат держится у правого края: он подписывает встречу, а не спорит
+   с датой */
+.news-card__kind { margin-left: auto; }
+
 .news-card__title {
-  grid-row: 1;
-  grid-column: 3;
   font-size: 1rem;
   font-weight: 700;
   line-height: var(--lh-snug);
   color: var(--ink);
-}
-
-/* Тип держится у правого края строки: он подписывает встречу,
-   а не спорит с названием */
-.news-card__kind {
-  grid-row: 1;
-  grid-column: 4;
-  text-align: right;
 }
 
 .news-card__title a { color: inherit; }
@@ -440,21 +443,14 @@ body { padding-top: var(--header-space, var(--header-total)); }
   inset: 0;
 }
 
-/* Верхняя строка: дата · время · формат. Точки ставит CSS — в разметке
-   лежат три отдельные величины, а не склеенная строка */
+/* Верхняя строка: слева дата с временем, справа формат. Точка между датой
+   и временем ставится в стиле — в разметке лежат отдельные величины */
 .news-card--lead .news-card__meta {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
+  width: 100%;
   gap: var(--space-xs) var(--space-sm);
   margin-bottom: var(--space-sm);
 }
 
-.news-card--lead .news-card__meta > * + *::before {
-  content: "·";
-  margin-right: var(--space-sm);
-  color: var(--border);
-}
 
 .news-card--lead .news-card__when,
 .news-card--lead .news-card__time {
@@ -464,8 +460,6 @@ body { padding-top: var(--header-space, var(--header-total)); }
   color: var(--gold-deep);
   white-space: nowrap;
 }
-
-.news-card--lead .news-card__time { grid-row: auto; grid-column: auto; }
 
 .news-card--lead .news-card__kind {
   font-size: var(--fs-eyebrow);
@@ -479,7 +473,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   line-height: var(--lh-tight);
   color: var(--brand);
   margin-bottom: var(--space-xs);
-  max-width: 22ch;
+  max-width: 30ch;
 }
 
 .news-card--lead .news-card__text {
@@ -487,7 +481,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-size: var(--fs-body);
   line-height: var(--lh-lead);
   color: var(--ink-soft);
-  max-width: 46ch;
+  max-width: 62ch;
 }
 
 /* Место — нижняя ступень карточки: отделено линией и прижато к низу */
@@ -542,16 +536,27 @@ body { padding-top: var(--header-space, var(--header-total)); }
   border-bottom: 1px solid var(--border-hair);
 }
 
-.church-day__eyebrow {
+/* В шапке стоит дата: новым стилем крупно, старым — мелкой подписью под ней */
+.church-day__date-new {
   font-family: var(--font-display);
-  font-size: var(--fs-eyebrow);
-  letter-spacing: .14em;
-  text-transform: uppercase;
+  font-size: clamp(1.1rem, 1rem + .4vw, 1.375rem);
+  line-height: 1.1;
+  color: var(--ink);
+}
+
+.church-day__date-new b { font-weight: 400; }
+
+.church-day__weekday { color: var(--ink-soft); }
+
+.church-day__date small {
+  display: block;
+  margin-top: .3em;
+  font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
-/* Приписка «сегодня» / «+3 дн.» — тем же кеглем, но золотом: она отвечает,
-   какой именно день сейчас в карточке */
+/* Приписка «завтра» / «+3 дн.» золотом: она отвечает, какой именно день
+   сейчас в карточке. У сегодняшнего дня её нет — дата и так на виду */
 .church-day__note { color: var(--gold-deep); }
 
 .church-day__nav { display: flex; align-items: center; gap: var(--space-2xs); }
@@ -576,8 +581,8 @@ body { padding-top: var(--header-space, var(--header-total)); }
 
 .church-day__body { padding-top: var(--space-md); }
 
-/* Верх карточки: образ дня доской слева, число и дата справа. Так блок остаётся
-   по высоте вровень с лентой — картинка во всю ширину тянула его вниз */
+/* Верх карточки: образ дня доской слева, память дня справа. Она в блоке
+   главная, поэтому набрана крупно и стоит на первой строке */
 .church-day__top {
   display: grid;
   grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr);
@@ -585,16 +590,15 @@ body { padding-top: var(--header-space, var(--header-total)); }
   align-items: start;
 }
 
-/* Образ дня: икона праздника, а в будни — образ дня седмицы.
-   Пропорция задана заранее, чтобы блок не прыгал, пока картинка идёт. */
+/* Образ дня: икона праздника, а в будни — образ дня седмицы. Картинка и плашка
+   поста лежат в одной клетке сетки: без картинки плашка не повиснет в воздухе */
 .church-day__icon {
+  display: grid;
   margin: 0;
   background: var(--surface-sunken);
   border: 1px solid var(--border-soft);
   box-shadow: 0 0 0 5px var(--surface);
 }
-
-.church-day__icon[hidden] { display: none; }
 
 /* Иконы стоячие, доска тоже: при такой пропорции срез по краям минимальный */
 .church-day__icon img {
@@ -605,56 +609,35 @@ body { padding-top: var(--header-space, var(--header-total)); }
   object-position: center 18%;
 }
 
-/* Число дня — крупной цифрой золотом, как на календарной доске */
-.church-day__num b {
-  font-family: var(--font-display);
-  font-weight: 400;
-  font-size: clamp(2.75rem, 2rem + 2.4vw, 4rem);
-  line-height: .8;
-  color: var(--gold-deep);
-}
+.church-day__icon img,
+.church-day__icon .church-day__fast { grid-area: 1 / 1; }
 
-.church-day__cal {
-  margin-top: var(--space-2xs);
-  font-size: var(--fs-body);
-  line-height: 1.35;
-  color: var(--ink-body);
-}
+.church-day__icon .church-day__fast { align-self: end; }
 
-.church-day__weekday { color: var(--ink-soft); }
-
-/* Образ не отдался — число занимает всю ширину карточки */
-.church-day__icon[hidden] + .church-day__date { grid-column: 1 / -1; }
-
-/* Старый стиль и седмица с гласом — подписью под числом, столбиком:
-   рядом с образом строка узкая, и точка-разделитель тут не нужна */
-.church-day__line {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-2xs);
-  margin-top: var(--space-sm);
+/* Седмица с гласом — подписью под памятью дня */
+.church-day__week {
+  margin-top: var(--space-xs);
   font-size: var(--fs-small);
   line-height: var(--lh-snug);
   color: var(--ink-soft);
 }
 
+/* Память дня — первое, что читается в блоке: крупнее даты и в цвет заголовков */
 .church-day__feast {
-  margin-top: var(--space-md);
   font-family: var(--font-display);
-  font-weight: 700;
-  font-size: clamp(1.15rem, 1rem + .7vw, 1.5rem);
-  line-height: var(--lh-snug);
+  font-weight: 400;
+  font-size: clamp(1.4rem, 1.1rem + 1.1vw, 2rem);
+  line-height: var(--lh-tight);
   color: var(--brand);
-  max-width: 26ch;
 }
 
 .church-day__feast[hidden] { display: none; }
 
-/* Двунадесятый и великий праздники подчёркиваются золотой чертой сверху:
+/* Двунадесятый и великий праздники подчёркиваются золотой чертой снизу:
    ранг видно, не раскрашивая заголовок в другой цвет */
 .church-day__feast--great {
-  padding-top: var(--space-sm);
-  border-top: 2px solid var(--gold);
+  padding-bottom: var(--space-xs);
+  border-bottom: 2px solid var(--gold);
 }
 
 .church-day__saints {
@@ -687,18 +670,22 @@ body { padding-top: var(--header-space, var(--header-total)); }
   background: var(--gold);
 }
 
+/* Пост подписан плашкой на самом образе: строка в тексте занимала место,
+   а на иконе она читается сразу и ничего не двигает */
 .church-day__fast {
   max-width: none;
-  margin-top: var(--space-md);
-  padding: var(--space-xs) var(--space-sm);
-  background: var(--surface-sunken);
-  font-size: var(--fs-small);
+  padding: var(--space-2xs) var(--space-xs);
+  background: rgba(250, 245, 233, .94);
+  font-size: var(--fs-eyebrow);
+  line-height: var(--lh-snug);
   color: var(--ink-body);
-  border-left: 2px solid var(--border);
+  text-align: center;
+  border-top: 2px solid var(--border);
 }
 
-.church-day__fast--strict { border-left-color: var(--accent); }
-.church-day__fast--none { border-left-color: var(--gold); }
+.church-day__fast:empty { display: none; }
+.church-day__fast--strict { border-top-color: var(--accent); }
+.church-day__fast--none { border-top-color: var(--gold); }
 
 .church-day__links {
   display: flex;
@@ -1145,15 +1132,6 @@ html:not(.js) .video-embed::after { display: none; }
   .news { grid-template-columns: 1fr; gap: var(--space-xl); }
 }
 
-/* На узком экране четыре колонки строки не помещаются: дата со временем уходят
-   влево столбиком, название с типом — вправо */
-@media (max-width: 640px) {
-  .news-card { grid-template-columns: 4.75rem minmax(0, 1fr); }
-  .news-card__when { grid-row: 1; grid-column: 1; }
-  .news-card__time { grid-row: 2; grid-column: 1; }
-  .news-card__title { grid-row: 1; grid-column: 2; }
-  .news-card__kind { grid-row: 2; grid-column: 2; text-align: left; }
-}
 
 /* На узком экране образ уступает место числу и дате */
 @media (max-width: 420px) {
