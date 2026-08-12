@@ -631,12 +631,18 @@ body { padding-top: var(--header-space, var(--header-total)); }
   gap: var(--space-2xs);
 }
 
+/* Памяти бывают в три строки длиной: обрезаем по двум, за полным перечнем
+   ведёт нижняя ссылка — иначе один длинный день растянет всю колонку */
 .church-day__saints li {
   font-size: var(--fs-small);
   line-height: var(--lh-lead);
   color: var(--ink-body);
   padding-left: var(--space-md);
   position: relative;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 .church-day__saints li::before {
