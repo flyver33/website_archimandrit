@@ -150,6 +150,22 @@
   border-top: 3px solid var(--gold);
 }
 
+/* Образ дня — тот же, что в блоке на главной */
+.calendar__day-icon {
+  margin: 0 0 var(--space-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-soft);
+}
+
+.calendar__day-icon[hidden] { display: none; }
+
+.calendar__day-icon img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
 .calendar__day-date {
   display: flex;
   align-items: flex-end;

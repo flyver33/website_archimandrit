@@ -357,11 +357,10 @@ body { padding-top: var(--header-space, var(--header-total)); }
   transform: translateX(3px);
 }
 
-/* Строке нужны только дата, название и тип: лид, подробности и кнопка
+/* Строке нужны только дата, название и тип: описание и место
    принадлежат крупной карточке */
 .news-card .news-card__text,
-.news-card .news-card__full,
-.news-card .news-card__toggle { display: none; }
+.news-card .news-card__place { display: none; }
 
 .news-card__when {
   font-family: var(--font-display);
@@ -379,11 +378,20 @@ body { padding-top: var(--header-space, var(--header-total)); }
   color: var(--ink-soft);
 }
 
-/* Обёртка мета-строки в строке ленты не рисуется: дата уходит в свою
+/* Обёртка мета-строки в строке ленты не рисуется: дата и время уходят в свою
    колонку, тип — под название */
 .news-card__meta { display: contents; }
 
 .news-card__when { grid-row: 1; grid-column: 1; }
+
+.news-card__time {
+  grid-row: 2;
+  grid-column: 1;
+  font-family: var(--font-display);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: .06em;
+  color: var(--ink-soft);
+}
 
 /* Порядок в разметке — дата, тип, название; читается наоборот:
    сперва название, тип под ним подписью */
@@ -401,16 +409,16 @@ body { padding-top: var(--header-space, var(--header-total)); }
 .news-card__title a { color: inherit; }
 .news-card:hover .news-card__title a { color: var(--brand); }
 
-.news-card__status { display: none; }
-
-/* --- Ближайшая встреча: крупная карточка --- */
+/* --- Выбранная встреча: крупная карточка ---
+   Порядок сверху вниз: дата, время и формат — потом название, описание,
+   и внизу место. Вся площадь ведёт на страницу встречи. */
 
 .news-card--lead {
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   min-height: 0;
-  overflow: hidden;
   margin-bottom: var(--space-md);
   padding: clamp(1.25rem, 2vw, 1.75rem);
   background: var(--surface);
@@ -420,44 +428,46 @@ body { padding-top: var(--header-space, var(--header-total)); }
 }
 
 .news-card--lead:hover { background: var(--surface); transform: none; }
+.news-card--lead:hover .news-card__title a { color: var(--accent); }
 
-/* Надпись «Ближайшая встреча — послезавтра»: она и отвечает на вопрос,
-   что в ленте происходит сейчас */
-.news-card--lead .news-card__status {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xs);
-  margin-bottom: var(--space-xs);
-  font-family: var(--font-display);
-  font-size: var(--fs-eyebrow);
-  font-weight: 700;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--gold-deep);
-}
-
-.news-card--lead .news-card__status::before {
+/* Ссылка заголовка растянута на карточку: нажатие в любом месте ведёт
+   на страницу встречи, и при этом остаётся одна настоящая ссылка */
+.news-card--lead .news-card__title a::after {
   content: "";
-  width: 1.75rem;
-  height: 2px;
-  background: var(--gold);
+  position: absolute;
+  inset: 0;
 }
 
-.news-card--lead .news-card__status[hidden] { display: none; }
-
+/* Верхняя строка: дата · время · формат. Точки ставит CSS — в разметке
+   лежат три отдельные величины, а не склеенная строка */
 .news-card--lead .news-card__meta {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--space-sm) var(--space-md);
-  margin-bottom: var(--space-2xs);
+  gap: var(--space-xs) var(--space-sm);
+  margin-bottom: var(--space-sm);
 }
 
-.news-card--lead .news-card__when {
-  font-size: var(--fs-body);
-  letter-spacing: .02em;
-  color: var(--ink-body);
-  white-space: normal;
+.news-card--lead .news-card__meta > * + *::before {
+  content: "·";
+  margin-right: var(--space-sm);
+  color: var(--border);
+}
+
+.news-card--lead .news-card__when,
+.news-card--lead .news-card__time {
+  font-family: var(--font-display);
+  font-size: var(--fs-small);
+  letter-spacing: .06em;
+  color: var(--gold-deep);
+  white-space: nowrap;
+}
+
+.news-card--lead .news-card__time { grid-row: auto; grid-column: auto; }
+
+.news-card--lead .news-card__kind {
+  font-size: var(--fs-eyebrow);
+  color: var(--ink-soft);
 }
 
 .news-card--lead .news-card__title {
@@ -470,8 +480,6 @@ body { padding-top: var(--header-space, var(--header-total)); }
   max-width: 22ch;
 }
 
-.news-card--lead .news-card__title a:hover { color: var(--accent); }
-
 .news-card--lead .news-card__text {
   display: block;
   font-size: var(--fs-body);
@@ -480,74 +488,45 @@ body { padding-top: var(--header-space, var(--header-total)); }
   max-width: 46ch;
 }
 
-/* Раскрытие: строка сетки растёт с 0fr до 1fr — переход идёт по высоте
-   без замера скриптом. Без JS подробности видны сразу. */
-.news-card--lead .news-card__full { display: block; }
-
-.js .news-card--lead .news-card__full {
-  display: grid;
-  grid-template-rows: 0fr;
-  min-height: 0;
-  transition: grid-template-rows var(--dur-slow) var(--ease);
-}
-
-.js .news-card--lead.is-open .news-card__full { grid-template-rows: 1fr; }
-
-.js .news-card--lead .news-card__full-inner { overflow: hidden; min-height: 0; }
-
-/* Раскрытая карточка не выталкивает список из экрана: когда места не хватает,
-   прокручиваются сами подробности */
-/* Нижняя граница — чтобы на тесном экране подробности не схлопнулись в ноль;
-   выше неё она не действует и лишнего отступа под текстом не появляется */
-.js .news-card--lead.is-open .news-card__full-inner { overflow-y: auto; min-height: 4rem; }
-
-.news-card__full-inner > * + * { margin-top: var(--space-xs); }
-.news-card__full-inner > :first-child { margin-top: var(--space-sm); }
-
-.news-card__place {
+/* Место — нижняя ступень карточки: отделено линией и прижато к низу */
+.news-card--lead .news-card__place {
   display: flex;
   align-items: baseline;
   gap: var(--space-sm);
+  width: 100%;
+  margin-top: var(--space-md);
+  padding-top: var(--space-sm);
+  border-top: 1px solid var(--border-hair);
   font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
 .news-card__place svg { flex: none; align-self: flex-start; margin-top: .1em; }
 
-.news-card__more { font-size: var(--fs-small); }
-
-.news-card--lead .news-card__toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--space-xs);
-  align-self: flex-start;
-  flex: none;
-  margin-top: var(--space-sm);
-  padding: var(--space-2xs) 0;
-  font-family: var(--font-display);
-  font-size: var(--fs-eyebrow);
-  letter-spacing: .1em;
-  text-transform: uppercase;
-  color: var(--brand);
-}
-
-.news-card__toggle:hover { color: var(--accent); }
-.news-card__toggle svg { transition: transform var(--dur) var(--ease); }
-.news-card__toggle[aria-expanded="true"] svg { transform: rotate(180deg); }
-
 /* Список строк не ужимается: при нехватке места сжимается крупная карточка */
 .news-card:not(.news-card--lead) { flex: none; }
+
+/* Строка не уводит со страницы: нажатие поднимает встречу в крупную карточку.
+   Без скрипта строка остаётся обычной ссылкой на страницу встречи. */
+.js .news-card:not(.news-card--lead) { cursor: pointer; }
 
 /* Последняя строка ленты закрывает список линией — иначе он обрывается */
 .news__main > .news-card:last-child { border-bottom: 1px solid var(--border-soft); }
 
-/* --- Церковный день --- */
+/* --- Церковный день ---
+   Карточка на фактуре: по светлой бумаге идёт золотая ромбовидная сетка —
+   тот же мотив, что в орнаментальной ленте шапки, только тише и мельче.
+   Сетка нарисована в самом стиле: отдельная картинка ради узора в 40 пикселей
+   стоила бы запроса и кеша, а тайл в разметке правится вместе с цветом. */
 
 .church-day {
+  position: relative;
   display: flex;
   flex-direction: column;
   padding: clamp(1.25rem, 2vw, 1.75rem);
-  background: var(--surface);
+  background-color: var(--surface);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' viewBox='0 0 40 40'%3E%3Cg fill='none' stroke='%23C59A48' stroke-width='1' opacity='.16'%3E%3Cpath d='M20 0 40 20 20 40 0 20z'/%3E%3Cpath d='M20 11 29 20 20 29 11 20z'/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 40px 40px;
   border: 1px solid var(--border-soft);
   border-top: 3px solid var(--gold);
 }
@@ -595,36 +574,67 @@ body { padding-top: var(--header-space, var(--header-total)); }
 
 .church-day__body { padding-top: var(--space-md); }
 
-.church-day__date {
+/* Образ дня: икона праздника, а в будни — образ дня седмицы.
+   Пропорция задана заранее, чтобы блок не прыгал, пока картинка идёт. */
+.church-day__icon {
+  position: relative;
+  margin: 0 0 var(--space-md);
+  background: var(--surface-sunken);
+  border: 1px solid var(--border-soft);
+  box-shadow: 0 0 0 6px var(--surface);
+}
+
+.church-day__icon img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center 22%;
+}
+
+/* Число дня лежит на углу образа плашкой цвета бумаги: дата читается
+   поверх любой иконы, и картинку не приходится затемнять */
+.church-day__stamp {
+  position: absolute;
+  left: 0;
+  bottom: 0;
   display: flex;
   align-items: flex-end;
   gap: var(--space-sm);
+  padding: var(--space-xs) var(--space-md) var(--space-xs) var(--space-sm);
+  background: var(--surface);
+  border-top: 2px solid var(--gold);
 }
 
-.church-day__date b {
+.church-day__stamp b {
   font-family: var(--font-display);
   font-weight: 400;
-  font-size: clamp(3rem, 2rem + 3vw, 4.5rem);
+  font-size: clamp(2.5rem, 1.8rem + 2.4vw, 3.75rem);
   line-height: .85;
   color: var(--gold-deep);
 }
 
-.church-day__date span {
+.church-day__stamp > span {
   font-size: var(--fs-small);
-  line-height: 1.35;
+  line-height: 1.3;
   color: var(--ink-soft);
 }
 
 .church-day__weekday { color: var(--ink-soft); }
 
-.church-day__old,
-.church-day__week {
-  margin-top: var(--space-xs);
+/* Старый стиль и седмица с гласом — одной строкой подписью под образом */
+.church-day__line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2xs) var(--space-sm);
   font-size: var(--fs-small);
   color: var(--ink-soft);
 }
 
-.church-day__week { color: var(--ink-body); }
+.church-day__line > * + *::before {
+  content: "·";
+  margin-right: var(--space-sm);
+  color: var(--border);
+}
 
 .church-day__feast {
   margin-top: var(--space-md);
@@ -682,39 +692,11 @@ body { padding-top: var(--header-space, var(--header-total)); }
 .church-day__fast--strict { border-left-color: var(--accent); }
 .church-day__fast--none { border-left-color: var(--gold); }
 
-/* Ближайший праздник стоит внизу карточки: подсказка, куда листать дальше */
-.church-day__next {
-  display: block;
-  width: 100%;
-  margin-top: auto;
-  padding: var(--space-sm) 0 0;
-  text-align: left;
-  border-top: 1px solid var(--border-hair);
-  transition: color var(--dur) var(--ease);
-}
-
-.church-day__next[hidden] { display: none; }
-
-.church-day__next-label {
-  display: block;
-  font-family: var(--font-display);
-  font-size: var(--fs-eyebrow);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  margin-bottom: var(--space-2xs);
-}
-
-.church-day__next-text {
-  display: block;
-  font-size: var(--fs-small);
-  line-height: var(--lh-lead);
-  color: var(--ink-body);
-}
-
-.church-day__next:hover .church-day__next-text { color: var(--brand); }
-
 .church-day__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+  margin-top: auto;
   padding-top: var(--space-md);
   font-size: var(--fs-small);
 }
@@ -1155,6 +1137,14 @@ html:not(.js) .video-embed::after { display: none; }
 @media (max-width: 900px) {
   .news { grid-template-columns: 1fr; gap: var(--space-xl); }
   .news__main { max-height: none; }
+}
+
+/* Старый стиль и седмица в одну строку не помещаются: точка-разделитель
+   осталась бы висеть в начале переноса — на узком экране строки встают
+   друг под друга, и разделитель не нужен */
+@media (max-width: 620px) {
+  .church-day__line { flex-direction: column; }
+  .church-day__line > * + *::before { content: none; }
 }
 
 @media (max-width: 1024px) {
