@@ -373,12 +373,20 @@
           // весь круг памятей длиннее карточки, за ним ведёт нижняя ссылка
           fill(info.title || head,
             info.rank > 0 || (lead >= 0 && day.i[lead][1] <= 2),
-            items.slice(0, 3));
+            items.slice(0, 5));
         });
       }
 
+      /* На плашке места мало: длинные пояснения («Сырная седмица (Масленица):
+         мясо не едят…») режутся до сути, полный текст остаётся на странице
+         календаря */
       var fast = pick('[data-day-fast]');
-      fast.textContent = info.fast.text;
+      var short = info.fast.level === 'none' || info.fast.level === 'solid'
+        ? 'Поста нет'
+        : info.fast.text.split(/\s+[—:]/)[0].replace(/\s*\([^)]*\)/g, '');
+
+      fast.textContent = short;
+      fast.title = info.fast.text;
       fast.className = 'church-day__fast' +
         (info.fast.level === 'strict' ? ' church-day__fast--strict' : '') +
         (info.fast.level === 'none' || info.fast.level === 'solid' ? ' church-day__fast--none' : '');
@@ -393,8 +401,10 @@
       var note = pick('[data-day-note]');
       var shift = Math.round((date.getTime() - today.getTime()) / 86400000);
 
+      // В шапке стоит сама дата, поэтому «сегодня» не подписываем: приписка
+      // нужна только когда день отлистан и дата уже не сегодняшняя
       if (note) {
-        note.textContent = shift === 0 ? ' · сегодня'
+        note.textContent = shift === 0 ? ''
           : shift === 1 ? ' · завтра'
           : shift === -1 ? ' · вчера'
           : shift > 0 ? ' · +' + shift + ' дн.'
