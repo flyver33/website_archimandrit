@@ -253,7 +253,7 @@
     });
 
     // Всё прошло — показываем последние встречи, а не пустой блок
-    var shownCards = (upcoming.length ? upcoming : cards.slice(-4)).slice(0, 4);
+    var shownCards = (upcoming.length ? upcoming : cards.slice(-5)).slice(0, 5);
 
     cards.forEach(function (c) { c.hidden = shownCards.indexOf(c) === -1; });
 
@@ -332,7 +332,9 @@
 
       if (image) {
         var base = dayCard.dataset.imageBase || '';
-        image.hidden = false;
+        // Доску прячет onerror у картинки: на новом дне возвращаем её обратно,
+        // иначе один неудачный образ убрал бы её до конца сеанса
+        if (image.parentNode) image.parentNode.hidden = false;
         image.src = base + info.image + '.jpg';
         image.alt = info.title || 'Образ дня';
       }
