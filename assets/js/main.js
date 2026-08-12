@@ -93,12 +93,123 @@
     measureSitebar();
     window.addEventListener('resize', measureSitebar);
     if (document.fonts && document.fonts.ready) document.fonts.ready.then(measureSitebar);
+
+    // На главной полоса выходит вслед за первым экраном — пункт за пунктом.
+    // На остальных страницах она стоит сразу под шапкой и не двигается:
+    // меню моргало бы на каждом переходе.
+    // Появление здесь по таймеру, а не по прокрутке: полоса стоит у нижней
+    // кромки первого экрана — ниже порога наблюдателя, и с ним она ждала бы
+    // прокрутки, а меню на входе не было бы видно вовсе.
+    if (hero) {
+      var barItems = sitebar.querySelectorAll('.sitebar__item');
+
+      Array.prototype.forEach.call(barItems, function (item, i) {
+        item.classList.add('reveal', 'reveal--fade');
+        item.style.setProperty('--reveal-delay', (420 + Math.min(i, 7) * 55) + 'ms');
+      });
+
+      window.setTimeout(function () {
+        Array.prototype.forEach.call(barItems, function (item) {
+          item.classList.add('is-visible');
+        });
+      }, 60);
+    }
   }
 
   /* Разделы живут в полосе-меню под шапкой — она видна на любой ширине,
      всплывающего меню и бургера на сайте нет. */
 
+  /* --- Прокрутка: доля прочитанного и глубина первого экрана -------------- */
+
+  // Всё, что зависит от положения страницы, считается в одном месте и раз
+  // в кадр: события прокрутки приходят чаще, чем браузер рисует, и на
+  // каждом из них читать геометрию — значит гонять пересчёт раскладки.
+  var wide = window.matchMedia('(min-width: 761px)');
+  var heroPicture = hero && hero.querySelector('picture');
+  var heroQuote = hero && hero.querySelector('.hero__quote');
+  var heroHeight = hero ? hero.offsetHeight : 0;
+  var layered = false;   // сдвиг первого экрана сейчас проставлен
+  var queued = false;
+
+  var paint = function () {
+    queued = false;
+
+    var y = window.scrollY;
+
+    // Доля прочитанного — золотая черта по нижней кромке шапки
+    if (header) {
+      var full = document.documentElement.scrollHeight - window.innerHeight;
+      header.style.setProperty('--progress', full > 0 ? Math.min(y / full, 1).toFixed(4) : '0');
+    }
+
+    if (!heroPicture || !heroQuote) return;
+
+    // Первый экран расслаивается в глубину: портрет отстаёт от прокрутки,
+    // цитата уходит вперёд и растворяется. Ниже первого экрана считать
+    // нечего — сдвиг там уже не виден.
+    var deep = !reduceMotion && wide.matches;
+
+    if (deep && y < heroHeight) {
+      heroPicture.style.transform = 'translate3d(0,' + (y * 0.14).toFixed(1) + 'px,0)';
+      heroQuote.style.transform = 'translate3d(0,' + (y * -0.06).toFixed(1) + 'px,0)';
+      heroQuote.style.opacity = Math.max(0, 1 - y / heroHeight).toFixed(3);
+      layered = true;
+    } else if (layered) {
+      // Ушли с первого экрана или сменили ширину — снимаем сдвиг целиком,
+      // иначе на узком экране портрет остался бы сдвинутым навсегда
+      heroPicture.style.transform = '';
+      heroQuote.style.transform = '';
+      heroQuote.style.opacity = '';
+      layered = false;
+    }
+  };
+
+  var queuePaint = function () {
+    if (queued) return;
+    queued = true;
+    requestAnimationFrame(paint);
+  };
+
+  var remeasureHero = function () {
+    if (hero) heroHeight = hero.offsetHeight;
+    queuePaint();
+  };
+
+  window.addEventListener('scroll', queuePaint, { passive: true });
+  window.addEventListener('resize', remeasureHero);
+  if (document.fonts && document.fonts.ready) document.fonts.ready.then(remeasureHero);
+  paint();
+
+  /* --- Снимки проявляются по мере загрузки -------------------------------- */
+
+  // Превью приходят по сети уже после разметки, и без этого карточка
+  // меняется рывком. Кадр, который не отдался, убирает себя сам (onerror
+  // в разметке), поэтому невидимой пустоты не остаётся.
+  Array.prototype.forEach.call(
+    document.querySelectorAll('.video-card__img, .video-embed__img'),
+    function (img) {
+      img.classList.add('is-fading');
+
+      if (img.complete && img.naturalWidth) { img.classList.add('is-loaded'); return; }
+
+      img.addEventListener('load', function () {
+        img.classList.add('is-loaded');
+      }, { once: true });
+    }
+  );
+
   /* --- Появление блоков при прокрутке ------------------------------------ */
+
+  // Строки раздела выходят каскадом — но только там, где список отдаётся
+  // целиком. Со страницами так нельзя: строки скрытых страниц не попадут в
+  // поле зрения наблюдателя и остались бы прозрачными навсегда — там за
+  // появление отвечает сама пагинация.
+  var entryList = document.querySelector('.entry-list');
+
+  if (entryList) {
+    var perPage = parseInt(entryList.dataset.paginate, 10) || 0;
+    if (!perPage || entryList.children.length <= perPage) entryList.dataset.stagger = '45';
+  }
 
   // Каскад: детям контейнера с data-stagger раздаются нарастающие задержки
   Array.prototype.forEach.call(document.querySelectorAll('[data-stagger]'), function (group) {
@@ -183,9 +294,24 @@
       var show = function (n, moveView) {
         currentPage = Math.min(Math.max(n, 1), pageCount);
 
+        // Строки новой страницы выходят по очереди сверху вниз. Задержку
+        // считаем по месту СРЕДИ ВИДИМЫХ: на второй странице первая строка
+        // идёт шестнадцатой в разметке, и порядковый номер там не годится.
+        var place = 0;
+
         rows.forEach(function (row, i) {
-          row.hidden = Math.floor(i / per) + 1 !== currentPage;
+          var onPage = Math.floor(i / per) + 1 === currentPage;
+          row.hidden = !onPage;
+          if (onPage) row.style.setProperty('--row-delay', Math.min(place++, 8) * 35 + 'ms');
         });
+
+        if (!reduceMotion) {
+          // Перезапуск: без снятия класса повторный переход на ту же
+          // страницу не проиграл бы анимацию заново
+          list.classList.remove('is-paging');
+          void list.offsetWidth;
+          list.classList.add('is-paging');
+        }
 
         draw();
 
@@ -257,46 +383,66 @@
 
     cards.forEach(function (c) { c.hidden = shownCards.indexOf(c) === -1; });
 
-    // Крупной становится выбранная встреча: у неё дата пишется полностью,
-    // у строк — коротко, с днём недели. Порядок в ленте тот же, только
-    // выбранная поднимается наверх.
-    var setLead = function (lead) {
+    // Крупная карточка — КОПИЯ выбранной строки, а не сама строка: лента
+    // всегда идёт по дате и при выборе не перестраивается. Копия лежит в
+    // отдельном списке над лентой; в строках дата пишется коротко, с днём
+    // недели, в копии — полностью.
+    var leadHost = document.querySelector('[data-news-lead]');
+
+    var setLead = function (lead, animate) {
       shownCards.forEach(function (card) {
         var d = parseDate(card.dataset.date);
-        var isLead = card === lead;
         var when = card.querySelector('[data-when]');
         var time = card.querySelector('[data-time]');
 
-        card.classList.toggle('news-card--lead', isLead);
-
-        if (isLead) card.setAttribute('aria-current', 'true');
+        if (card === lead) card.setAttribute('aria-current', 'true');
         else card.removeAttribute('aria-current');
 
-        when.textContent = isLead
-          ? d.getDate() + ' ' + MONTHS[d.getMonth()]
-          : d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()] + ', ' + WEEKDAYS_SHORT[d.getDay()];
+        when.textContent = d.getDate() + ' ' + MONTHS_SHORT[d.getMonth()] +
+          ', ' + WEEKDAYS_SHORT[d.getDay()];
 
         if (time) time.textContent = d.getHours() + ':' + pad(d.getMinutes());
       });
 
-      var order = [lead]
-        .concat(shownCards.filter(function (c) { return c !== lead; }))
-        .concat(cards.filter(function (c) { return shownCards.indexOf(c) === -1; }));
+      if (!leadHost) return;
 
-      order.forEach(function (c) { feed.appendChild(c); });
+      var copy = lead.cloneNode(true);
+      var date = parseDate(lead.dataset.date);
+
+      copy.classList.add('news-card--lead');
+      // Каскад появления и отметка выбора принадлежат строке, а не копии
+      copy.classList.remove('reveal', 'is-visible');
+      copy.removeAttribute('style');
+      copy.removeAttribute('aria-current');
+      copy.removeAttribute('hidden');
+
+      copy.querySelector('[data-when]').textContent =
+        date.getDate() + ' ' + MONTHS[date.getMonth()];
+
+      // Карточка скрыта от чтения с экрана как повтор строки — значит и в
+      // обход по Tab её ссылка попадать не должна
+      Array.prototype.forEach.call(copy.querySelectorAll('a'), function (a) {
+        a.tabIndex = -1;
+      });
+
+      // Первая карточка приезжает вместе со всем блоком — своя анимация ей
+      // ни к чему. Проявляется только подмена по нажатию.
+      if (animate && !reduceMotion) copy.classList.add('is-entering');
+
+      leadHost.replaceChildren(copy);
     };
 
-    setLead(shownCards[0]);
+    setLead(shownCards[0], false);
 
-    // Нажатие на строку не уводит со страницы: встреча поднимается в крупную
-    // карточку, а на её страницу ведёт уже сама карточка. Фокус переходит
-    // на заголовок — с клавиатуры следующий Enter открывает страницу встречи.
+    // Первое нажатие на строку не уводит со страницы: встреча показывается
+    // крупно. Второе — по уже выбранной строке — открывает её страницу:
+    // ссылка срабатывает как обычно, и с клавиатуры это тот же Enter подряд.
     feed.addEventListener('click', function (e) {
       var card = e.target.closest('.news-card');
-      if (!card || card.classList.contains('news-card--lead')) return;
+      if (!card || card.getAttribute('aria-current') === 'true') return;
 
       e.preventDefault();
-      setLead(card);
+      setLead(card, true);
 
       var title = card.querySelector('.news-card__title a');
       if (title) title.focus({ preventScroll: true });
