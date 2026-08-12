@@ -340,40 +340,31 @@
       }
 
       var feast = pick('[data-day-feast]');
-      var saints = pick('[data-day-saints]');
 
-      // Первую память показывает заголовок — в списке идут остальные
-      var fill = function (title, great, items) {
+      // В карточке стоит одна память — главная. Остальные не перечисляются:
+      // за полным кругом ведёт нижняя ссылка
+      var fill = function (title, great) {
         feast.textContent = title;
         feast.hidden = !title;
         feast.classList.toggle('church-day__feast--great', great);
-
-        saints.innerHTML = '';
-        items.forEach(function (t) {
-          var li = document.createElement('li');
-          li.textContent = t;
-          saints.appendChild(li);
-        });
       };
 
-      fill(info.title, info.rank > 0, info.items.slice(1));
+      fill(info.title, info.rank > 0);
 
-      /* Полный круг памятей лежит в выгрузке месяцеслова: она приходит позже
-         своей таблицы, поэтому карточка сперва рисуется по ней, а потом
-         дополняется — и только если день за это время не перелистнули */
+      /* У будней своего названия в таблице нет: главную память дня даёт
+         выгрузка месяцеслова. Она приходит позже, поэтому карточка сперва
+         рисуется по таблице, а потом уточняется — и только если день
+         за это время не перелистнули */
       if (window.ChurchDays) {
         window.ChurchDays.load(info.iso, dayCard).then(function (day) {
           if (!day || CC.iso(shown) !== info.iso) return;
 
           var lead = window.ChurchDays.lead(day);
-          var items = day.i.map(function (item) { return item[0]; });
-          var head = lead >= 0 ? items.splice(lead, 1)[0] : '';
+          var head = lead >= 0 ? day.i[lead][0] : '';
 
-          // Своё название праздника точнее и короче — оно и остаётся в шапке;
-          // весь круг памятей длиннее карточки, за ним ведёт нижняя ссылка
+          // Своё название праздника точнее и короче — оно и остаётся в шапке
           fill(info.title || head,
-            info.rank > 0 || (lead >= 0 && day.i[lead][1] <= 2),
-            items.slice(0, 5));
+            info.rank > 0 || (lead >= 0 && day.i[lead][1] <= 2));
         });
       }
 

@@ -382,7 +382,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: var(--space-2xs) var(--space-sm);
+  gap: var(--space-2xs) var(--space-xs);
 }
 
 .news-card__time {
@@ -393,10 +393,11 @@ body { padding-top: var(--header-space, var(--header-total)); }
 }
 
 /* Точку между датой и временем ставит стиль: в разметке лежат
-   отдельные величины, а не склеенная строка */
+   отдельные величины, а не склеенная строка. Зазор узкий с обеих сторон —
+   дата и время читаются как одна величина, а не как два поля */
 .news-card__time::before {
   content: "·";
-  margin-right: var(--space-sm);
+  margin-right: var(--space-xs);
   color: var(--border);
 }
 
@@ -404,15 +405,18 @@ body { padding-top: var(--header-space, var(--header-total)); }
    с датой */
 .news-card__kind { margin-left: auto; }
 
+/* Строка набрана оливой, как заголовок крупной карточки: строки — не
+   главное в ленте, и чёрный текст спорил с ней за внимание. Насыщенность
+   снимается цветом, а не начертанием: полужирное держит строку читаемой */
 .news-card__title {
   font-size: 1rem;
   font-weight: 700;
   line-height: var(--lh-snug);
-  color: var(--ink);
+  color: var(--brand);
 }
 
 .news-card__title a { color: inherit; }
-.news-card:hover .news-card__title a { color: var(--brand); }
+.news-card:hover .news-card__title a { color: var(--accent); }
 
 /* --- Выбранная встреча: крупная карточка ---
    Порядок сверху вниз: дата, время и формат — потом название, описание,
@@ -447,7 +451,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
    и временем ставится в стиле — в разметке лежат отдельные величины */
 .news-card--lead .news-card__meta {
   width: 100%;
-  gap: var(--space-xs) var(--space-sm);
+  gap: var(--space-xs);
   margin-bottom: var(--space-sm);
 }
 
@@ -466,10 +470,12 @@ body { padding-top: var(--header-space, var(--header-total)); }
   color: var(--ink-soft);
 }
 
+/* Название крупной карточки — полужирным: светлым начертанием олива
+   на бумаге не держала кегль и читалась серой */
 .news-card--lead .news-card__title {
   font-family: var(--font-display);
   font-size: clamp(1.3rem, 1.05rem + 1vw, 1.75rem);
-  font-weight: 400;
+  font-weight: 700;
   line-height: var(--lh-tight);
   color: var(--brand);
   margin-bottom: var(--space-xs);
@@ -536,22 +542,30 @@ body { padding-top: var(--header-space, var(--header-total)); }
   border-bottom: 1px solid var(--border-hair);
 }
 
-/* В шапке стоит дата: новым стилем крупно, старым — мелкой подписью под ней */
+/* В шапке стоит дата: новым стилем крупно, старым — мелкой подписью под ней.
+   Дата — первое, что ищут в карточке, поэтому набрана заметно крупнее
+   остальной шапки */
 .church-day__date-new {
   font-family: var(--font-display);
-  font-size: clamp(1.1rem, 1rem + .4vw, 1.375rem);
+  font-size: clamp(1.375rem, 1.15rem + .7vw, 1.75rem);
   line-height: 1.1;
   color: var(--ink);
 }
 
-.church-day__date-new b { font-weight: 400; }
+/* Число — золотом: тот же числовой акцент, что у дат в ленте новостей */
+.church-day__date-new b {
+  font-weight: 700;
+  color: var(--gold-deep);
+}
 
 .church-day__weekday { color: var(--ink-soft); }
 
+/* Старый стиль — служебная приписка: мельче даты на две ступени,
+   чтобы не спорить с ней */
 .church-day__date small {
   display: block;
-  margin-top: .3em;
-  font-size: var(--fs-small);
+  margin-top: .35em;
+  font-size: var(--fs-eyebrow);
   color: var(--ink-soft);
 }
 
@@ -561,7 +575,10 @@ body { padding-top: var(--header-space, var(--header-total)); }
 
 .church-day__nav { display: flex; align-items: center; gap: var(--space-2xs); }
 
+/* Кнопки залиты бумагой: карточка идёт по золотой сетке, и сквозь
+   прозрачную кнопку узор проступал рваными кусками */
 .church-day__arrow {
+  background: var(--surface);
   border: 1px solid var(--border);
   width: 2.5rem;
   height: 2.5rem;
@@ -581,33 +598,30 @@ body { padding-top: var(--header-space, var(--header-total)); }
 
 .church-day__body { padding-top: var(--space-md); }
 
-/* Верх карточки: образ дня доской слева, память дня справа. Она в блоке
-   главная, поэтому набрана крупно и стоит на первой строке */
-.church-day__top {
-  display: grid;
-  grid-template-columns: minmax(0, 8.5rem) minmax(0, 1fr);
-  gap: var(--space-md);
-  align-items: start;
-}
-
-/* Образ дня: икона праздника, а в будни — образ дня седмицы. Картинка и плашка
-   поста лежат в одной клетке сетки: без картинки плашка не повиснет в воздухе */
+/* Образ дня: икона праздника, а в будни — образ дня седмицы. Идёт во всю
+   ширину карточки, память дня — заголовком под ним. Картинка и плашка поста
+   лежат в одной клетке сетки: без картинки плашка не повиснет в воздухе */
 .church-day__icon {
   display: grid;
-  margin: 0;
+  margin: 0 0 var(--space-md);
   background: var(--surface-sunken);
   border: 1px solid var(--border-soft);
-  box-shadow: 0 0 0 5px var(--surface);
+  box-shadow: 0 0 0 6px var(--surface);
 }
 
-/* Иконы стоячие, доска тоже: при такой пропорции срез по краям минимальный */
+/* Лежачая пропорция: во всю ширину стоячая доска увела бы карточку
+   на треть экрана вниз. Срез идёт по низу — лики остаются в кадре */
 .church-day__icon img {
   display: block;
   width: 100%;
-  aspect-ratio: 3 / 4;
+  aspect-ratio: 4 / 3;
   object-fit: cover;
-  object-position: center 18%;
+  object-position: center 22%;
 }
+
+/* Образ не отдался — доска убирается целиком: display у фигуры свой,
+   и без этого правила атрибут hidden на ней не сработал бы */
+.church-day__icon[hidden] { display: none; }
 
 .church-day__icon img,
 .church-day__icon .church-day__fast { grid-area: 1 / 1; }
@@ -640,35 +654,8 @@ body { padding-top: var(--header-space, var(--header-total)); }
   border-bottom: 2px solid var(--gold);
 }
 
-.church-day__saints {
-  margin-top: var(--space-sm);
-  display: grid;
-  gap: var(--space-2xs);
-}
-
-/* Памяти бывают в три строки длиной: обрезаем по двум, за полным перечнем
-   ведёт нижняя ссылка — иначе один длинный день растянет всю колонку */
-.church-day__saints li {
-  font-size: var(--fs-small);
-  line-height: var(--lh-lead);
-  color: var(--ink-body);
-  padding-left: var(--space-md);
-  position: relative;
-  display: -webkit-box;
-  -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  overflow: hidden;
-}
-
-.church-day__saints li::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: .65em;
-  width: 6px;
-  height: 1px;
-  background: var(--gold);
-}
+/* Перечня остальных памятей в карточке нет: он повторял то, за чем ведёт
+   нижняя ссылка, и растягивал колонку на длинных днях */
 
 /* Пост подписан плашкой на самом образе: строка в тексте занимала место,
    а на иконе она читается сразу и ничего не двигает */
@@ -687,9 +674,12 @@ body { padding-top: var(--header-space, var(--header-total)); }
 .church-day__fast--strict { border-top-color: var(--accent); }
 .church-day__fast--none { border-top-color: var(--gold); }
 
+/* Ссылки разведены по краям карточки: своя таблица — слева, источник
+   с полным кругом памятей — справа. Рядом они читались одним списком */
 .church-day__links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: space-between;
   gap: var(--space-xs) var(--space-lg);
   margin-top: auto;
   padding-top: var(--space-md);
@@ -1132,11 +1122,6 @@ html:not(.js) .video-embed::after { display: none; }
   .news { grid-template-columns: 1fr; gap: var(--space-xl); }
 }
 
-
-/* На узком экране образ уступает место числу и дате */
-@media (max-width: 420px) {
-  .church-day__top { grid-template-columns: minmax(0, 6.5rem) minmax(0, 1fr); }
-}
 
 @media (max-width: 1024px) {
   /* Три колонки в ряд уже не помещаются: визитка занимает всю ширину,
