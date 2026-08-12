@@ -47,11 +47,11 @@ a.entry-row:hover { background: var(--surface-sunken); }
   font-weight: 700;
   font-size: var(--fs-h3);
   line-height: var(--lh-snug);
-  color: var(--brand);
+  color: var(--gold-deep);
   transition: color var(--dur) var(--ease);
 }
 
-a.entry-row:hover .entry-row__title { color: var(--accent); }
+a.entry-row:hover .entry-row__title { color: var(--gold-dark); }
 
 .entry-row__arrow {
   justify-self: end;
@@ -112,7 +112,7 @@ a.entry-row:hover .entry-row__arrow { transform: translateX(6px); }
 .pager__btn[aria-current="page"] {
   border-color: var(--border);
   background: var(--surface-sunken);
-  color: var(--brand);
+  color: var(--gold-deep);
 }
 
 .pager__btn:disabled {

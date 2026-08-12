@@ -142,12 +142,12 @@
   border: 1px solid var(--border-soft);
   border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--bg) 90%, transparent);
-  color: var(--accent);
+  color: var(--gold-deep);
   cursor: pointer;
   transition: border-color var(--dur) var(--ease), color var(--dur) var(--ease);
 }
 
-.pdf__nav:hover { border-color: var(--border); color: var(--accent-hover); }
+.pdf__nav:hover { border-color: var(--border); color: var(--gold-dark); }
 .pdf__nav:disabled { opacity: .3; cursor: default; }
 
 /* Счётчик стоит внутри страницы элемента, где абзацы ограничены мерой чтения.
