@@ -28,6 +28,27 @@
 
 .header.is-stuck { box-shadow: 0 1px 0 var(--border-soft); }
 
+/* Прочитанная доля страницы — золотая черта по нижней кромке шапки. Растёт
+   слева направо, появляется вместе с уплотнением: на самом верху страницы
+   читать ещё нечего. Долю ставит скрипт в --progress, без скрипта черты нет.
+   Черта лежит на месте разделителя и в развёрнутой шапке прозрачна. */
+.header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  background: var(--gold);
+  transform: scaleX(var(--progress, 0));
+  transform-origin: left;
+  opacity: 0;
+  transition: opacity var(--dur-header) var(--ease-header);
+  pointer-events: none;
+}
+
+.header.is-stuck::after { opacity: .9; }
+
 /* Кадр замера: скрипт снимает уплотнение, чтобы прочитать высоту развёрнутой
    шапки. Без остановки переходов он прочитал бы высоту на середине анимации —
    резерв вышел бы меньше шапки, и она накрыла бы первую строку страницы. */
@@ -136,10 +157,24 @@ body { padding-top: var(--header-space, var(--header-total)); }
   height: 44px;
   border-radius: var(--radius);
   color: var(--gold-deep);
-  transition: background var(--dur) var(--ease);
+  transition: background var(--dur) var(--ease), scale var(--dur-fast) var(--ease);
 }
 
 .icon-btn:hover { background: var(--surface-sunken); }
+
+/* Нажатие отзывается: кнопка на миг проседает под пальцем */
+.icon-btn:active:not(:disabled) { scale: .93; }
+
+/* Стрелка подаётся в свою сторону — направление читается до нажатия */
+.icon-btn[data-carousel-prev] svg,
+.icon-btn[data-carousel-next] svg,
+.icon-btn[data-day-step] svg { transition: transform var(--dur) var(--ease); }
+
+.icon-btn[data-carousel-next]:hover:not(:disabled) svg,
+.icon-btn[data-day-step="1"]:hover:not(:disabled) svg { transform: translateX(3px); }
+
+.icon-btn[data-carousel-prev]:hover:not(:disabled) svg,
+.icon-btn[data-day-step="-1"]:hover:not(:disabled) svg { transform: translateX(-3px); }
 
 /* --------------------------------------------------------------------------
    2. Полоса-меню: разделы сайта
@@ -169,6 +204,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
 }
 
 .sitebar__link {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -190,6 +226,26 @@ body { padding-top: var(--header-space, var(--header-total)); }
 
 .sitebar__link:hover,
 .sitebar__link:focus-visible { background: var(--green-deep); }
+
+/* Под курсором из середины ячейки расходится та же золотая подсечка, какой
+   отмечен текущий раздел: наведение обещает ровно то, чем станет */
+.sitebar__link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 3px;
+  background: var(--gold);
+  transform: scaleX(0);
+  transition: transform var(--dur) var(--ease);
+}
+
+.sitebar__link:hover::after,
+.sitebar__link:focus-visible::after { transform: scaleX(1); }
+
+/* У текущего раздела подсечка уже стоит — она нарисована тенью внутрь */
+.sitebar__link[aria-current="page"]::after { content: none; }
 
 /* Текущий раздел: тонкая золотая подсечка снизу, без сдвига раскладки */
 .sitebar__link[aria-current="page"] {
@@ -252,6 +308,15 @@ body { padding-top: var(--header-space, var(--header-total)); }
   height: 100%;
 }
 
+/* Портрет отстаёт от прокрутки: скрипт сдвигает его на долю пройденного пути,
+   и первый экран расслаивается в глубину. Сдвиг живёт на <picture>, потому
+   что у самой обёртки уже есть свой переход появления. */
+.hero__photo picture {
+  display: block;
+  height: 100%;
+  will-change: transform;
+}
+
 /* cover, а не contain: над головой не остаётся пустой полосы */
 .hero__photo img {
   width: 100%;
@@ -259,6 +324,21 @@ body { padding-top: var(--header-space, var(--header-total)); }
   object-fit: cover;
   object-position: 50% 0;
   transform: scaleX(var(--portrait-flip));
+  /* Наплыв идёт от верхней кромки: точка отсчёта внизу увела бы голову
+     под шапку, а по центру — срезала бы её сверху */
+  transform-origin: 50% 0;
+}
+
+/* Портрет очень медленно наплывает и отходит: страница дышит, а движения
+   как такового глаз не ловит. Отражение по горизонтали входит в каждый
+   кадр — иначе наплыв отменил бы разворот портрета к цитате. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero__photo img { animation: portrait-breathe 26s var(--ease) infinite alternate; }
+}
+
+@keyframes portrait-breathe {
+  from { transform: scaleX(var(--portrait-flip)); }
+  to   { transform: scaleX(var(--portrait-flip)) scale(1.03); }
 }
 
 .hero__quote {
@@ -318,9 +398,10 @@ body { padding-top: var(--header-space, var(--header-total)); }
   align-items: stretch;
 }
 
-/* Лента: карточка сверху, строки под ней. Крупной становится ближайшая
-   встреча — класс проставляет скрипт, разметка у всех элементов одна. */
-.news__main {
+/* Левая половина: копия выбранной встречи крупной карточкой, под ней —
+   сама лента. Порядок строк в ленте постоянный: карточка их не забирает
+   и не тасует, а повторяет одну из них. */
+.news__feed {
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -328,6 +409,16 @@ body { padding-top: var(--header-space, var(--header-total)); }
      подросла бы при раскрытии карточки, и последняя строка вылезла бы наружу */
   align-self: start;
 }
+
+.news__main {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+/* Копию кладёт скрипт: до этого списка нет вовсе, и пустой отступ он
+   не занимает */
+.news__lead:empty { display: none; }
 
 /* Потолка по высоте у колонки нет: он сжимал крупную карточку на низком окне —
    описание и место наезжали друг на друга. Длину ленты держит скрипт,
@@ -342,10 +433,16 @@ body { padding-top: var(--header-space, var(--header-total)); }
   flex-direction: column;
   gap: var(--space-2xs);
   padding: var(--space-sm) var(--space-sm) var(--space-sm) var(--space-sm);
-  border-top: 1px solid var(--border-soft);
   border-left: 2px solid transparent;
   transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease),
               transform var(--dur) var(--ease);
+}
+
+/* Линия разделяет строки, а не открывает список: у первой видимой строки
+   её нет. Предыдущая строка скрыта — значит эта первая, и соседний
+   селектор до неё не достаёт. */
+.news-card:not([hidden]) + .news-card:not([hidden]) {
+  border-top: 1px solid var(--border-soft);
 }
 
 .news-card:hover {
@@ -508,12 +605,52 @@ body { padding-top: var(--header-space, var(--header-total)); }
 /* Список строк не ужимается: при нехватке места сжимается крупная карточка */
 .news-card:not(.news-card--lead) { flex: none; }
 
-/* Строка не уводит со страницы: нажатие поднимает встречу в крупную карточку.
+/* Строка не уводит со страницы первым нажатием: встреча показывается крупно,
+   и уже второе нажатие открывает её страницу.
    Без скрипта строка остаётся обычной ссылкой на страницу встречи. */
 .js .news-card:not(.news-card--lead) { cursor: pointer; }
 
-/* Последняя строка ленты закрывает список линией — иначе он обрывается */
-.news__main > .news-card:last-child { border-bottom: 1px solid var(--border-soft); }
+/* Последняя ВИДИМАЯ строка закрывает список линией — иначе он обрывается.
+   Скрытые строки лежат хвостом, поэтому «последняя видимая» — та, за которой
+   идёт скрытая. */
+.news__main > .news-card:last-child,
+.news__main > .news-card:not([hidden]):has(+ .news-card[hidden]) {
+  border-bottom: 1px solid var(--border-soft);
+}
+
+/* Строка, повторённая крупной карточкой: подсечка тем же золотом, что и
+   даты в ленте. Ясно, откуда взялась карточка сверху. */
+.news__main > .news-card[aria-current="true"] {
+  border-left-color: var(--gold);
+  background: var(--surface-sunken);
+}
+
+/* Смена крупной карточки — проявление, а не подмена: сначала встаёт сама
+   карточка, следом по очереди её строки */
+.news-card--lead.is-entering { animation: news-lead-in 420ms var(--ease) both; }
+
+.news-card--lead.is-entering > * {
+  animation: news-lead-part-in 420ms var(--ease) both;
+}
+
+.news-card--lead.is-entering > :nth-child(2) { animation-delay: 60ms; }
+.news-card--lead.is-entering > :nth-child(3) { animation-delay: 110ms; }
+.news-card--lead.is-entering > :nth-child(4) { animation-delay: 160ms; }
+
+@keyframes news-lead-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@keyframes news-lead-part-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .news-card--lead.is-entering,
+  .news-card--lead.is-entering > * { animation: none; }
+}
 
 /* --- Церковный день ---
    Карточка на фактуре: по светлой бумаге идёт золотая ромбовидная сетка —
@@ -1093,8 +1230,14 @@ html:not(.js) .video-embed::after { display: none; }
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: var(--space-sm) var(--space-lg);
 }
-.footer__col a { color: var(--ink); font-size: var(--fs-small); }
-.footer__col a:hover { color: var(--green); }
+.footer__col a {
+  display: inline-block;
+  color: var(--ink);
+  font-size: var(--fs-small);
+  transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+
+.footer__col a:hover { color: var(--green); transform: translateX(3px); }
 
 /* Контакты — по одному в строке: названия длинные, в две колонки не лягут */
 .footer__col--contacts ul { grid-template-columns: minmax(0, 1fr); }

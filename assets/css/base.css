@@ -157,16 +157,43 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
   font-weight: 700;
   letter-spacing: .1em;
   text-transform: uppercase;
-  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease), color var(--dur) var(--ease);
+  transition: background var(--dur) var(--ease), border-color var(--dur) var(--ease),
+              color var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
 
 .btn svg { transition: transform var(--dur) var(--ease); flex: none; }
 .btn:hover svg { transform: translateX(4px); }
 
+.btn:active { transform: translateY(1px); }
+
 /* Первичная кнопка — зелёная заливка: она принадлежит каркасу, а не тексту
-   секции. Её постоянное место — шапка, рядом с логотипом и полосой разделов */
-.btn--primary { background: var(--green); color: var(--on-green); }
-.btn--primary:hover { background: var(--green-deep); }
+   секции. Её постоянное место — шапка, рядом с логотипом и полосой разделов.
+   По кнопке проходит золотой отсвет — слева направо на наведение. Блик
+   нарисован фоном, а не накладкой: он идёт ПОД текстом и не красит буквы.
+   Цвет задан отдельным свойством: сокращённая запись background стирала бы
+   градиент при каждой смене фона. */
+.btn--primary {
+  background-color: var(--green);
+  background-image: linear-gradient(105deg,
+    rgba(197, 154, 72, 0) 38%,
+    rgba(197, 154, 72, .55) 50%,
+    rgba(197, 154, 72, 0) 62%);
+  background-repeat: no-repeat;
+  background-size: 260% 100%;
+  background-position: 165% 0;
+  color: var(--on-green);
+  transition: background-color var(--dur) var(--ease), color var(--dur) var(--ease),
+              transform var(--dur) var(--ease), background-position 750ms var(--ease);
+}
+
+.btn--primary:hover {
+  background-color: var(--green-deep);
+  background-position: -65% 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn--primary:hover { background-position: 165% 0; }
+}
 
 .btn--secondary {
   border: 1px solid var(--border);
@@ -257,9 +284,22 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 .js .hero.is-ready .hero__quote blockquote { clip-path: inset(-25% 0 -25% 0); }
 .js .hero.is-ready .hero__quote figcaption { opacity: 1; transform: none; transition-delay: 900ms; }
 
+/* Приезд сбоку — для блока, стоящего второй колонкой: он появляется не
+   снизу вместе с текстом, а со своей стороны, и две колонки не выезжают
+   одинаково */
+.js .reveal--side {
+  transform: translateX(28px);
+  transition:
+    opacity var(--dur-slow) var(--ease),
+    transform 700ms var(--ease);
+}
+
+.js .reveal--side.is-visible { transform: none; }
+
 @media (prefers-reduced-motion: reduce) {
   .js .reveal,
   .js .reveal--mask,
+  .js .reveal--side,
   .js .hero__photo,
   .js .hero__marks,
   .js .hero__quote blockquote,
@@ -271,3 +311,16 @@ button { font: inherit; color: inherit; background: none; border: 0; cursor: poi
 
   .js .reveal--rule::after { transform: none; }
 }
+
+/* --- Снимок проявляется, а не выпрыгивает --------------------------------- */
+
+/* Превью подгружаются на ходу, и без этого карточка меняется рывком: пустая
+   плашка мгновенно сменяется кадром. Класс ставит скрипт по событию load —
+   без скрипта снимок виден сразу. */
+.js .is-fading { opacity: 0; transition: opacity 700ms var(--ease); }
+.js .is-fading.is-loaded { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .js .is-fading { opacity: 1; transition: none; }
+}
+
