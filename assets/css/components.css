@@ -138,7 +138,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-size: clamp(1.375rem, .8rem + 2.1vw, 2.875rem);
   line-height: 1.04;
   letter-spacing: .005em;
-  color: var(--brand);
+  color: var(--green);
   white-space: nowrap;
   transition: font-size var(--dur-header) var(--ease-header);
 }
@@ -156,7 +156,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   width: 44px;
   height: 44px;
   border-radius: var(--radius);
-  color: var(--brand);
+  color: var(--gold-deep);
   transition: background var(--dur) var(--ease), scale var(--dur-fast) var(--ease);
 }
 
@@ -188,7 +188,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
 .sitebar {
   position: relative;
   z-index: 2;
-  background: var(--accent);
+  background: var(--green);
 }
 
 /* Фон списка виден только в зазорах — он и есть разделительная линия */
@@ -211,7 +211,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   height: 100%;
   min-height: var(--sitebar-h);
   padding: var(--space-md) var(--space-sm);
-  background: var(--accent);
+  background: var(--green);
   font-family: var(--font-display);
   font-size: var(--fs-eyebrow);
   font-weight: 700;
@@ -220,12 +220,12 @@ body { padding-top: var(--header-space, var(--header-total)); }
   text-align: center;
   text-transform: uppercase;
   text-wrap: balance;
-  color: var(--on-accent);
+  color: var(--on-green);
   transition: background var(--dur) var(--ease);
 }
 
 .sitebar__link:hover,
-.sitebar__link:focus-visible { background: var(--accent-hover); }
+.sitebar__link:focus-visible { background: var(--green-deep); }
 
 /* Под курсором из середины ячейки расходится та же золотая подсечка, какой
    отмечен текущий раздел: наведение обещает ровно то, чем станет */
@@ -249,7 +249,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
 
 /* Текущий раздел: тонкая золотая подсечка снизу, без сдвига раскладки */
 .sitebar__link[aria-current="page"] {
-  background: var(--accent-hover);
+  background: var(--green-deep);
   box-shadow: inset 0 -3px 0 var(--gold);
 }
 
@@ -274,7 +274,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   );
   overflow: hidden;
   /* подложка на случай, если слой с текстурой не отрисуется */
-  background: radial-gradient(105% 105% at 0% -4%, #FFFDF4 0%, #FBEFCF 26%, #F2DCA6 56%, #E5C381 80%, #D8AE64 100%);
+  background: var(--hero-paper);
 }
 
 /* Бумага: волокно и зерно, смешанные с самим градиентом — фактура «в бумаге»,
@@ -296,7 +296,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='700' height='700'%3E%3Cfilter id='c'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.009' numOctaves='3' seed='23' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.12' intercept='.88'/%3E%3CfeFuncG type='linear' slope='.14' intercept='.86'/%3E%3CfeFuncB type='linear' slope='.18' intercept='.82'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='700' height='700' filter='url(%23c)'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='500' height='500'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.025 .8' numOctaves='5' seed='11' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.34' intercept='.66'/%3E%3CfeFuncG type='linear' slope='.42' intercept='.58'/%3E%3CfeFuncB type='linear' slope='.56' intercept='.44'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='500' height='500' filter='url(%23f)'/%3E%3C/svg%3E"),
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' seed='5' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncR type='linear' slope='.72' intercept='.4'/%3E%3CfeFuncG type='linear' slope='.72' intercept='.38'/%3E%3CfeFuncB type='linear' slope='.72' intercept='.34'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='320' height='320' filter='url(%23g)'/%3E%3C/svg%3E"),
-    radial-gradient(105% 105% at 0% -4%, #FFFDF4 0%, #FBEFCF 26%, #F2DCA6 56%, #E5C381 80%, #D8AE64 100%);
+    var(--hero-paper);
   background-size: cover, cover, auto, 700px 700px, 500px 500px, 320px 320px, cover;
   background-blend-mode: multiply, soft-light, multiply, multiply, multiply, soft-light, normal;
 }
@@ -359,7 +359,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   /* Кегль крупный, но кавычки жмутся к цитате: высота строки и отступ
      заданы в em, поэтому просвет не растёт вслед за размером */
   line-height: .24;
-  color: #B08430;
+  color: var(--gold-deep);
   margin-bottom: .04em;
 }
 
@@ -368,10 +368,10 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 1rem + 2.4vw, 2.875rem);
   line-height: 1.0;
-  /* Тёмное золото: цитата уходит от оливы навигации и держит одну линию с
-     орнаментом ленты. На золотой бумаге даёт 4.3:1 даже в самой насыщенной
-     части градиента — для этого кегля запас есть (крупный текст: порог 3:1) */
-  color: #63440E;
+  /* Тёмное золото: на золотой бумаге первого экрана даёт 4.3:1 даже в самой
+     насыщенной части градиента — для этого кегля запас есть (крупный текст:
+     порог 3:1). Обычный --gold-deep на ней уже плыл бы */
+  color: var(--gold-dark);
   max-width: 21ch;
   text-wrap: balance;
 }
@@ -380,9 +380,9 @@ body { padding-top: var(--header-space, var(--header-total)); }
   margin-top: var(--space-md);
   font-size: var(--fs-small);
   letter-spacing: .06em;
-  /* Ссылка на стих идёт следом за цитатой — тон тёплый, а не зелёный,
-     иначе подпись спорит с ней по цвету */
-  color: #4A4130;
+  /* Ссылка на стих идёт следом за цитатой: она подпись, а не акцент —
+     значит тело текста, а не золото */
+  color: var(--ink-body);
 }
 
 /* --------------------------------------------------------------------------
@@ -447,7 +447,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
 
 .news-card:hover {
   background: var(--surface-sunken);
-  border-left-color: var(--accent);
+  border-left-color: var(--gold);
   transform: translateX(3px);
 }
 
@@ -509,11 +509,11 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-size: 1rem;
   font-weight: 700;
   line-height: var(--lh-snug);
-  color: var(--brand);
+  color: var(--gold-deep);
 }
 
 .news-card__title a { color: inherit; }
-.news-card:hover .news-card__title a { color: var(--accent); }
+.news-card:hover .news-card__title a { color: var(--gold-dark); }
 
 /* --- Выбранная встреча: крупная карточка ---
    Порядок сверху вниз: дата, время и формат — потом название, описание,
@@ -529,12 +529,12 @@ body { padding-top: var(--header-space, var(--header-total)); }
   padding: clamp(1.25rem, 2vw, 1.75rem);
   background: var(--surface);
   border: 1px solid var(--border-soft);
-  border-left: 3px solid var(--accent);
+  border-left: 3px solid var(--gold);
   transform: none;
 }
 
 .news-card--lead:hover { background: var(--surface); transform: none; }
-.news-card--lead:hover .news-card__title a { color: var(--accent); }
+.news-card--lead:hover .news-card__title a { color: var(--gold-dark); }
 
 /* Ссылка заголовка растянута на карточку: нажатие в любом месте ведёт
    на страницу встречи, и при этом остаётся одна настоящая ссылка */
@@ -574,7 +574,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-size: clamp(1.3rem, 1.05rem + 1vw, 1.75rem);
   font-weight: 700;
   line-height: var(--lh-tight);
-  color: var(--brand);
+  color: var(--gold-deep);
   margin-bottom: var(--space-xs);
   max-width: 30ch;
 }
@@ -689,9 +689,13 @@ body { padding-top: var(--header-space, var(--header-total)); }
   color: var(--ink);
 }
 
-/* Число — золотом: тот же числовой акцент, что у дат в ленте новостей */
+/* Число — крупной цифрой, как на календарной доске: оно и есть то, что
+   в карточке ищут первым. Интерлиньяж прижат к единице, иначе строка
+   шапки разъезжается вслед за кеглем */
 .church-day__date-new b {
+  font-size: 1.75em;
   font-weight: 700;
+  line-height: 1;
   color: var(--gold-deep);
 }
 
@@ -726,12 +730,12 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-size: var(--fs-eyebrow);
   letter-spacing: .1em;
   text-transform: uppercase;
-  color: var(--brand);
+  color: var(--gold-deep);
   padding: 0 var(--space-xs);
 }
 
 .church-day__today[hidden] { display: none; }
-.church-day__today:hover { color: var(--accent); }
+.church-day__today:hover { color: var(--gold-dark); }
 
 .church-day__body { padding-top: var(--space-md); }
 
@@ -779,7 +783,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   font-weight: 400;
   font-size: clamp(1.4rem, 1.1rem + 1.1vw, 2rem);
   line-height: var(--lh-tight);
-  color: var(--brand);
+  color: var(--gold-deep);
 }
 
 .church-day__feast[hidden] { display: none; }
@@ -808,7 +812,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
 }
 
 .church-day__fast:empty { display: none; }
-.church-day__fast--strict { border-top-color: var(--accent); }
+.church-day__fast--strict { border-top-color: var(--gold-dark); }
 .church-day__fast--none { border-top-color: var(--gold); }
 
 /* Ссылки разведены по краям карточки: своя таблица — слева, источник
@@ -846,6 +850,8 @@ body { padding-top: var(--header-space, var(--header-total)); }
   overflow: hidden;
 }
 
+/* Декоративный спад утопленной поверхности, а не роль палитры: две ступени
+   того же тёплого тона, что и --surface-sunken */
 .ph::before {
   content: "";
   position: absolute;
@@ -972,7 +978,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   border: 1px solid var(--border);
   border-radius: 50%;
   background: rgba(250, 245, 233, .82);
-  color: var(--accent);
+  color: var(--gold-dark);
   transition: background var(--dur) var(--ease), scale var(--dur) var(--ease);
 }
 
@@ -1005,11 +1011,11 @@ body { padding-top: var(--header-space, var(--header-total)); }
 .video-card__body :is(h2, h3) {
   font-size: var(--fs-h3);
   line-height: var(--lh-snug);
-  color: var(--brand);
+  color: var(--gold-deep);
   transition: color var(--dur) var(--ease);
 }
 
-.video-card:hover .video-card__body :is(h2, h3) { color: var(--accent); }
+.video-card:hover .video-card__body :is(h2, h3) { color: var(--gold-dark); }
 
 /* Ссылка одна — на названии; клик по остальной карточке она добирает
    растянутым псевдоэлементом. Отдельная кнопка на постере не нужна: смотреть
@@ -1079,7 +1085,7 @@ body { padding-top: var(--header-space, var(--header-total)); }
   border: 1px solid var(--border);
   border-radius: 50%;
   background: rgba(250, 245, 233, .82);
-  color: var(--accent);
+  color: var(--gold-dark);
   transition: background var(--dur) var(--ease), scale var(--dur) var(--ease);
 }
 
@@ -1149,7 +1155,7 @@ html:not(.js) .video-embed::after { display: none; }
   font-family: var(--font-display);
   font-size: clamp(1.15rem, 0.55rem + 1.65vw, 2.25rem);
   line-height: 1.35;
-  color: var(--brand);
+  color: var(--gold-deep);
   text-wrap: nowrap;
 }
 
@@ -1188,9 +1194,12 @@ html:not(.js) .video-embed::after { display: none; }
   padding-block: var(--space-2xl);
 }
 
+/* Имя в подвале — зелёное, как логотип в шапке: подвал с шапкой держат
+   один каркасный тон, золото остаётся внутри секций */
 .footer h2 {
   font-size: clamp(1.375rem, 1.15rem + .8vw, 1.75rem);
   margin-bottom: var(--space-sm);
+  color: var(--green);
 }
 
 /* Левая колонка тянется на высоту ряда, чтобы подпись легла по нижней
@@ -1198,7 +1207,7 @@ html:not(.js) .video-embed::after { display: none; }
 .footer__brand { display: flex; flex-direction: column; }
 
 .footer__contacts { margin-top: var(--space-md); font-size: var(--fs-body); }
-.footer__contacts a { color: var(--brand); }
+.footer__contacts a { color: var(--green); }
 
 .footer__place {
   margin-top: auto;          /* дожимает подпись к низу списка разделов */
@@ -1228,7 +1237,7 @@ html:not(.js) .video-embed::after { display: none; }
   transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
 }
 
-.footer__col a:hover { color: var(--brand); transform: translateX(3px); }
+.footer__col a:hover { color: var(--green); transform: translateX(3px); }
 
 /* Контакты — по одному в строке: названия длинные, в две колонки не лягут */
 .footer__col--contacts ul { grid-template-columns: minmax(0, 1fr); }

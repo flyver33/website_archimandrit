@@ -53,7 +53,7 @@
   transition: transform var(--dur) var(--ease);
 }
 
-.back-link:hover { color: var(--accent); }
+.back-link:hover { color: var(--gold-dark); }
 .back-link:hover svg { transform: translateX(-4px); }
 
 /* Название элемента: во всю ширину и плотнее обычного заголовка — длинная
@@ -166,7 +166,7 @@
 
 .transcript__reader[open] .transcript__toggle::after { rotate: -135deg; translate: 0 2px; }
 
-.transcript__toggle:hover { color: var(--accent); }
+.transcript__toggle:hover { color: var(--gold-dark); }
 
 .transcript__text { margin-top: var(--space-lg); }
 
