@@ -1189,7 +1189,7 @@ html:not(.js) .video-embed::after { display: none; }
 
 .footer__inner {
   display: grid;
-  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr) minmax(0, .9fr);
+  grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
   gap: var(--space-2xl);
   padding-block: var(--space-2xl);
 }
@@ -1206,8 +1206,39 @@ html:not(.js) .video-embed::after { display: none; }
    кромке списка разделов — без разделительной линии */
 .footer__brand { display: flex; flex-direction: column; }
 
-.footer__contacts { margin-top: var(--space-md); font-size: var(--fs-body); }
-.footer__contacts a { color: var(--green); }
+/* Мессенджеры — прямая связь, поэтому идут сразу под именем и крупнее сайтов */
+.footer__messengers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-lg);
+  margin-top: var(--space-md);
+}
+
+.footer__messenger {
+  display: inline-flex;
+  align-items: center;
+  gap: .5em;
+  color: var(--green);
+  font-size: var(--fs-body);
+  transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.footer__messenger svg { flex: none; }
+.footer__messenger:hover { color: var(--gold-deep); transform: translateX(3px); }
+
+/* Сайты приходов — не личная связь: отступ побольше, кегль поменьше */
+.footer__sites {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  margin-top: var(--space-xl);
+}
+.footer__sites a {
+  display: inline-block;
+  color: var(--ink);
+  font-size: var(--fs-small);
+  transition: color var(--dur) var(--ease), transform var(--dur) var(--ease);
+}
+.footer__sites a:hover { color: var(--green); transform: translateX(3px); }
 
 .footer__place {
   margin-top: auto;          /* дожимает подпись к низу списка разделов */
@@ -1238,9 +1269,6 @@ html:not(.js) .video-embed::after { display: none; }
 }
 
 .footer__col a:hover { color: var(--green); transform: translateX(3px); }
-
-/* Контакты — по одному в строке: названия длинные, в две колонки не лягут */
-.footer__col--contacts ul { grid-template-columns: minmax(0, 1fr); }
 
 /* --------------------------------------------------------------------------
    12. Адаптив
@@ -1276,11 +1304,8 @@ html:not(.js) .video-embed::after { display: none; }
 
 
 @media (max-width: 1024px) {
-  /* Три колонки в ряд уже не помещаются: визитка занимает всю ширину,
-     под ней — разделы и контакты рядом */
-  .footer__inner { grid-template-columns: 1fr 1fr; }
-  .footer__brand { grid-column: 1 / -1; }
-  .footer__place { margin-top: var(--space-md); }
+  /* Визитка и разделы держатся в два столбца до самого мобильного порога */
+  .footer__place { margin-top: var(--space-lg); }
 
   /* Две карточки в ряд, третья выглядывает краем — ряд читается как
      продолжающийся, без подсказок и стрелок-приманок */

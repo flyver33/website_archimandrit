@@ -51,7 +51,7 @@ ${sheets.map((name) => `<link rel="stylesheet" href="${UP}assets/css/${name}.css
 `;
 }
 
-/* В шапке только имя и «Автобиография»: разделы живут в полосе-меню.
+/* В шапке только имя и «Биография»: разделы живут в полосе-меню.
    aria-current="page" ставится только на самой странице раздела. На странице
    элемента пункт меню ведёт не сюда, поэтому пометки нет. */
 function header(activeKey, isIndex) {
@@ -94,18 +94,40 @@ ${items}
 `;
 }
 
-/* Контакты подвала: приходы и авторские каналы. Порядок фиксирован —
-   сначала сайты приходов, потом мессенджеры. */
-const CONTACTS = [
-  { title: 'Храм Покрова Пресвятой Богородицы', href: 'https://hrampokrov.ru/' },
-  { title: 'Подворье Оптиной пустыни в Москве', href: 'http://optina-msk.ru/' },
-  { title: 'MAX', href: 'https://max.ru/melkhisedek_artyukhin_official' },
-  { title: 'Telegram', href: 'https://t.me/melkhisedek_artyukhin_official' },
+/* Связь в подвале: авторские каналы под именем, сайты приходов — ниже
+   и отдельным блоком, они не про личное обращение */
+const MESSENGERS = [
+  {
+    title: 'MAX',
+    href: 'https://max.ru/melkhisedek_artyukhin_official',
+    icon: '<rect x="2.75" y="2.75" width="18.5" height="18.5" rx="5.5"/><path d="M7.6 15.9V8.3l4.4 4.9 4.4-4.9v7.6"/>',
+  },
+  {
+    title: 'Telegram',
+    href: 'https://t.me/melkhisedek_artyukhin_official',
+    icon: '<path d="M21.4 4.1 2.9 11.3a.4.4 0 0 0 .04.75l4.7 1.5 1.75 5.3a.4.4 0 0 0 .7.16l2.5-2.8 4.4 3.2a.4.4 0 0 0 .63-.22l3.5-14.6a.4.4 0 0 0-.53-.47Z"/><path d="m7.64 13.55 11.1-7.3-6.9 8.4-.32 4.3"/>',
+  },
 ];
 
-function contactItems(indent) {
-  return CONTACTS.map((c) =>
-    `${indent}<li><a href="${c.href}" target="_blank" rel="noopener">${c.title}</a></li>`
+const SITES = [
+  { title: 'Храм Покрова Пресвятой Богородицы', href: 'https://hrampokrov.ru/' },
+  { title: 'Подворье Оптиной пустыни в Москве', href: 'http://optina-msk.ru/' },
+];
+
+function messengerItems(indent) {
+  return MESSENGERS.map((m) =>
+    `${indent}<li>
+${indent}  <a class="footer__messenger" href="${m.href}" target="_blank" rel="noopener">
+${indent}    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${m.icon}</svg>
+${indent}    <span>${m.title}</span>
+${indent}  </a>
+${indent}</li>`
+  ).join('\n');
+}
+
+function siteItems(indent) {
+  return SITES.map((s) =>
+    `${indent}<li><a href="${s.href}" target="_blank" rel="noopener">${s.title}</a></li>`
   ).join('\n');
 }
 
@@ -123,10 +145,12 @@ function footer() {
         <p class="muted" style="font-size: var(--fs-small)">
           Пресс-секретарь Синодального отдела<br>по монастырям и монашеству
         </p>
-        <p class="footer__contacts">
-          <a class="link" href="tel:+79999999999">+7 (999) 999-99-99</a> ·
-          <a class="link" href="mailto:pochta@mail.ru">pochta@mail.ru</a>
-        </p>
+        <ul class="footer__messengers">
+${messengerItems('          ')}
+        </ul>
+        <ul class="footer__sites">
+${siteItems('          ')}
+        </ul>
         <p class="footer__place">Москва 2026</p>
       </div>
 
@@ -134,13 +158,6 @@ function footer() {
         <h3>Разделы</h3>
         <ul>
 ${links}
-        </ul>
-      </div>
-
-      <div class="footer__col footer__col--contacts">
-        <h3>Контакты</h3>
-        <ul>
-${contactItems('          ')}
         </ul>
       </div>
     </div>
