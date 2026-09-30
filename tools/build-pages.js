@@ -21,6 +21,7 @@ const { SECTIONS, MENU, EVENTS, BOOKS, VIDEO, BIO, EXTRA_PAGES } = require('./co
 
 const ROOT = path.join(__dirname, '..');
 const UP = '../'; // все страницы лежат на один уровень ниже корня
+const SITE = 'https://flyver33.github.io/website_archimandrit/'; // og:image обязан быть абсолютным
 
 /* --- Общие куски разметки -------------------------------------------------- */
 
@@ -28,7 +29,7 @@ const ARROW_RIGHT = '<svg class="entry-row__arrow" width="20" height="14" viewBo
 
 const ARROW_LEFT = '<svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M13 7H1M6 2 1 7l5 5"/></svg>';
 
-function head({ title, description, css }) {
+function head({ title, description, css, image }) {
   const sheets = ['fonts', 'tokens', 'base', 'components'].concat(css || []);
   return `<!DOCTYPE html>
 <html lang="ru">
@@ -38,7 +39,8 @@ function head({ title, description, css }) {
 <title>${title}</title>
 <meta name="description" content="${description}">
 <meta name="theme-color" content="#FAF6EC">
-
+${image ? `<meta property="og:image" content="${SITE}${image}">
+` : ''}
 <link rel="icon" href="${UP}assets/img/favicon.svg" type="image/svg+xml">
 <link rel="preload" href="${UP}assets/fonts/arsenal-400-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="${UP}assets/fonts/ptserif-400-normal-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
@@ -297,9 +299,55 @@ ${cards}
 ` + footer('video');
 }
 
+/* --- Раздел «Книги»: полка обложек -----------------------------------------
+   Как и у видео, элемент раздела узнают в лицо: вместо строки — обложка,
+   под ней название и год. Обложки разной высоты стоят по нижнему краю,
+   как книги на полке. */
+
+/* Высота обложки для атрибута height: читаем из заголовка WebP (VP8, с потерями),
+   чтобы сетка не прыгала при загрузке картинок */
+function coverHeight(slug) {
+  const buf = fs.readFileSync(path.join(ROOT, `assets/img/books/${slug}.webp`));
+  const width = buf.readUInt16LE(26) & 0x3fff;
+  const height = buf.readUInt16LE(28) & 0x3fff;
+  return Math.round(height * 480 / width);
+}
+
+function booksSectionPage({ title, description, items }) {
+  const cards = items.map((b) => `      <li class="book-grid__item">
+        <a class="book-card" href="${b.slug}.html">
+          <span class="book-card__cover">
+            <img src="${UP}assets/img/books/${b.slug}.webp" alt="" width="480" height="${coverHeight(b.slug)}" loading="lazy" decoding="async">
+          </span>
+          <span class="book-card__title">${b.title}</span>
+${b.subtitle ? `          <span class="book-card__sub">${b.subtitle}</span>\n` : ''}          <span class="book-card__meta">${b.year}</span>
+        </a>
+      </li>`).join('\n');
+
+  return head({
+    title: `${title} — архимандрит Мелхиседек (Артюхин)`,
+    description,
+    css: ['reading', 'section'],
+  }) + header('books', true) + `
+<main id="main">
+
+  <div class="container page-head">
+    <h1 class="page-head__title">${title}</h1>
+  </div>
+
+  <div class="container section-page">
+    <ul class="book-grid" data-paginate="15">
+${cards}
+    </ul>
+  </div>
+
+</main>
+` + footer('books');
+}
+
 /* --- Страница элемента ----------------------------------------------------- */
 
-function entryPage({ key, title, description, lead, body, css, scripts, prev, next }) {
+function entryPage({ key, title, description, lead, body, css, scripts, prev, next, image }) {
   const section = SECTIONS.find((s) => s.key === key);
 
   const nav = (prev || next) ? `
@@ -312,6 +360,7 @@ ${next ? `      <a class="link entry-nav__next" href="${next.href}">${next.title
     title: `${title} — архимандрит Мелхиседек (Артюхин)`,
     description,
     css: ['reading'].concat(css || []),
+    image,
   }) + header(key) + `
 <main id="main">
 
@@ -444,15 +493,15 @@ EVENTS.forEach((e, i) => {
 
 /* Книги */
 
-written.push(write('books/index.html', sectionPage({
-  key: 'books',
+written.push(write('books/index.html', booksSectionPage({
   title: 'Книги',
   description: 'Книги архимандрита Мелхиседека (Артюхина): чтение прямо в браузере и загрузка файлов.',
-  items: BOOKS.map((b) => ({ meta: b.meta, title: b.title, href: b.locked ? null : `${b.slug}.html` })),
+  items: BOOKS,
 })));
 
-BOOKS.filter((b) => !b.locked).forEach((b) => {
-  const body = `    <div class="pdf" id="book" data-src="${b.pdf}">
+BOOKS.forEach((b, i) => {
+  const pdf = `${UP}assets/docs/books/${b.slug}.pdf`;
+  const body = `    <div class="pdf" id="book" data-src="${pdf}">
       <div class="pdf__stage">
         <button class="pdf__nav pdf__nav--prev" type="button" aria-label="Предыдущий разворот">
           ${ARROW_LEFT}
@@ -471,7 +520,7 @@ BOOKS.filter((b) => !b.locked).forEach((b) => {
     </div>
 
     <div class="book__actions pdf__downloads">
-      <a class="btn btn--primary" href="${b.pdf}" download>Скачать PDF</a>
+      <a class="btn btn--primary" href="${pdf}" download>Скачать PDF</a>
       <!-- TODO: подставить адрес файла EPUB и убрать класс is-disabled -->
       <a class="btn btn--secondary is-disabled" href="" aria-disabled="true" tabindex="-1" download>
         Скачать EPUB <span class="btn__note">скоро</span>
@@ -480,10 +529,13 @@ BOOKS.filter((b) => !b.locked).forEach((b) => {
 
   written.push(write(`books/${b.slug}.html`, entryPage({
     key: 'books',
-    title: b.title,
+    title: b.subtitle ? `${b.title}. ${b.subtitle}` : b.title,
     description: b.lead,
     lead: b.lead,
     body,
+    image: `assets/img/books/${b.slug}.webp`,
+    prev: i > 0 ? { href: `${BOOKS[i - 1].slug}.html`, title: BOOKS[i - 1].title } : null,
+    next: i < BOOKS.length - 1 ? { href: `${BOOKS[i + 1].slug}.html`, title: BOOKS[i + 1].title } : null,
     css: ['reader'],
     // pdf.js подключается динамическим import — файл обязан быть модулем
     scripts: [{ src: 'book-reader.js', module: true }],

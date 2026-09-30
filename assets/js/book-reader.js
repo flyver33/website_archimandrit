@@ -51,18 +51,20 @@ async function start(root) {
      каждый следующий разворот брал бы размер предыдущего и книга росла бы
      с каждым щелчком.
 
-     Эталон — самый крупный разворот: первая и последняя страницы книги
-     одиночные, и без общей меры кегль на них подскакивал бы вдвое. */
+     Эталон — самый крупный разворот: обложка и первая страница книги
+     одиночные, и без общей меры кегль на них подскакивал бы вдвое. Первый
+     разворот — не дальше третьей страницы: обложка, первая полоса, разворот. */
   let base = { width: 1, height: 1 };
   let scale = 1;
 
   async function measure() {
-    const first = (await doc.getPage(1)).getViewport({ scale: 1 });
-    const spread = total > 1 ? (await doc.getPage(2)).getViewport({ scale: 1 }) : first;
-    base = {
-      width: Math.max(first.width, spread.width),
-      height: Math.max(first.height, spread.height),
-    };
+    for (let n = 1; n <= Math.min(total, 3); n++) {
+      const view = (await doc.getPage(n)).getViewport({ scale: 1 });
+      base = {
+        width: Math.max(base.width, view.width),
+        height: Math.max(base.height, view.height),
+      };
+    }
   }
 
   /* Предел высоты задан в таблице стилей; снимаем свою прошлую меру, чтобы

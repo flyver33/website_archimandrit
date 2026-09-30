@@ -301,11 +301,18 @@ body { padding-top: var(--header-space, var(--header-total)); }
   background-blend-mode: multiply, soft-light, multiply, multiply, multiply, soft-light, normal;
 }
 
+/* Портрет выше первого экрана на --portrait-lift — верх клобука уходит под
+   орнамент шапки — и ниже на --portrait-drop: край рясы срезает полоса
+   разделов, а голова крупнее. Ширину задаёт высота через пропорцию снимка.
+   Правый край — от края контейнера (линии кнопки в шапке) со сдвигом вправо
+   на --portrait-shift. */
 .hero__photo {
   position: absolute;
-  inset: 0 0 0 auto;
-  width: min(70%, 66rem);
-  height: 100%;
+  right: calc(max(var(--gutter), (100% - var(--container)) / 2) - var(--portrait-shift));
+  bottom: calc(-1 * var(--portrait-drop));
+  height: calc(100% + var(--portrait-lift) + var(--portrait-drop));
+  aspect-ratio: 1000 / 833;
+  max-width: 70%;
 }
 
 /* Портрет отстаёт от прокрутки: скрипт сдвигает его на долю пройденного пути,
@@ -1348,7 +1355,9 @@ html:not(.js) .video-embed::after { display: none; }
     position: relative;
     inset: auto;
     width: 100%;
+    max-width: none;
     height: min(52vh, 26rem);
+    aspect-ratio: auto;
   }
 
   .hero__photo img { object-position: bottom center; }
