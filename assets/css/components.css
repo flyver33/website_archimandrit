@@ -354,7 +354,9 @@ body { padding-top: var(--header-space, var(--header-total)); }
   width: 100%;
   max-width: calc(var(--container) + var(--gutter) * 2);
   margin: 0 auto;
-  padding: 0 var(--gutter) clamp(3rem, 11vh, 7rem);
+  /* Цитата на уровне бороды: взгляд портрета, обращённый влево,
+     уходит в текст, а не проходит над ним */
+  padding: 0 var(--gutter) clamp(3rem, 12vh, 7.5rem);
 }
 
 /* Кавычки — декор: на золотой бумаге золото читается только глубокое, и оно
